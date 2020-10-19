@@ -1,5 +1,5 @@
 open OUnit2
-open deck
+open Deck
 
 let deck_tests = [
 
