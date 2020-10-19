@@ -1,6 +1,7 @@
 module Deck = struct
   (** The type [card] represents a playing card with a rank from 1-13 and a suit
-      denoted by the first character of the suit's name *)
+      denoted by the first character of the suit's name. A card with the rank of
+      1 represents an ace, 11 is a Jack, 12 a Queen, and 13 a King.*)
   type card = {rank : int; suit : char}
 
   (** The type [deck] represents a mutable array of cards. *)
@@ -32,9 +33,9 @@ module Deck = struct
       swap i j;
     done
 
-  (* [create] initializes a new deck with the standard 52-card deck in 
-     random order*)
-  let create : deck =
+  (* [create_help d s] initializes a new deck s times with the standard 
+     52-card deck.*)
+  let create_help s = 
     let d = empty in
     for i = 1 to 13 do
       push {rank = i; suit = 'C'} d;
@@ -43,5 +44,18 @@ module Deck = struct
       push {rank = i; suit = 'S'} d
     done;
     shuffle d;
-    d;
+    d
+  ;;
+
+  (* [create] calls [create_help 1] to initialize a new deck with the standard 
+     52-card deck in random order. *)
+  let create : deck =
+    create_help 1 
+
+  (* [create_size s] calls [create_help s] to intialize a new deck with s number 
+     of standard 52-card decks in random order.
+     [s] is an int >= 1*)
+  let create_size s : deck =
+    create_help s 
+
 end
