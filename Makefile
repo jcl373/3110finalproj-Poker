@@ -1,4 +1,4 @@
-MODULES=deck game
+MODULES=deck 
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
