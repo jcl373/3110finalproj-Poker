@@ -11,8 +11,9 @@ type deck = card array ref
 let empty = ref [||]
 
 (* To push [c] onto [d], we create a new array with value [c] at the 
-   beginning followed by the values of [d]. *)
-let push (c : card) (d : deck) : unit = d := (Array.append [|c|] !d)
+   beginning followed by the values of [d] before returning [d]. *)
+let push (c : card) (d : deck) = d := (Array.append [|c|] !d);
+  d
 
 (* [peek d] is the first element of [d].*)
 let peek (d : deck) : 'a = !d.(0)
@@ -22,7 +23,7 @@ let pop (d : deck) : 'a = let first = !d.(0) in
   d := Array.sub !d 1 (Array.length !d - 1);
   first
 
-(* [shuffle d] randomizes the deck [d] using the Knuth shuffle algorithm. *)
+(* [shuffle d] randomizes the deck [d] using the Knuth shuffle algorithm before returning the shuffled deck. *)
 let shuffle (d : deck) = 
   let swap index1 index2 =
     let temp = Array.get !d index1 in
@@ -31,7 +32,8 @@ let shuffle (d : deck) =
   for i = Array.length !d - 1 downto 1 do
     let j : int = Random.int (i + 1) in
     swap i j;
-  done
+  done;
+  d
 
 (* [create_help d s] initializes a new deck s times with the standard 
    52-card deck.*)
