@@ -68,7 +68,6 @@ let ace_spade_deck = ref ace_spade_array (*Deck containing ace of spades *)
 let deck_tests =
   [
     push_test "pushing one card on empty" ace_spade Deck.empty ace_spade_array;
-<<<<<<< HEAD
     pop_test "popping one card" ace_spade_deck ace_spade;
   ]
 
@@ -98,11 +97,9 @@ let hand_test
 
 let hand_tests =
   [
-    hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};{rank = 12;suit='C'};{rank = 11;suit='C'};{rank = 10; suit = 'C'}|] RoyalFlush
-=======
+    hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};{rank = 12;suit='C'};{rank = 11;suit='C'};{rank = 10; suit = 'C'}|] RoyalFlush;
     push_test "pushing one card on non-empty deck" king_spade ace_spade_deck ace_king_spade_array;
     pop_test "poping one card" ace_spade_deck ace_spade;
->>>>>>> fb203e568e126b258ce5e63635d28cb7075cda7e
   ]
 
 let suite =
