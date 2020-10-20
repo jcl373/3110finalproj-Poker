@@ -12,9 +12,20 @@ type result =
 
 let getRank (card : Deck.card) = card.rank
 
-let compareCards (c1 : Deck.card) (c2 : Deck.card) = if getRank c1 > getRank c2 then -1
-  else if getRank c1 = getRank c2 then 0 else 1
+let compare_hands (hand1 : result) (hand2 : result) = 1
 
+let rec choose n k =
+  if n <= 0 then [ [] ]
+  else match k with
+    | [] -> []
+    | h :: tl ->
+      let with_h = List.map (fun l -> h :: l) (choose (n-1) tl) in
+      let without_h = choose n tl in
+      with_h @ without_h;;
+
+let evaluate_hands (hole : Deck.card array) (community : Deck.card array) = 5
+
+(* TODO: add in helper methods to replace List.hd and List.nth cause Clarkson doesn't like them *)
 let evaluate_hand (h : Deck.card array) : result =
   let x : (int * int) list ref = ref [] in
   let add_to_histogram (card : Deck.card) : unit =
@@ -24,6 +35,9 @@ let evaluate_hand (h : Deck.card array) : result =
   let histogram = 
     List.iter add_to_histogram (Array.to_list h);
     !x in
+
+  let compareCards (c1 : Deck.card) (c2 : Deck.card) = if getRank c1 > getRank c2 then -1
+    else if getRank c1 = getRank c2 then 0 else 1 in
   let checkSTRAIGHT h = 
     let hSorted = (List.sort compareCards (Array.to_list h)) in
     if getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 1)) = 4 then Straight (getRank (List.hd hSorted))
@@ -34,6 +48,7 @@ let evaluate_hand (h : Deck.card array) : result =
     if getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 1)) = 4 then StraightFlush (getRank (List.hd hSorted))
     else if getRank (List.nth hSorted (List.length hSorted - 1)) = 1 && getRank (List.hd hSorted) = 13 && getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 2)) = 3 then RoyalFlush
     else Flush (getRank h.(0),getRank h.(1),getRank h.(2),getRank h.(3),getRank h.(4)) in
+
   let sameSuit (suit : char) (card : Deck.card) = card.suit = suit in
   let checkFLUSH h =
     if (Array.for_all (sameSuit 'C') h) then checkSTRAIGHTFLUSH h
@@ -41,7 +56,8 @@ let evaluate_hand (h : Deck.card array) : result =
     else if (Array.for_all (sameSuit 'H') h) then checkSTRAIGHTFLUSH h
     else if (Array.for_all (sameSuit 'S') h) then checkSTRAIGHTFLUSH h
     else checkSTRAIGHT h in
-  let check41_32_221_2111 x =
+
+  let check41_32_221_2111 x = 
     match List.sort compare x with
     | [(x, 4); (y, 1)] -> FourOfKind (x, y)
     | [(x, 1); (y, 4)] -> FourOfKind (y, x)

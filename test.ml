@@ -66,7 +66,7 @@ let ace_spade_deck = ref ace_spade_array
 let deck_tests =
   [
     push_test "pushing one card on empty" ace_spade Deck.empty ace_spade_array;
-    pop_test "poping one card" ace_spade_deck ace_spade;
+    pop_test "popping one card" ace_spade_deck ace_spade;
   ]
 
 (** [pp_result r] pretty-prints result [r]. *)
