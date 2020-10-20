@@ -1,8 +1,3 @@
-(**IN PROGRESS *)
-
-
-
-
 (** The type [card] represents a playing card with a rank from 1-13 and a suit
      denoted by the first character of the suit's name. A card with the rank of
      1 represents an ace, 11 is a Jack, 12 a Queen, and 13 a King.*)
@@ -35,6 +30,3 @@ val create : deck
    of standard 52-card decks in random order.
    [s] is an int >= 1*)
 val create_size : int -> deck
-
-
-

@@ -23,7 +23,8 @@ module Deck = struct
     d := Array.sub !d 1 (Array.length !d - 1);
     first
 
-  (* [shuffle d] randomizes the deck [d] using the Knuth shuffle algorithm before returning the shuffled deck. *)
+  (* [shuffle d] randomizes the deck [d] using the Knuth shuffle a
+     lgorithm before returning the shuffled deck. *)
   let shuffle (d : deck) = 
     let swap index1 index2 =
       let temp = Array.get !d index1 in
@@ -38,14 +39,15 @@ module Deck = struct
   (* [create_help d s] initializes a new deck s times with the standard 
      52-card deck.*)
   let create_help s = 
-    let d = empty in
+    let d = ref [||] in
     for i = 1 to 13 do
       push {rank = i; suit = 'C'} d;
       push {rank = i; suit = 'D'} d;
       push {rank = i; suit = 'H'} d;
-      push {rank = i; suit = 'S'} d
+      push {rank = i; suit = 'S'} d;
     done;
-    shuffle d
+    shuffle d;
+    d
 
   (* [create] calls [create_help 1] to initialize a new deck with the standard 
      52-card deck in random order. *)
@@ -56,5 +58,5 @@ module Deck = struct
      of standard 52-card decks in random order.
      [s] is an int >= 1*)
   let create_size s : deck =
-    create_help s 
+    create_help s
 end

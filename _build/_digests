@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "Rule: ocaml dependencies ml (%=test )": "\164Z\024\024M\170\185i#\191\130\231\020\239\024\202"
 "Rule: ocaml dependencies mli (%=deck )": ">i\229\173\165\196\159\141\027r\233\024R\128\\\227"
 "Rule: ocaml: ml & cmi -> cmo (%=deck )": ";{\199a\017\156\214\160\130\142\031\245.Q\188\245"
@@ -10,3 +11,17 @@
 "Resource: /Users/justin/Documents/GitHub/3110proj/test.ml": "A\014\227\206\015\242\250:\r`\150?\223v\223;"
 "Resource: /Users/justin/Documents/GitHub/3110proj/deck.mli": "\1911\011\027i\030\237Fs\140\167\163\1863\026\023"
 "Rule: ocaml: cmo* -> byte (%=test )": "\188\155\248\231\230b\238\149Y\177\002\157\226xo\025"
+=======
+"Rule: ocaml dependencies ml (%=test )": "\247\020.\133<}~\0142<\200\158\019V_%"
+"Rule: ocaml dependencies mli (%=deck )": "\012\194\145\1950\001\133\030U\254?Rg\127\254["
+"Rule: ocaml: ml & cmi -> cmo (%=deck )": "\t\031b\236\238H\127a.\154\218]?wS5"
+"Resource: /Users/justin/Documents/GitHub/3110proj/deck.ml": "\184\255mA\2441\165\163\163[\163\214\172\217\205\245"
+"Resource: /home/bcl62/3110/proj1/3110proj/deck.mli": "\000*\184Z\2245\168\150\149\166\0295\002\128\251k"
+"Rule: ocaml dependencies ml (%=deck )": "\147'f.(\129\159\016\213\245\234\175\168\192}\249"
+"Resource: /home/bcl62/3110/proj1/3110proj/deck.ml": "w'n\176e|\148\243\031\205]\131\014\127\160\235"
+"Rule: ocaml: mli -> cmi (%=deck )": "\020$\225V(\\\014y\240\145\249\0299\221\145:"
+"Rule: ocaml: ml -> cmo & cmi (%=test )": "\209ST\149t\b\157\131\\1\1605_<\1335"
+"Resource: /Users/justin/Documents/GitHub/3110proj/test.ml": "\016\208\188\234\219y2\201\196\150\139mGm\029\001"
+"Resource: /Users/justin/Documents/GitHub/3110proj/deck.mli": "\022g\161\027C\026w\144\206\223M\174 \251\138e"
+"Rule: ocaml: cmo* -> byte (%=test )": "\138\159\251\201\191\222-b\014DoIe\011\142/"
+>>>>>>> 55ad5a950f3212da13619bfa33a350c9001c7f57
