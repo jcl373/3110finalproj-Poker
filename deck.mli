@@ -7,7 +7,7 @@ type card = {rank : int; suit : char}
 type deck = card array ref
 
 (* [empty] is the empty deck *)
-val empty : deck
+val empty : unit -> deck
 
 (* To push [c] onto [d], we create a new array with value [c] at the 
    beginning followed by the values of [d] before returning [d]. *)

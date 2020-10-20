@@ -1,7 +1,6 @@
 open OUnit2
 open Deck
 open Game
-open Bet
 
 (** [cmp_arrays a1 a2] compares two arrays to see whether
     they are equivalent arrays.  They must contain the same elements,
@@ -81,7 +80,7 @@ let empty = empty
 
 let deck_tests =
   [
-    push_test "pushing one card on empty" ace_spade Deck.empty ace_spade_array;
+    push_test "pushing one card on empty" ace_spade (Deck.empty ()) ace_spade_array;
     pop_test "popping one card" ace_spade_deck ace_spade;
   ]
 
