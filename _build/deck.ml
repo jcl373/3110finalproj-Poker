@@ -45,9 +45,7 @@ let create_help s =
     push {rank = i; suit = 'H'} d;
     push {rank = i; suit = 'S'} d
   done;
-  shuffle d;
-  d
-;;
+  shuffle d
 
 (* [create] calls [create_help 1] to initialize a new deck with the standard 
    52-card deck in random order. *)
