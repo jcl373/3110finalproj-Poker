@@ -13,6 +13,18 @@ type result =
 let getRank (card : Deck.card) = card.rank
 
 (* TODO: add in helper methods to replace List.hd and List.nth cause Clarkson doesn't like them *)
+
+(** [nth_of_list] returns the nth element of the list [lst]
+    Returns an option as the list may not contain that number 
+    [lst] is a valid list
+    [n] is an int; represents the nth element
+    [acc] is an int; the accumulator *)
+let rec nth_of_list lst n acc = 
+  match lst with
+  | [] -> None
+  | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
+;;
+
 let evaluate_hand (h : Deck.card array) : result =
   let x : (int * int) list ref = ref [] in
   let add_to_histogram (card : Deck.card) : unit =
@@ -25,8 +37,8 @@ let evaluate_hand (h : Deck.card array) : result =
 
   let compareCards (c1 : Deck.card) (c2 : Deck.card) = 
     if getRank c1 = getRank c2 then 0
-    else if getRank c1 = 1 then -1
-    else if getRank c2 = 1 then 1
+    (* else if getRank c1 = 1 then -1 (* These actually can cause aces to be in the wrong position*)
+       else if getRank c2 = 1 then 1 *) 
     else if getRank c1 > getRank c2 then -1
     else 1 in
   let checkSTRAIGHT h = 

@@ -2,6 +2,18 @@ open OUnit2
 open Deck
 open Game
 
+(** [cmp_arrays a1 a2] compares two arrays to see whether
+    they are equivalent arrays.  They must contain the same elements,
+    though not necessarily in the same order. *)
+let cmp_arrays a1 a2 =
+  let uniq1 = Array.sort compare a1 in
+  let uniq2 = Array.sort compare a2 in
+  (* List.length a1 = List.length uniq1
+     &&
+     List.length a2 = List.length uniq2
+     && *)
+  uniq1 = uniq2
+
 (** [pp_array pp_elt arr] pretty-prints array [arr], using [pp_elt]
     to pretty-print each element of [arr]. *)
 let pp_array (pp_elt : 'a -> string)  (arr : 'a array) = String.concat " " (Array.to_list (Array.map pp_elt arr))
@@ -18,7 +30,7 @@ let push_test
     (d : Deck.deck)
     (expected_output : card array) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output ((!) (push c d)) ~printer:(pp_array pp_card))
+      assert_equal expected_output ((!) (push c d)) ~cmp:(cmp_arrays) ~printer:(pp_array pp_card))
 
 (** [peek_test name d expected_output] constructs an OUnit
     test named [name] that asserts the quality of [expected_output]
@@ -63,7 +75,7 @@ let ace_spade = {rank = 1 ; suit = 'S'} (* Ace of Spades Card *)
 let king_spade = {rank = 13 ; suit = 'S'} (* King of Spades card *)
 let ace_spade_array =  [|ace_spade|] (*Array containing ace of spades *)
 let ace_king_spade_array = [|ace_spade;king_spade|] (*Array with King/ace of spades *)
-let ace_spade_deck = ref ace_spade_array (*Deck containing ace of spades *)
+let ace_spade_deck = ref [|ace_spade|] (*Deck containing ace of spades *)
 
 let deck_tests =
   [
@@ -97,9 +109,11 @@ let hand_test
 
 let hand_tests =
   [
-    hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};{rank = 12;suit='C'};{rank = 11;suit='C'};{rank = 10; suit = 'C'}|] RoyalFlush;
-    push_test "pushing one card on non-empty deck" king_spade ace_spade_deck ace_king_spade_array;
-    pop_test "poping one card" ace_spade_deck ace_spade;
+    hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};
+                              {rank = 12;suit='C'};{rank = 11;suit='C'};
+                              {rank = 10; suit = 'C'}|] RoyalFlush;
+    push_test "pushing one card on non-empty deck" king_spade (ref ace_spade_array) ace_king_spade_array;
+    pop_test "poping one card" (ref ace_spade_array) ace_spade;
   ]
 
 let suite =
