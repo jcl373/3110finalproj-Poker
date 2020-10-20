@@ -1,4 +1,3 @@
-
 (** The type [card] represents a playing card with a rank from 1-13 and a suit
     denoted by the first character of the suit's name. A card with the rank of
     1 represents an ace, 11 is a Jack, 12 a Queen, and 13 a King.*)
@@ -46,12 +45,7 @@ let create_help s =
     push {rank = i; suit = 'H'} d;
     push {rank = i; suit = 'S'} d;
   done;
-<<<<<<< HEAD
   shuffle d
-=======
-  shuffle d;
-  d
->>>>>>> 55ad5a950f3212da13619bfa33a350c9001c7f57
 
 (* [create] calls [create_help 1] to initialize a new deck with the standard 
    52-card deck in random order. *)
@@ -62,5 +56,4 @@ let create : deck =
    of standard 52-card decks in random order.
    [s] is an int >= 1*)
 let create_size s : deck =
-  create_help s 
-
+  create_help s

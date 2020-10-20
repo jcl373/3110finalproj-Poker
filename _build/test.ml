@@ -1,6 +1,6 @@
 open OUnit2
 open Deck
-
+open Game
 
 (** [pp_array pp_elt arr] pretty-prints array [arr], using [pp_elt]
     to pretty-print each element of [arr]. *)
@@ -69,9 +69,39 @@ let deck_tests =
     pop_test "poping one card" ace_spade_deck ace_spade;
   ]
 
+(** [pp_result r] pretty-prints result [r]. *)
+let pp_result (r : Game.result) = 
+  match r with
+  | RoyalFlush -> "Royal Flush"
+  | StraightFlush a -> "Straight Flush " ^ string_of_int a 
+  | FourOfKind (a, b) -> "Four of a kind " ^ string_of_int a ^ " " ^ string_of_int b
+  | FullHouse (a, b) -> "Full house " ^ string_of_int a ^ " " ^ string_of_int b 
+  | Flush (a, b, c, d, e) -> "Flush " ^ string_of_int a ^ " " ^ string_of_int b ^ " " ^ string_of_int c ^ " " ^ string_of_int d ^ " " ^ string_of_int e
+  | Straight a -> "Straight " ^ string_of_int a
+  | ThreeOfKind (a, b, c) -> "Three of a kind " ^ string_of_int a ^ " " ^ string_of_int b ^ " " ^ string_of_int c
+  | TwoPair (a, b, c) -> "Two pairs " ^ string_of_int a ^ " " ^ string_of_int b ^ " " ^ string_of_int c
+  | OnePair (a, b, c, d)-> "One Pair " ^ string_of_int a ^ " " ^ string_of_int b ^ " " ^ string_of_int c ^ " " ^ string_of_int d
+  | HighCard a -> "High card " ^ string_of_int a
+
+(** [hand_test name hand expected_output] constructs an OUnit
+    test named [name] that asserts the quality of [expected_output]
+    with [evaluate_hand hand]. *)
+let hand_test
+    (name : string) 
+    (hand : Deck.card array)
+    (expected_output : Game.result) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (Game.evaluate_hand hand) ~printer:pp_result)
+
+let hand_tests =
+  [
+    hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};{rank = 12;suit='C'};{rank = 11;suit='C'};{rank = 10; suit = 'C'}|] RoyalFlush
+  ]
+
 let suite =
   "test suite"  >::: List.flatten [
-    deck_tests
+    deck_tests;
+    hand_tests
   ]
 
 let _ = run_test_tt_main suite

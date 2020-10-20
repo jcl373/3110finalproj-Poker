@@ -30,6 +30,3 @@ val create : deck
    of standard 52-card decks in random order.
    [s] is an int >= 1*)
 val create_size : int -> deck
-
-
-
