@@ -12,8 +12,6 @@ type result =
 
 let getRank (card : Deck.card) = card.rank
 
-(* TODO: add in helper methods to replace List.hd and List.nth cause Clarkson doesn't like them *)
-
 (** [nth_of_list] returns the nth element of the list [lst]
     Returns an option as the list may not contain that number 
     [lst] is a valid list
@@ -23,56 +21,98 @@ let rec nth_of_list lst n acc =
   match lst with
   | [] -> None
   | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
-;;
 
-let evaluate_hand (h : Deck.card array) : result =
+(** [n_of_list] returns the first (head) element of the list [lst]
+    Returns an option as the list may not contain anything.
+    [lst] is a valid list*)
+let h_of_list lst =
+  nth_of_list lst 0 0
+
+(** [n_of_list] returns the nth element of the list [lst]
+    Returns an option as the list may not contain that number.
+    [lst] is a valid list
+    [n] is an int; represents the nth element *)
+let n_of_list lst n =
+  nth_of_list lst n 0
+
+let extract_value = function
+  | Some x -> x
+  | None -> failwith("No Card");;
+
+let create_histogram h = 
   let x : (int * int) list ref = ref [] in
   let add_to_histogram (card : Deck.card) : unit =
     match List.assoc_opt card.rank !x with
     | None -> x := (card.rank, 1) :: !x
     | Some i -> x := (card.rank, i + 1) :: List.remove_assoc card.rank !x in
-  let histogram = 
-    List.iter add_to_histogram (Array.to_list h);
-    !x in
+  List.iter add_to_histogram (Array.to_list h);
+  !x 
 
-  let compareCards (c1 : Deck.card) (c2 : Deck.card) = 
-    if getRank c1 = getRank c2 then 0
-    (* else if getRank c1 = 1 then -1 (* These actually can cause aces to be in the wrong position*)
-       else if getRank c2 = 1 then 1 *) 
-    else if getRank c1 > getRank c2 then -1
-    else 1 in
-  let checkSTRAIGHT h = 
-    let hSorted = (List.sort compareCards (Array.to_list h)) in
-    if getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 1)) = 4 then Straight (getRank (List.hd hSorted))
-    else if getRank (List.nth hSorted (List.length hSorted - 1)) = 1 && getRank (List.hd hSorted) = 13 && getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 2)) = 3 then Straight 1
-    else HighCard (getRank (List.hd hSorted)) in
-  let checkSTRAIGHTFLUSH h = 
-    let hSorted = (List.sort compareCards (Array.to_list h)) in
-    if getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 1)) = 4 then StraightFlush (getRank (List.hd hSorted))
-    else if getRank (List.nth hSorted (List.length hSorted - 1)) = 1 && getRank (List.hd hSorted) = 13 && getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 2)) = 3 then RoyalFlush
-    else Flush (getRank h.(0),getRank h.(1),getRank h.(2),getRank h.(3),getRank h.(4)) in
+let compare_cards (c1 : Deck.card) (c2 : Deck.card) = 
+  if getRank c1 = getRank c2 then 0
+  else if getRank c1 = 1 then -1 
+  else if getRank c2 = 1 then 1 
+  else if getRank c1 > getRank c2 then -1
+  else 1 
 
+let compare_pairs pair1 pair2 = 
+  match (pair1, pair2) with
+  | ((a,b),(x,y)) -> 
+    if b > y then -1 
+    else 
+      begin if b < y then 1 else (* Needs to be cleaned up / broken up*)
+          begin (if a = 1 then -1 
+                 else if x = 1 then 1 
+                 else if a > x then -1 
+                 else if x > a then 1 
+                 else 0) end end
+
+let check_straight h = 
+  let hsort = (List.sort compare_cards (Array.to_list h)) in
+  let length = List.length hsort in 
+  let headrank = getRank (extract_value (h_of_list hsort)) in 
+  let sndrank = getRank (extract_value (n_of_list hsort 1)) in 
+  let thdrank = getRank (extract_value (n_of_list hsort 2)) in 
+  let frthrank = getRank (extract_value (n_of_list hsort 3)) in 
+  let tailrank = getRank (extract_value (n_of_list hsort (length - 1))) in 
+  if headrank - tailrank = 4 then Straight (headrank)
+  else if headrank = 1 && tailrank = 2 && sndrank = 5 && thdrank + frthrank = 7 then Straight 5
+  else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then Straight 1
+  else HighCard (headrank) 
+
+let check_straight_flush h = 
+  let hsort = (List.sort compare_cards (Array.to_list h)) in
+  let length = List.length hsort in 
+  let headrank = getRank (extract_value (h_of_list hsort)) in 
+  let sndrank = getRank (extract_value (n_of_list hsort 1)) in 
+  let thdrank = getRank (extract_value (n_of_list hsort 2)) in 
+  let frthrank = getRank (extract_value (n_of_list hsort 3)) in 
+  let tailrank = getRank (extract_value (n_of_list hsort (length - 1))) in 
+  if headrank - tailrank = 4 then StraightFlush (headrank)
+  else if headrank = 1 && tailrank = 2 && sndrank = 5 && thdrank + frthrank = 7 then StraightFlush 5
+  else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then RoyalFlush
+  else Flush (getRank h.(0),getRank h.(1),getRank h.(2),getRank h.(3),getRank h.(4)) 
+
+let check_flush h = 
   let sameSuit (suit : char) (card : Deck.card) = card.suit = suit in
-  let checkFLUSH h =
-    if (Array.for_all (sameSuit 'C') h) then checkSTRAIGHTFLUSH h
-    else if (Array.for_all (sameSuit 'D') h) then checkSTRAIGHTFLUSH h
-    else if (Array.for_all (sameSuit 'H') h) then checkSTRAIGHTFLUSH h
-    else if (Array.for_all (sameSuit 'S') h) then checkSTRAIGHTFLUSH h
-    else checkSTRAIGHT h in
+  if (Array.for_all (sameSuit 'C') h) then check_straight_flush h
+  else if (Array.for_all (sameSuit 'D') h) then check_straight_flush h
+  else if (Array.for_all (sameSuit 'H') h) then check_straight_flush h
+  else if (Array.for_all (sameSuit 'S') h) then check_straight_flush h
+  else check_straight h 
 
-  let comparePairs pair1 pair2 =
-    match (pair1, pair2) with
-    | ((a,b),(x,y)) -> if b > y then -1 else if b < y then 1 else 
-        (if a = 1 then -1 else if x = 1 then 1 else if a > x then -1 else if x > a then 1 else 0) in
-  let check41_32_221_2111 x = 
-    match List.sort comparePairs x with
-    | [(x, 4); (y, 1)] -> FourOfKind (x, y)
-    | [(x, 3); (y, 2)] -> FullHouse (x, y)
-    | [(x, 3); (y, 1); (z, 1)] -> ThreeOfKind (x, y, z)
-    | [(x, 2); (y, 2); (z, 1)] -> TwoPair (x, y, z)
-    | [(x, 2); (y, 1); (z, 1); (w, 1)] -> OnePair (x,y,z,w)
-    | _ -> checkFLUSH h in
-  check41_32_221_2111 histogram
+let check41_32_221_2111 x h = 
+  match List.sort compare_pairs x with
+  | [(x, 4); (y, 1)] -> FourOfKind (x, y)
+  | [(x, 3); (y, 2)] -> FullHouse (x, y)
+  | [(x, 3); (y, 1); (z, 1)] -> ThreeOfKind (x, y, z)
+  | [(x, 2); (y, 2); (z, 1)] -> TwoPair (x, y, z)
+  | [(x, 2); (y, 1); (z, 1); (w, 1)] -> OnePair (x,y,z,w)
+  | _ -> check_flush h
+
+let evaluate_hand (h : Deck.card array) : result =
+  let histogram = create_histogram h in
+  check41_32_221_2111 histogram h 
 
 let compare_hands (hand1 : result) (hand2 : result) : int=
   let h1 =

@@ -109,9 +109,42 @@ let hand_test
 
 let hand_tests =
   [
-    hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};
-                              {rank = 12;suit='C'};{rank = 11;suit='C'};
-                              {rank = 10; suit = 'C'}|] RoyalFlush;
+    hand_test "Royal flush C" [|{rank = 1;suit='C'};{rank = 13;suit='C'};
+                                {rank = 12;suit='C'};{rank = 11;suit='C'};
+                                {rank = 10; suit = 'C'}|] RoyalFlush;
+
+    hand_test "Straight Flush C" [|{rank = 9;suit='C'};{rank = 13;suit='C'};
+                                   {rank = 12;suit='C'};{rank = 11;suit='C'};
+                                   {rank = 10; suit = 'C'}|] (StraightFlush 13);
+
+    hand_test "Royal flush H" [|{rank = 1;suit='H'};{rank = 13;suit='H'};
+                                {rank = 12;suit='H'};{rank = 11;suit='H'};
+                                {rank = 10; suit = 'H'}|] RoyalFlush;
+
+    hand_test "Straight Flush H" [|{rank = 2;suit='H'};{rank = 4;suit='H'};
+                                   {rank = 6;suit='H'};{rank = 3;suit='H'};
+                                   {rank = 5; suit = 'H'}|] (StraightFlush 6); 
+
+    hand_test "Straight 2 types" [|{rank = 2;suit='C'};{rank = 4;suit='H'};
+                                   {rank = 6;suit='C'};{rank = 3;suit='H'};
+                                   {rank = 5; suit = 'H'}|] (Straight 6); 
+
+    hand_test "Straight 3 types" [|{rank = 7;suit='C'};{rank = 4;suit='H'};
+                                   {rank = 6;suit='D'};{rank = 8;suit='D'};
+                                   {rank = 5; suit = 'H'}|] (Straight 8); 
+
+    hand_test "Straight 4 types" [|{rank = 11;suit='C'};{rank = 10;suit='S'};
+                                   {rank = 9;suit='D'};{rank = 8;suit='D'};
+                                   {rank = 7; suit = 'H'}|] (Straight 11);    
+
+    hand_test "High Ace" [|{rank = 7;suit='C'};{rank = 10;suit='S'};
+                           {rank = 9;suit='D'};{rank = 8;suit='D'};
+                           {rank = 1; suit = 'H'}|] (HighCard 1);   
+
+    hand_test "One Pair" [|{rank = 7;suit='C'};{rank = 7;suit='S'};
+                           {rank = 9;suit='D'};{rank = 8;suit='D'};
+                           {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8));                         
+
     push_test "pushing one card on non-empty deck" king_spade (ref ace_spade_array) ace_king_spade_array;
     pop_test "poping one card" (ref ace_spade_array) ace_spade;
   ]
