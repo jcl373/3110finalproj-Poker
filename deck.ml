@@ -23,7 +23,8 @@ let pop (d : deck) : 'a = let first = !d.(0) in
   d := Array.sub !d 1 (Array.length !d - 1);
   first
 
-(* [shuffle d] randomizes the deck [d] using the Knuth shuffle algorithm before returning the shuffled deck. *)
+(* [shuffle d] randomizes the deck [d] using the Knuth shuffle a
+   lgorithm before returning the shuffled deck. *)
 let shuffle (d : deck) = 
   let swap index1 index2 =
     let temp = Array.get !d index1 in
@@ -43,11 +44,10 @@ let create_help s =
     push {rank = i; suit = 'C'} d;
     push {rank = i; suit = 'D'} d;
     push {rank = i; suit = 'H'} d;
-    push {rank = i; suit = 'S'} d
+    push {rank = i; suit = 'S'} d;
   done;
   shuffle d;
   d
-;;
 
 (* [create] calls [create_help 1] to initialize a new deck with the standard 
    52-card deck in random order. *)

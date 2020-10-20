@@ -41,7 +41,8 @@ let pop_test
       assert_equal expected_output (pop d) ~printer:pp_card)
 
 (** [pop_test name d] constructs an OUnit
-    test named [name] that asserts physical inequality between [d] and [shuffle d]. *)
+    test named [name] that asserts physical inequality between [d] and 
+    [shuffle d]. *)
 let shuffle_test
     (name : string) 
     (d : Deck.deck) : test = 
