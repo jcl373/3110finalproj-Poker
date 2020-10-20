@@ -10,6 +10,8 @@ type result =
   | OnePair of int * int * int * int (* first int is the pair, rest are kickers *)
   | HighCard of int (* int is highest card *)
 
+exception Empty
+
 let getRank (card : Deck.card) = card.rank
 
 (** [nth_of_list] returns the nth element of the list [lst]
@@ -37,7 +39,7 @@ let n_of_list lst n =
 
 let extract_value = function
   | Some x -> x
-  | None -> failwith("No Card");;
+  | None -> raise Empty ;;
 
 let create_histogram h = 
   let x : (int * int) list ref = ref [] in

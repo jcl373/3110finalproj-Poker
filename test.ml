@@ -1,6 +1,7 @@
 open OUnit2
 open Deck
 open Game
+open Bet
 
 (** [cmp_arrays a1 a2] compares two arrays to see whether
     they are equivalent arrays.  They must contain the same elements,
@@ -76,6 +77,7 @@ let king_spade = {rank = 13 ; suit = 'S'} (* King of Spades card *)
 let ace_spade_array =  [|ace_spade|] (*Array containing ace of spades *)
 let ace_king_spade_array = [|ace_spade;king_spade|] (*Array with King/ace of spades *)
 let ace_spade_deck = ref [|ace_spade|] (*Deck containing ace of spades *)
+let empty = empty
 
 let deck_tests =
   [
