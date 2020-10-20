@@ -1,0 +1,10 @@
+# ocaml
+*.native
+_build
+
+# temporary files
+*.swp
+*~
+\#*\#
+.DS_Store
+

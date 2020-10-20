@@ -12,19 +12,6 @@ type result =
 
 let getRank (card : Deck.card) = card.rank
 
-let compare_hands (hand1 : result) (hand2 : result) = 1
-
-let rec choose n k =
-  if n <= 0 then [ [] ]
-  else match k with
-    | [] -> []
-    | h :: tl ->
-      let with_h = List.map (fun l -> h :: l) (choose (n-1) tl) in
-      let without_h = choose n tl in
-      with_h @ without_h;;
-
-let evaluate_hands (hole : Deck.card array) (community : Deck.card array) = 5
-
 (* TODO: add in helper methods to replace List.hd and List.nth cause Clarkson doesn't like them *)
 let evaluate_hand (h : Deck.card array) : result =
   let x : (int * int) list ref = ref [] in
@@ -36,8 +23,12 @@ let evaluate_hand (h : Deck.card array) : result =
     List.iter add_to_histogram (Array.to_list h);
     !x in
 
-  let compareCards (c1 : Deck.card) (c2 : Deck.card) = if getRank c1 > getRank c2 then -1
-    else if getRank c1 = getRank c2 then 0 else 1 in
+  let compareCards (c1 : Deck.card) (c2 : Deck.card) = 
+    if getRank c1 = getRank c2 then 0
+    else if getRank c1 = 1 then -1
+    else if getRank c2 = 1 then 1
+    else if getRank c1 > getRank c2 then -1
+    else 1 in
   let checkSTRAIGHT h = 
     let hSorted = (List.sort compareCards (Array.to_list h)) in
     if getRank (List.hd hSorted) - getRank (List.nth hSorted (List.length hSorted - 1)) = 4 then Straight (getRank (List.hd hSorted))
@@ -57,21 +48,59 @@ let evaluate_hand (h : Deck.card array) : result =
     else if (Array.for_all (sameSuit 'S') h) then checkSTRAIGHTFLUSH h
     else checkSTRAIGHT h in
 
+  let comparePairs pair1 pair2 =
+    match (pair1, pair2) with
+    | ((a,b),(x,y)) -> if b > y then -1 else if b < y then 1 else 
+        (if a = 1 then -1 else if x = 1 then 1 else if a > x then -1 else if x > a then 1 else 0) in
   let check41_32_221_2111 x = 
-    match List.sort compare x with
+    match List.sort comparePairs x with
     | [(x, 4); (y, 1)] -> FourOfKind (x, y)
-    | [(x, 1); (y, 4)] -> FourOfKind (y, x)
     | [(x, 3); (y, 2)] -> FullHouse (x, y)
-    | [(x, 2); (y, 3)] -> FullHouse (y, x)
-    | [(x, 3); (y, 1); (z, 1)] -> ThreeOfKind (x, z, y)
-    | [(x, 1); (y, 3); (z, 1)] -> ThreeOfKind (y, z, x)
-    | [(x, 1); (y, 1); (z, 3)] -> ThreeOfKind (z, y, x)
-    | [(x, 2); (y, 2); (z, 1)] -> TwoPair (y, x, z)
-    | [(x, 2); (y, 1); (z, 2)] -> TwoPair (z, x, y)
-    | [(x, 1); (y, 2); (z, 2)] -> TwoPair (z, y, x)
-    | [(x, 2); (y, 1); (z, 1); (w, 1)] -> OnePair (x,w,z,y)
-    | [(x, 1); (y, 2); (z, 1); (w, 1)] -> OnePair (y,w,z,x)
-    | [(x, 1); (y, 1); (z, 2); (w, 1)] -> OnePair (z,w,y,x)
-    | [(x, 1); (y, 1); (z, 1); (w, 2)] -> OnePair (w,z,y,x)
+    | [(x, 3); (y, 1); (z, 1)] -> ThreeOfKind (x, y, z)
+    | [(x, 2); (y, 2); (z, 1)] -> TwoPair (x, y, z)
+    | [(x, 2); (y, 1); (z, 1); (w, 1)] -> OnePair (x,y,z,w)
     | _ -> checkFLUSH h in
   check41_32_221_2111 histogram
+
+let compare_hands (hand1 : result) (hand2 : result) : int=
+  let h1 =
+    match hand1 with
+    | RoyalFlush -> 10
+    | StraightFlush _ -> 9
+    | FourOfKind (_,_) -> 8
+    | FullHouse (_,_) -> 7
+    | Flush (_,_,_,_,_) -> 6
+    | Straight _ -> 5
+    | ThreeOfKind (_,_,_) -> 4
+    | TwoPair (_,_,_) -> 3
+    | OnePair (_,_,_,_) -> 2
+    | HighCard _ -> 1 in
+  let h2 =
+    match hand2 with
+    | RoyalFlush -> 10
+    | StraightFlush _ -> 9
+    | FourOfKind (_,_) -> 8
+    | FullHouse (_,_) -> 7
+    | Flush (_,_,_,_,_) -> 6
+    | Straight _ -> 5
+    | ThreeOfKind (_,_,_) -> 4
+    | TwoPair (_,_,_) -> 3
+    | OnePair (_,_,_,_) -> 2
+    | HighCard _ -> 1 in
+  if h1 > h2 then -1
+  else if h2 > h1 then 1
+  else 0 (* WIP *)
+
+let rec choose n k =
+  if n <= 0 then [ [] ]
+  else match k with
+    | [] -> []
+    | h :: t ->
+      let before = List.map (fun x -> h :: x) (choose (n-1) t) in
+      let after = choose n t in
+      before @ after
+
+let evaluate_hands (hole : Deck.card array) (community : Deck.card array) =
+  match List.sort compare_hands (List.map evaluate_hand (List.map Array.of_list (choose 5 (Array.to_list(Array.append hole community))))) with
+  | [] -> failwith("empty")
+  | h :: _ -> h
