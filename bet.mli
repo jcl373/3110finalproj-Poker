@@ -30,5 +30,5 @@ val wager : pot -> bag -> unit
 
 val clear : pot -> unit
 
-val next_option : choice -> choice
+val next_option : choice -> choice list
 
