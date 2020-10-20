@@ -59,13 +59,16 @@ let deck_test
   name >:: (fun _ -> 
       assert_equal expected_output ((!) d) ~printer:(pp_array pp_card))
 
-let ace_spade = {rank = 1 ; suit = 'S'}
-let ace_spade_array =  [|ace_spade|]
-let ace_spade_deck = ref ace_spade_array
+let ace_spade = {rank = 1 ; suit = 'S'} (* Ace of Spades Card *)
+let king_spade = {rank = 13 ; suit = 'S'} (* King of Spades card *)
+let ace_spade_array =  [|ace_spade|] (*Array containing ace of spades *)
+let ace_king_spade_array = [|ace_spade;king_spade|] (*Array with King/ace of spades *)
+let ace_spade_deck = ref ace_spade_array (*Deck containing ace of spades *)
 
 let deck_tests =
   [
     push_test "pushing one card on empty" ace_spade Deck.empty ace_spade_array;
+<<<<<<< HEAD
     pop_test "popping one card" ace_spade_deck ace_spade;
   ]
 
@@ -96,6 +99,10 @@ let hand_test
 let hand_tests =
   [
     hand_test "Royal flush" [|{rank = 1;suit='C'};{rank = 13;suit='C'};{rank = 12;suit='C'};{rank = 11;suit='C'};{rank = 10; suit = 'C'}|] RoyalFlush
+=======
+    push_test "pushing one card on non-empty deck" king_spade ace_spade_deck ace_king_spade_array;
+    pop_test "poping one card" ace_spade_deck ace_spade;
+>>>>>>> fb203e568e126b258ce5e63635d28cb7075cda7e
   ]
 
 let suite =
