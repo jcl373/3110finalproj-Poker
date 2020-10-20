@@ -59,14 +59,19 @@ let deck_test
   name >:: (fun _ -> 
       assert_equal expected_output ((!) d) ~printer:(pp_array pp_card))
 
+let ace_spade = {rank = 1 ; suit = 'S'}
+let ace_spade_array =  [|ace_spade|]
+let ace_spade_deck = ref ace_spade_array
+
 let deck_tests =
   [
-
+    push_test "pushing one card on empty" ace_spade Deck.empty ace_spade_array;
+    pop_test "poping one card" ace_spade_deck ace_spade;
   ]
 
 let suite =
   "test suite"  >::: List.flatten [
-    deck_tests;
+    deck_tests
   ]
 
 let _ = run_test_tt_main suite

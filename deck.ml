@@ -39,7 +39,7 @@ let shuffle (d : deck) =
 (* [create_help d s] initializes a new deck s times with the standard 
    52-card deck.*)
 let create_help s = 
-  let d = empty in
+  let d = ref [||] in
   for i = 1 to 13 do
     push {rank = i; suit = 'C'} d;
     push {rank = i; suit = 'D'} d;
