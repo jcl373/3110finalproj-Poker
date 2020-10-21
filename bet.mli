@@ -16,19 +16,20 @@ type choice =
   | Bet of int
   | Call of int
   | Raise of int
+  | AllIn
 
 (** [amount] returns the amount of money in a given bag. *)
 val amount : bag -> int
 
-val add : int -> unit
+val add : bag -> int -> bag 
 
 val empty_bag : unit -> bag
 
 val empty_pot : unit -> pot
 
-val wager : pot -> bag -> unit
+val wager : pot -> bag -> int -> unit
 
 val clear : pot -> unit
 
-val next_option : choice -> choice list
+
 
