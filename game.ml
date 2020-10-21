@@ -143,7 +143,19 @@ let compare_hands (hand1 : result) (hand2 : result) : int=
     | HighCard _ -> 1 in
   if h1 > h2 then -1
   else if h2 > h1 then 1
-  else 0 (* WIP *)
+  else
+    match (hand1, hand2) with
+    | (RoyalFlush, RoyalFlush) -> 0
+    | (StraightFlush a, StraightFlush b) -> if a > b then -1 else if a = b then 0 else 1
+    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a1 then 1 else 0
+    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a1 then 1 else 0
+    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else if a4 > b4 then -1 else if b4 > a4 then 1 else if a5 > b5 then -1 else if b5 > a5 then 1 else 0
+    | (Straight a, Straight b) -> if a > b then -1 else if b > a then 1 else 0
+    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else 0
+    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else 0
+    | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else if a4 > b4 then -1 else if b4 > a4 then 1 else 0
+    | (HighCard a, HighCard b) -> if a > b then -1 else if b > a then 1 else 0
+    | _ -> failwith("faulty comparison")
 
 let rec choose n k =
   if n <= 0 then [ [] ]
