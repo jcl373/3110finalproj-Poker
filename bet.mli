@@ -13,10 +13,10 @@ type pot = int ref
 type choice = 
   | Check
   | Fold
-  | Bet of int
+  | Bet of int 
   | Call of int
   | Raise of int
-  | AllIn
+  | AllIn of int
 
 (** [amount] returns the amount of money in a given bag. *)
 val amount : bag -> int
@@ -29,9 +29,9 @@ val empty_pot : unit -> pot
 
 val check_wager : choice -> int -> bool
 
-val wager : pot -> bag -> int -> unit
+val wager : choice -> pot -> bag -> int -> int -> unit
 
-val win_pot : Table.player -> pot -> unit
+val win_pot : Table.person -> pot -> unit
 
 val clear : pot -> unit
 
