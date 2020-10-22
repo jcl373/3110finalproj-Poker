@@ -147,7 +147,7 @@ let hand_tests =
                            {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8));                         
 
     push_test "pushing one card on non-empty deck" king_spade (ref ace_spade_array) ace_king_spade_array;
-    pop_test "poping one card" (ref ace_spade_array) ace_spade;
+    pop_test "popping one card" (ref ace_spade_array) ace_spade;
   ]
 
 let suite =
