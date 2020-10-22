@@ -80,7 +80,8 @@ let empty = empty
 
 let deck_tests =
   [
-    push_test "pushing one card on empty" ace_spade (Deck.empty ()) ace_spade_array;
+    push_test "pushing one card on empty" ace_spade (Deck.empty ()) ace_spade_array; 
+    push_test "pushing a card on non empty deck" king_spade ace_spade_deck ace_king_spade_array;
     pop_test "popping one card" ace_spade_deck ace_spade;
   ]
 
