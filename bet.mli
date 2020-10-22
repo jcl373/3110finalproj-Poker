@@ -27,7 +27,11 @@ val empty_bag : unit -> bag
 
 val empty_pot : unit -> pot
 
+val check_wager : choice -> int -> bool
+
 val wager : pot -> bag -> int -> unit
+
+val win_pot : Table.player -> pot -> unit
 
 val clear : pot -> unit
 
