@@ -11,8 +11,8 @@ let empty () = ref [||]
 
 (* To push [c] onto [d], we create a new array with value [c] at the 
    beginning followed by the values of [d] before returning [d]. *)
-let push (c : card) (d : deck) = d := (Array.append [|c|] !d);
-  d
+let push (c : card) (d : deck) = d := (Array.append [|c|] !d)
+
 
 (* [peek d] is the first element of [d].*)
 let peek (d : deck) : 'a = !d.(0)

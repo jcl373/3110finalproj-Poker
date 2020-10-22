@@ -11,7 +11,7 @@ val empty : unit -> deck
 
 (* To push [c] onto [d], we create a new array with value [c] at the 
    beginning followed by the values of [d] before returning [d]. *)
-val push : card -> deck -> deck
+val push : card -> deck -> unit
 
 (* [peek d] is the first element of [d].*)
 val peek : deck -> card
