@@ -11,3 +11,5 @@ type result =
   | HighCard of int 
 
 val evaluate_hand : Deck.card array -> result
+
+val evaluate_hands : Deck.card array -> Deck.card array -> result

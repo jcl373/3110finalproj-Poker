@@ -45,12 +45,20 @@ let extract_value = function
 (** The type [player] represents a player in the game. A player
     has a name, which is an identifier for the player, a hand, which is a pair of
     cards, and chips, which is the amount of money they have. *)
-type person = {name : string; mutable hand: Deck.card * Deck.card; 
-               chips : Bet.bag; mutable position : pos option } 
+type person = {name : string; 
+               mutable hand : Deck.card * Deck.card; 
+               chips : Bet.bag; 
+               mutable position : pos option
+              } 
 
-type table = {pot : Bet.pot ; blinds: int * int; mutable river: Deck.card list; 
-              mutable players : person list; mutable out_players : person list;
-              mutable dealer : person option; mutable round_num : int}
+type table = {pot : Bet.pot; 
+              blinds: int * int; 
+              mutable river: Deck.card list; 
+              mutable players : person list; 
+              mutable out_players : person list;
+              mutable dealer : person option; 
+              mutable round_num : int
+             }
 
 let new_player nm c1 c2 start_amt =
   {name = nm ; hand = (c1, c2); chips = Bet.add (Bet.empty_bag ()) start_amt;
@@ -74,8 +82,8 @@ let remove_player table player_name =
   failwith ("unimplemented")
 
 (* let deal_start = table.players |> List.length |> Random.int
-maybe chain some of the stuff below, i was gonna make this change but then realized
-you need num_in_players later *) 
+   maybe chain some of the stuff below, i was gonna make this change but then realized
+   you need num_in_players later *) 
 let choose_dealer table = 
   let num_in_players = List.length table.players in
   let deal_start = Random.int num_in_players in

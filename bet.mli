@@ -31,9 +31,6 @@ val check_wager : choice -> int -> bool
 
 val wager : choice -> pot -> bag -> int -> int -> unit
 
-val win_pot : Table.person -> pot -> unit
+(*val win_pot : Table.person -> pot -> unit*)
 
 val clear : pot -> unit
-
-
-

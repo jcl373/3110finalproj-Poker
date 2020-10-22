@@ -69,10 +69,12 @@ let wager (opt : choice) (p1 : pot) (b1 : bag) amt (current_bet: int) =
 let clear pot = 
   pot := 0
 
-(** [win_pot] takes in a player and a pot, and transfers the pot amount
+(* Temporarily removed because of problem with circular dependencies
+   (** [win_pot] takes in a player and a pot, and transfers the pot amount
     into the players chips. It then clears the pot*)
-let win_pot (player : Table.person) (p1 : pot) =
-  player.chips := !(player.chips) + !p1;
-  clear p1
+   let win_pot (player : Table.person) (p1 : pot) =
+   player.chips := !(player.chips) + !p1;
+   clear p1
+*)
 
 

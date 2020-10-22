@@ -1,4 +1,4 @@
-MODULES= deck game bet table
+MODULES= deck game table bet
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -14,6 +14,9 @@ build:
 
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST)
+
+play:
+	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 
 
 
