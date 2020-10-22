@@ -10,7 +10,7 @@ type pos =
 type person = {name : string; mutable hand: Deck.card * Deck.card; 
                chips : int ref; mutable position : pos option } 
 
-type table = {pot : Bet.pot ; blinds: int * int; mutable river: Deck.card list; 
+type table = {pot : int ref ; blinds: int * int; mutable river: Deck.card list; 
               mutable players : person list; mutable out_players : person list;
               mutable dealer : person option; mutable round_num : int}
 
