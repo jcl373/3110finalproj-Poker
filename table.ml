@@ -69,8 +69,8 @@ let add_player table player =
 
 (** remove_player removes a player from the table. 
     [table] is a valid table
-    [player] is a valid player *)
-let remove_player table player =
+    [player_name] is a valid player's name *)
+let remove_player table player_name =
   failwith ("unimplemented")
 
 
@@ -116,7 +116,7 @@ let next_round_prep table =
   let bigblinds = extract_value (n_of_list table.players bb_start) in
   bigblinds.position <- Some BB; 
   table.river <- [];
-  table.pot := 0; 
+  Bet.clear table.pot; 
   table.round_num <- table.round_num + 1;
 
 
