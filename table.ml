@@ -73,7 +73,9 @@ let add_player table player =
 let remove_player table player_name =
   failwith ("unimplemented")
 
-
+(* let deal_start = table.players |> List.length |> Random.int
+maybe chain some of the stuff below, i was gonna make this change but then realized
+you need num_in_players later *) 
 let choose_dealer table = 
   let num_in_players = List.length table.players in
   let deal_start = Random.int num_in_players in
