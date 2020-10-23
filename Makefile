@@ -1,4 +1,4 @@
-MODULES= deck game table bet
+MODULES= deck game table bet main
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
