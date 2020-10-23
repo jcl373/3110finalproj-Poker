@@ -170,3 +170,10 @@ let evaluate_hands (hole : Deck.card array) (community : Deck.card array) =
   match List.sort compare_hands (List.map evaluate_hand (List.map Array.of_list (choose 5 (Array.to_list(Array.append hole community))))) with
   | [] -> failwith("empty")
   | h :: _ -> h
+
+let evaluate_table (table : Table.table) : Table.person =
+  let rec pairs (list : Table.person list) =
+    match list with
+    | [] -> []
+    | h :: t -> (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] (Array.of_list table.river)) :: pairs t in
+  table.players |> pairs |> h_of_list |> extract_value |> fst

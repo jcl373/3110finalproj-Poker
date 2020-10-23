@@ -16,15 +16,20 @@ type table = {pot : int ref ; blinds: int * int; mutable river: Deck.card list;
 
 val empty_table : int -> int -> table 
 
+val new_player : string -> Deck.card -> Deck.card -> int -> person
+
 val add_player : table -> person -> unit
 
 val remove_player : table -> person -> unit
 
 val choose_dealer : table -> unit
+
+val next_round_prep : table -> unit
+
+val find_list : 'a list -> 'a -> int option
+
+val n_of_list : 'a list -> int -> 'a option
+
+val extract_value : 'a option -> 'a
+
 exception Empty
-
-
-
-
-
-

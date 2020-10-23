@@ -6,6 +6,22 @@ type card = {rank : int; suit : char}
 (** The type [deck] represents a mutable array of cards. *)
 type deck = card array ref
 
+(* [print_card c] is the string representation of the card [c] *)
+let print_card (c : card) : string = 
+  let print_suit (c : char) : string =
+    match c with
+    | 'C' -> "Clubs"
+    | 'H' -> "Hearts"
+    | 'D' -> "Diamonds"
+    | 'S' -> "Spades" 
+    | _ -> failwith "invalid suit" in
+  match c with
+  | {rank = 13; suit = c} -> "King of " ^ print_suit c
+  | {rank = 12; suit = c} -> "Queen of " ^ print_suit c
+  | {rank = 11; suit = c} -> "Jack of " ^ print_suit c
+  | {rank = 1; suit = c} -> "Ace of " ^ print_suit c
+  | {rank = n; suit = c} -> string_of_int n ^ " of " ^ print_suit c
+
 (* [empty] is the empty deck *)
 let empty () = ref [||]
 
@@ -14,7 +30,6 @@ let push_unit (c : card) (d : deck) = d := (Array.append [|c|] !d)
 (* To push [c] onto [d], we create a new array with value [c] at the 
    beginning followed by the values of [d]. *)
 let push (c : card) (d : deck) = push_unit c d; d
-
 
 (* [peek d] is the first element of [d].*)
 let peek (d : deck) : 'a = !d.(0)
@@ -27,6 +42,7 @@ let pop (d : deck) : 'a = let first = !d.(0) in
 (* [shuffle d] randomizes the deck [d] using the Knuth shuffle a
    lgorithm before returning the shuffled deck. *)
 let shuffle (d : deck) = 
+  Random.init (int_of_float (Unix.gettimeofday ()));
   let swap index1 index2 =
     let temp = Array.get !d index1 in
     Array.set !d index1 (Array.get !d index2);
@@ -37,7 +53,7 @@ let shuffle (d : deck) =
   done;
   d
 
-(* [create_help d s] initializes a new deck s times with the standard 
+(* [create_help s] initializes a new deck s times with the standard 
    52-card deck.*)
 let create_help s = 
   let d = ref [||] in

@@ -35,25 +35,24 @@ let add b1 amt =
     [opt] is a valid choice *)
 let current_wager (opt : choice) = 
   match opt with
-  |Check -> 0
-  |Fold -> 0
-  |Bet x -> x
-  |Call x -> x
-  |Raise x -> x
-  |AllIn x -> x
+  | Check -> 0
+  | Fold -> 0
+  | Bet x -> x
+  | Call x -> x
+  | Raise x -> x
+  | AllIn x -> x
 
 (**[Check_wager] takes in a choice [opt] and the current minimum bet
    [current_bet] that a player can make. It checks to see if the wager is a 
    valid one, returning true if it is valid and false if it is not valid. *)
 let check_wager (opt: choice) (current_bet: int) =
   match opt with
-  |Check -> true
-  |Fold -> true
-  |Bet x -> if x > current_bet then false else true
-  |Call x -> if x > current_bet then false else true
-  |Raise x -> if x <= current_bet then false else true
-  |AllIn x -> true
-
+  | Check -> true
+  | Fold -> true
+  | Bet x -> if x > current_bet then false else true
+  | Call x -> if x > current_bet then false else true
+  | Raise x -> if x <= current_bet then false else true
+  | AllIn x -> true
 
 (** [wager] places the amount [amt] from a player's bag [b1] into
     the pot [p1].
@@ -69,10 +68,12 @@ let wager (opt : choice) (p1 : pot) (b1 : bag) amt (current_bet: int) =
 let clear pot = 
   pot := 0
 
-(** [win_pot] takes in a player and a pot, and transfers the pot amount
+(* Temporarily removed because of problem with circular dependencies
+   (** [win_pot] takes in a player and a pot, and transfers the pot amount
     into the players chips. It then clears the pot*)
-let win_pot (player : Table.person) (p1 : pot) =
-  player.chips := !(player.chips) + !p1;
-  clear p1
+   let win_pot (player : Table.person) (p1 : pot) =
+   player.chips := !(player.chips) + !p1;
+   clear p1
+*)
 
 
