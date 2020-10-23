@@ -36,4 +36,6 @@ val set_hand : person -> Deck.card -> Deck.card -> unit
 
 val init_commcard : table -> Deck.deck -> unit
 
+val add_commcard : table -> Deck.deck -> unit
+
 exception Empty
