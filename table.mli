@@ -26,6 +26,10 @@ val choose_dealer : table -> unit
 
 val next_round_prep : table -> unit
 
+val find_list : 'a list -> 'a -> int option
+
+val n_of_list : 'a list -> int -> 'a option
+
 val extract_value : 'a option -> 'a
 
 exception Empty

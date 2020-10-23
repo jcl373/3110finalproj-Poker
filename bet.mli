@@ -29,6 +29,8 @@ val empty_pot : unit -> pot
 
 val check_wager : choice -> int -> bool
 
+val current_wager : choice -> int
+
 val wager : choice -> pot -> bag -> int -> int -> unit
 
 (*val win_pot : Table.person -> pot -> unit*)

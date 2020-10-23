@@ -6,6 +6,9 @@ type card = {rank : int; suit : char}
 (** The type [deck] represents a mutable array of cards. *)
 type deck = card array ref
 
+(* [print_card c] is the string representation of the card [c] *)
+val print_card : card -> string
+
 (* [empty] is the empty deck *)
 val empty : unit -> deck
 
