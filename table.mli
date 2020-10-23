@@ -20,7 +20,7 @@ val new_player : string -> Deck.card -> Deck.card -> int -> person
 
 val add_player : table -> person -> unit
 
-val remove_player : table -> person -> unit
+(* val remove_player : table -> person -> unit *)
 
 val choose_dealer : table -> unit
 
@@ -33,5 +33,7 @@ val n_of_list : 'a list -> int -> 'a option
 val extract_value : 'a option -> 'a
 
 val set_hand : person -> Deck.card -> Deck.card -> unit
+
+val init_commcard : table -> Deck.deck -> unit
 
 exception Empty

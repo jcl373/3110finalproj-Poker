@@ -6,6 +6,8 @@ type pot = int ref
 
 exception InvalidWager
 
+exception InvalidResponse
+
 type choice = 
   | Check
   | Fold

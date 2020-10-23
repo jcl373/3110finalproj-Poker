@@ -88,7 +88,7 @@ let remove_player table player_name =
   let updated_players = List.filter (fun x -> x.name <> player_name ) players_list in 
   table.players <- updated_players
 
-let init_communitycards table deck =
+let init_commcard table deck =
   table.river <- Deck.pop deck :: table.river;
   table.river <- Deck.pop deck :: table.river;
   table.river <- Deck.pop deck :: table.river
@@ -116,11 +116,11 @@ let next_br_prep table =
       table.players in table.out_players <- folded
 
 
-let match_pos table x = 
-  match x.position with
-  | Some Dealer | Some BB | Some LB | Some Folded -> None
-  | Some Leave -> remove_player table x
-  | None -> None
+(* let match_pos table x = 
+   match x.position with
+   | Some Dealer | Some BB | Some LB | Some Folded -> None
+   | Some Leave -> remove_player table x
+   | None -> None *)
 
 (** Extract common functionality  *) 
 let next_round_prep table =

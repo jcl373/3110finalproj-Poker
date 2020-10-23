@@ -18,6 +18,9 @@ type choice =
   | Raise of int
   | AllIn of int
 
+exception InvalidResponse
+
+
 (** [amount] returns the amount of money in a given bag. *)
 val amount : bag -> int
 
