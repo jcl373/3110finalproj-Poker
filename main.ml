@@ -4,7 +4,7 @@ let max_wager = ref 0
 let dealer_index = ref 0
 
 let bot_choice (p : Table.person): Bet.choice =
-  Random.init Unix.gettimeofday;
+  Random.float (Unix.gettimeofday ()); (* What is the purpose of this*)
   match Random.int 4 with 
   | 999 -> Check
   | 0 -> Fold
@@ -82,15 +82,16 @@ let start_game name =
     print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
 
     (* Dealer / advance round *)    
-    Table.next_round_prep gametable;
+    if i = 0 then () 
+    else Table.next_round_prep gametable;
     dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
 
     (* Blind bets *)
-    print_endline ((Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 1))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
-    print_endline ((Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 2))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
-    Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 1))).chips (fst gametable.blinds) !max_wager;
-    Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 2))).chips (fst gametable.blinds) !max_wager;
+    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
+    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
+    Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
+    Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
@@ -130,7 +131,7 @@ let start_game name =
     print_endline "Do you want to stay? (Yes or No)";
     print_string "> ";
     match read_line () with
-    | "No" -> ()
+    | "No" -> print_string "Thanks for playing!"
     | "Yes" -> round (i+1)
     | _ -> failwith "invalid response"
   in
