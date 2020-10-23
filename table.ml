@@ -126,7 +126,7 @@ let next_round_prep table =
   let bigblinds = extract_value (n_of_list table.players bb_start) in
   bigblinds.position <- Some BB; 
   table.river <- [];
-  table.pot := 0; 
+  Bet.clear table.pot; 
   table.round_num <- table.round_num + 1;
 
 
