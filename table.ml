@@ -7,6 +7,8 @@ type pos =
 
 exception Empty
 
+exception Invalid_player
+
 (** [nth_of_list] returns the nth element of the list [lst]
     Returns an option as the list may not contain that number 
     [lst] is a valid list
@@ -78,8 +80,11 @@ let add_player table player =
 (** remove_player removes a player from the table. 
     [table] is a valid table
     [player_name] is a valid player's name *)
+
 let remove_player table player_name =
-  failwith ("unimplemented")
+  let players_list = table.players in 
+  let updated_players = List.filter (fun x -> x.name <> player_name ) players_list in 
+  table.players <- updated_players
 
 (* let deal_start = table.players |> List.length |> Random.int
    maybe chain some of the stuff below, i was gonna make this change but then realized
