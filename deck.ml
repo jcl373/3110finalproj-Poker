@@ -25,9 +25,11 @@ let print_card (c : card) : string =
 (* [empty] is the empty deck *)
 let empty () = ref [||]
 
+let push_unit (c : card) (d : deck) = d := (Array.append [|c|] !d)
+
 (* To push [c] onto [d], we create a new array with value [c] at the 
    beginning followed by the values of [d]. *)
-let push (c : card) (d : deck) = d := (Array.append [|c|] !d)
+let push (c : card) (d : deck) = push_unit c d; d
 
 (* [peek d] is the first element of [d].*)
 let peek (d : deck) : 'a = !d.(0)
@@ -56,10 +58,10 @@ let shuffle (d : deck) =
 let create_help s = 
   let d = ref [||] in
   for i = 1 to 13 do
-    push {rank = i; suit = 'C'} d;
-    push {rank = i; suit = 'D'} d;
-    push {rank = i; suit = 'H'} d;
-    push {rank = i; suit = 'S'} d;
+    push_unit {rank = i; suit = 'C'} d;
+    push_unit {rank = i; suit = 'D'} d;
+    push_unit {rank = i; suit = 'H'} d;
+    push_unit {rank = i; suit = 'S'} d;
   done;
   shuffle d
 
