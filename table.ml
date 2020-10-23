@@ -93,6 +93,10 @@ let init_commcard table deck =
   table.river <- Deck.pop deck :: table.river;
   table.river <- Deck.pop deck :: table.river
 
+(*Adds card to the community cards *)
+let add_commcard table deck = 
+  table.river <- Deck.pop deck :: table.river
+
 (* let deal_start = table.players |> List.length |> Random.int
    maybe chain some of the stuff below, i was gonna make this change but then realized
    you need num_in_players later *) 

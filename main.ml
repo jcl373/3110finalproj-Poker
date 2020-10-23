@@ -76,7 +76,7 @@ let start_game name =
     choices 2;
 
     (* turn *)
-    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    Table.add_commcard gametable gamedeck;
     print_endline ("The community cards are the " ^ print_card_list gametable.river);
     max_wager := 0;
 
@@ -84,8 +84,9 @@ let start_game name =
     choices 3;
 
     (* river *)
-    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    Table.add_commcard gametable gamedeck; 
     print_endline ("The community cards are the " ^ print_card_list gametable.river);
+    max_wager := 0;
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
     (* set winner *)
