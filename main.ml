@@ -10,7 +10,7 @@ let bot_choice (p : Table.person): Bet.choice =
   | 2 -> Bet 11 (* TODO : fix AI *)
   | 3 -> Call !max_wager
   | 4 -> Raise 11 (* TODO : fix AI *)
-  | 5 -> AllIn !(p.chips)
+  | 6 -> AllIn !(p.chips)
   | _ -> failwith "impossible"
 
 let parse str (p : Table.person) : Bet.choice =
@@ -120,7 +120,7 @@ let start_game name =
 
     (* set winner *)
     let winner : Table.person = Game.evaluate_table gametable in
-    print_endline ("The winner is " ^ winner.name);
+    print_endline ("The winner is " ^ winner.name ^ "."); (* TODO : make it say what their hand is *)
     winner.chips := !(winner.chips) + !(gametable.pot);
     gametable.pot := 0;
 
@@ -130,7 +130,8 @@ let start_game name =
     print_string "> ";
     match read_line () with
     | "No" -> ()
-    | _ -> round (i+1)
+    | "Yes" -> round (i+1)
+    | _ -> failwith "invalid response"
   in
   round 0
 
