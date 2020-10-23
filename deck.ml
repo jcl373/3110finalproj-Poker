@@ -13,7 +13,7 @@ let print_card (c : card) : string =
     | 'C' -> "Clubs"
     | 'H' -> "Hearts"
     | 'D' -> "Diamonds"
-    | 'S' -> "spades" 
+    | 'S' -> "Spades" 
     | _ -> failwith "invalid suit" in
   match c with
   | {rank = 13; suit = c} -> "King of " ^ print_suit c
@@ -50,7 +50,7 @@ let shuffle (d : deck) =
   done;
   d
 
-(* [create_help d s] initializes a new deck s times with the standard 
+(* [create_help s] initializes a new deck s times with the standard 
    52-card deck.*)
 let create_help s = 
   let d = ref [||] in

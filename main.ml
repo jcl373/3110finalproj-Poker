@@ -4,12 +4,12 @@ let max_wager = ref 0
 let dealer_index = ref 0
 
 let bot_choice (p : Table.person): Bet.choice =
-  match Random.int 6 with 
+  match Random.int 5 with 
   | 0 -> Check
   | 1 -> Fold
-  | 2 -> Bet 11 (* TODO *)
+  | 2 -> Bet 11 (* TODO : fix AI *)
   | 3 -> Call !max_wager
-  | 4 -> Raise 11 (* TODO *)
+  | 4 -> Raise 11 (* TODO : fix AI *)
   | 5 -> AllIn !(p.chips)
   | _ -> failwith "impossible"
 
@@ -52,12 +52,19 @@ let request_choice (p : Table.person) : unit =
       print_choice player_bet p
   end
 
+let rec print_card_list list : string =
+  match list with
+  | [] -> failwith "can't print empty deck"
+  | h :: [] -> "and the " ^ Deck.print_card h ^ "."
+  | h :: t -> "the " ^ Deck.print_card h ^ ", " ^ (print_card_list t)
+
 let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
   | [] -> failwith "empty iter list"
   | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
 
 let start_game name =
+  (* Fill table with 5 bots + the player *)
   Table.add_player gametable (Table.new_player "Bot 5" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
   Table.add_player gametable (Table.new_player "Bot 4" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
   Table.add_player gametable (Table.new_player "Bot 3" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
@@ -65,19 +72,67 @@ let start_game name =
   Table.add_player gametable (Table.new_player "Bot 1" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
   let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100) in
   Table.add_player gametable player;
+
+  (* Pick random dealer *)
   Table.choose_dealer gametable;
-  let rec round =
+
+  let rec round i =
+    (* Print cards in hole *)
     print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
+
+    (* Dealer / advance round *)    
     Table.next_round_prep gametable;
     dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
+
+    (* Blind bets *)
     print_endline ((Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 1))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
     print_endline ((Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 2))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 1))).chips (fst gametable.blinds) !max_wager;
     Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players (!dealer_index + 2))).chips (fst gametable.blinds) !max_wager;
     max_wager := snd gametable.blinds;
-    iter_index (!dealer_index + 3) request_choice gametable.players in
-  round
+
+    (* Request choices *)
+    (* TODO : add conditions so folding/betting/checking actually works *)
+    iter_index (!dealer_index + 3) request_choice gametable.players;
+
+    (* flop *)
+    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    print_endline ("The community cards are the " ^ print_card_list gametable.river);
+    max_wager := 0;
+
+    (* Request choices *)
+    iter_index (!dealer_index + 1) request_choice gametable.players;
+
+    (* turn *)
+    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    print_endline ("The community cards are the " ^ print_card_list gametable.river);
+    max_wager := 0;
+
+    (* Request choices *)
+    iter_index (!dealer_index + 1) request_choice gametable.players;
+
+    (* river *)
+    gametable.river <- Deck.pop gamedeck :: gametable.river;
+    print_endline ("The community cards are the " ^ print_card_list gametable.river);
+
+    (* set winner *)
+    let winner : Table.person = Game.evaluate_table gametable in
+    print_endline ("The winner is " ^ winner.name);
+    winner.chips := !(winner.chips) + !(gametable.pot);
+    gametable.pot := 0;
+
+    (* new round *)
+    gamedeck := !Deck.create;
+    print_endline "Do you want to stay? (Yes or No)";
+    print_string "> ";
+    match read_line () with
+    | "No" -> ()
+    | _ -> round (i+1)
+  in
+  round 0
 
 (** [main ()] starts the game *)
 let main () =
