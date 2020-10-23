@@ -4,13 +4,14 @@ let max_wager = ref 0
 let dealer_index = ref 0
 
 let bot_choice (p : Table.person): Bet.choice =
-  match Random.int 5 with 
-  | 0 -> Check
-  | 1 -> Fold
-  | 2 -> Bet 11 (* TODO : fix AI *)
-  | 3 -> Call !max_wager
-  | 4 -> Raise 11 (* TODO : fix AI *)
-  | 6 -> AllIn !(p.chips)
+  Random.init Unix.gettimeofday;
+  match Random.int 4 with 
+  | 999 -> Check
+  | 0 -> Fold
+  | 1 -> Bet 11 (* TODO : fix AI *)
+  | 2 -> Call !max_wager
+  | 3 -> Raise 11 (* TODO : fix AI *)
+  | 999 -> AllIn !(p.chips)
   | _ -> failwith "impossible"
 
 let parse str (p : Table.person) : Bet.choice =
