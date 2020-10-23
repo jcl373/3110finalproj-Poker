@@ -88,6 +88,11 @@ let remove_player table player_name =
   let updated_players = List.filter (fun x -> x.name <> player_name ) players_list in 
   table.players <- updated_players
 
+let init_communitycards table deck =
+  table.river <- Deck.pop deck :: table.river;
+  table.river <- Deck.pop deck :: table.river;
+  table.river <- Deck.pop deck :: table.river
+
 (* let deal_start = table.players |> List.length |> Random.int
    maybe chain some of the stuff below, i was gonna make this change but then realized
    you need num_in_players later *) 

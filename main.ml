@@ -66,7 +66,6 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
 
 (*[create_bot] creates a bot with a name [name] and gives it 
 a [start_amt] number of chips *)
-
 let create_bot name start_amt =
   Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt)
 
@@ -106,6 +105,8 @@ let start_game name =
     iter_index ((!dealer_index + 3) mod (List.length gametable.players)) request_choice gametable.players;
 
     (* flop *)
+    Table.init_communitycards gametable gamedeck; (*helper function to initalize the flop instead of 3 lines below,
+    but theres an error that I'm too sleepy to fix -Abhi*)
     gametable.river <- Deck.pop gamedeck :: gametable.river;
     gametable.river <- Deck.pop gamedeck :: gametable.river;
     gametable.river <- Deck.pop gamedeck :: gametable.river;
