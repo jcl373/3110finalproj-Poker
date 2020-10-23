@@ -32,4 +32,6 @@ val n_of_list : 'a list -> int -> 'a option
 
 val extract_value : 'a option -> 'a
 
+val set_hand : person -> Deck.card -> Deck.card -> unit
+
 exception Empty

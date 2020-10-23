@@ -4,7 +4,10 @@ let max_wager = ref 0
 let dealer_index = ref 0
 
 let bot_choice (p : Table.person): Bet.choice =
+<<<<<<< HEAD
   Random.float (Unix.gettimeofday ()); (* What is the purpose of this*)
+=======
+>>>>>>> cc8918fd650069db8799c2c8d4c307d2979273a2
   match Random.int 4 with 
   | 999 -> Check
   | 0 -> Fold
@@ -75,28 +78,41 @@ let start_game name =
   Table.add_player gametable player;
 
   (* Pick random dealer *)
+  Random.init (int_of_float (Unix.gettimeofday ()));
   Table.choose_dealer gametable;
 
   let rec round i =
     (* Print cards in hole *)
     print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
 
+<<<<<<< HEAD
     (* Dealer / advance round *)    
     if i = 0 then () 
     else Table.next_round_prep gametable;
+=======
+    (* Dealer / advance round *)  
+    Table.next_round_prep gametable;
+>>>>>>> cc8918fd650069db8799c2c8d4c307d2979273a2
     dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
 
     (* Blind bets *)
+<<<<<<< HEAD
     print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
     print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
     Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
+=======
+    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod (List.length gametable.players)))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
+    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod (List.length gametable.players)))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
+    Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod (List.length gametable.players)))).chips (fst gametable.blinds) !max_wager;
+    Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod (List.length gametable.players)))).chips (fst gametable.blinds) !max_wager;
+>>>>>>> cc8918fd650069db8799c2c8d4c307d2979273a2
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
     (* TODO : add conditions so folding/betting/checking actually works *)
-    iter_index (!dealer_index + 3) request_choice gametable.players;
+    iter_index ((!dealer_index + 3) mod (List.length gametable.players)) request_choice gametable.players;
 
     (* flop *)
     gametable.river <- Deck.pop gamedeck :: gametable.river;
@@ -106,7 +122,7 @@ let start_game name =
     max_wager := 0;
 
     (* Request choices *)
-    iter_index (!dealer_index + 1) request_choice gametable.players;
+    iter_index ((!dealer_index + 1) mod (List.length gametable.players)) request_choice gametable.players;
 
     (* turn *)
     gametable.river <- Deck.pop gamedeck :: gametable.river;
@@ -114,7 +130,7 @@ let start_game name =
     max_wager := 0;
 
     (* Request choices *)
-    iter_index (!dealer_index + 1) request_choice gametable.players;
+    iter_index ((!dealer_index + 1) mod (List.length gametable.players)) request_choice gametable.players;
 
     (* river *)
     gametable.river <- Deck.pop gamedeck :: gametable.river;
@@ -128,6 +144,11 @@ let start_game name =
 
     (* new round *)
     gamedeck := !Deck.create;
+    let rec reset_hand list =
+      match list with
+      | [] -> ()
+      | h :: t -> Table.set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); reset_hand t in
+    reset_hand gametable.players;
     print_endline "Do you want to stay? (Yes or No)";
     print_string "> ";
     match read_line () with

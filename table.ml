@@ -68,6 +68,8 @@ let empty_table small_blind big_blind =
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
    river = []; players = []; out_players = []; dealer = None; round_num = 1} 
 
+let set_hand (p : person) c1 c2 : unit =
+  p.hand <- (c1, c2)
 
 (** add_player adds a new player to the table. 
     [table] is a valid table
@@ -117,7 +119,7 @@ let next_round_prep table =
   let curr_dealer = find_list table.players (extract_value table.dealer) in
   let curr_deal_int = extract_value curr_dealer in
   let length = List.length table.players in
-  let new_dealer =  n_of_list table.players (curr_deal_int + 1 mod length) in 
+  let new_dealer =  n_of_list table.players ((curr_deal_int + 1) mod length) in 
   table.dealer <- new_dealer;  
   let lb_start =  (curr_deal_int + 2) mod length in
   let littleblinds = extract_value (n_of_list table.players lb_start) in
@@ -126,7 +128,7 @@ let next_round_prep table =
   let bigblinds = extract_value (n_of_list table.players bb_start) in
   bigblinds.position <- Some BB; 
   table.river <- [];
-  table.pot := 0; 
+  Bet.clear table.pot; 
   table.round_num <- table.round_num + 1;
 
 
