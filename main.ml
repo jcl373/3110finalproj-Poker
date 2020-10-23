@@ -27,8 +27,6 @@ let choices round =
     let startpos = (!dealer_index + 1) mod (List.length gametable.players) in
     iter_index startpos (Prompt.request_choice max_wager gametable) gametable.players
 
-
-
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
 let create_bot name start_amt =

@@ -12,6 +12,8 @@ type result =
 
 val evaluate_hand : Deck.card array -> result
 
+val compare_hands : result -> result -> int 
+
 val evaluate_hands : Deck.card array -> Deck.card array -> result
 
 val evaluate_table : Table.table -> Table.person

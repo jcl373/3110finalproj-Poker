@@ -20,6 +20,8 @@ type choice =
 
 exception InvalidResponse
 
+exception InvalidWager
+
 
 (** [amount] returns the amount of money in a given bag. *)
 val amount : bag -> int
@@ -35,6 +37,8 @@ val check_wager : choice -> int -> bool
 val current_wager : choice -> int
 
 val wager : choice -> pot -> bag -> int -> int -> unit
+
+val max_wager : choice -> int -> bool
 
 (*val win_pot : Table.person -> pot -> unit*)
 

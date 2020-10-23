@@ -56,6 +56,11 @@ let check_wager (opt: choice) (current_bet: int) =
   | Raise x -> if x <= current_bet then false else true
   | AllIn x -> true
 
+let max_wager (opt: choice) (p : int) = 
+  match opt with
+  | Bet x | Call x | Raise x -> if x > p then false else true
+  | _ -> true
+
 (** [wager] places the amount [amt] from a player's bag [b1] into
     the pot [p1].
     Precondition: 
@@ -63,7 +68,8 @@ let check_wager (opt: choice) (current_bet: int) =
     [b1] is a valid bag
     [amt] is an int >= 0 and <= !b1 *)
 let wager (opt : choice) (p1 : pot) (b1 : bag) amt (current_bet: int) =  
-  if (current_wager opt > !b1) && not (check_wager opt current_bet) then raise InvalidWager else
+  if (current_wager opt > !b1) && not (check_wager opt current_bet) then 
+    raise InvalidWager else
     p1 := !p1 + amt; 
   b1 := !b1 - amt
 

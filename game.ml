@@ -115,32 +115,24 @@ let check41_32_221_2111 x h =
 let evaluate_hand (h : Deck.card array) : result =
   let histogram = create_histogram h in
   check41_32_221_2111 histogram h 
+(*helper to factor out duplicated code below, if for some reason you didn't want it
+  like this change it back -Abhi *)
+let compare_hands_helper (hand: result) =
+  match hand with
+  | RoyalFlush -> 10
+  | StraightFlush _ -> 9
+  | FourOfKind (_,_) -> 8
+  | FullHouse (_,_) -> 7
+  | Flush (_,_,_,_,_) -> 6
+  | Straight _ -> 5
+  | ThreeOfKind (_,_,_) -> 4
+  | TwoPair (_,_,_) -> 3
+  | OnePair (_,_,_,_) -> 2
+  | HighCard _ -> 1
 
-let compare_hands (hand1 : result) (hand2 : result) : int=
-  let h1 =
-    match hand1 with
-    | RoyalFlush -> 10
-    | StraightFlush _ -> 9
-    | FourOfKind (_,_) -> 8
-    | FullHouse (_,_) -> 7
-    | Flush (_,_,_,_,_) -> 6
-    | Straight _ -> 5
-    | ThreeOfKind (_,_,_) -> 4
-    | TwoPair (_,_,_) -> 3
-    | OnePair (_,_,_,_) -> 2
-    | HighCard _ -> 1 in
-  let h2 =
-    match hand2 with
-    | RoyalFlush -> 10
-    | StraightFlush _ -> 9
-    | FourOfKind (_,_) -> 8
-    | FullHouse (_,_) -> 7
-    | Flush (_,_,_,_,_) -> 6
-    | Straight _ -> 5
-    | ThreeOfKind (_,_,_) -> 4
-    | TwoPair (_,_,_) -> 3
-    | OnePair (_,_,_,_) -> 2
-    | HighCard _ -> 1 in
+let compare_hands (hand1 : result) (hand2 : result) : int =
+  let h1 = compare_hands_helper hand1 in
+  let h2 = compare_hands_helper hand2 in 
   if h1 > h2 then -1
   else if h2 > h1 then 1
   else
