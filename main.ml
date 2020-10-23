@@ -4,10 +4,7 @@ let max_wager = ref 0
 let dealer_index = ref 0
 
 let bot_choice (p : Table.person): Bet.choice =
-<<<<<<< HEAD
   Random.float (Unix.gettimeofday ()); (* What is the purpose of this*)
-=======
->>>>>>> cc8918fd650069db8799c2c8d4c307d2979273a2
   match Random.int 4 with 
   | 999 -> Check
   | 0 -> Fold
@@ -85,29 +82,17 @@ let start_game name =
     (* Print cards in hole *)
     print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
 
-<<<<<<< HEAD
     (* Dealer / advance round *)    
     if i = 0 then () 
     else Table.next_round_prep gametable;
-=======
-    (* Dealer / advance round *)  
-    Table.next_round_prep gametable;
->>>>>>> cc8918fd650069db8799c2c8d4c307d2979273a2
     dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
 
     (* Blind bets *)
-<<<<<<< HEAD
     print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
     print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
     Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
-=======
-    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod (List.length gametable.players)))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
-    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod (List.length gametable.players)))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
-    Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod (List.length gametable.players)))).chips (fst gametable.blinds) !max_wager;
-    Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod (List.length gametable.players)))).chips (fst gametable.blinds) !max_wager;
->>>>>>> cc8918fd650069db8799c2c8d4c307d2979273a2
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
