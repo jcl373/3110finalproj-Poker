@@ -4,7 +4,7 @@ let max_wager = ref 0
 let dealer_index = ref 0
 
 let bot_choice (p : Table.person): Bet.choice =
-  match Random.init (int_of_float (Unix.gettimeofday ())); Random.int 4 with 
+  match Random.int 4 with 
   | 999 -> Check
   | 0 -> Fold
   | 1 -> Bet 11 (* TODO : fix AI *)
@@ -74,6 +74,7 @@ let start_game name =
   Table.add_player gametable player;
 
   (* Pick random dealer *)
+  Random.init (int_of_float (Unix.gettimeofday ()));
   Table.choose_dealer gametable;
 
   let rec round i =
