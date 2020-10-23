@@ -64,13 +64,19 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   | [] -> failwith "empty iter list"
   | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
 
+(*[create_bot] creates a bot with a name [name] and gives it 
+a [start_amt] number of chips *)
+
+let create_bot name start_amt =
+  Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt)
+
 let start_game name =
   (* Fill table with 5 bots + the player *)
-  Table.add_player gametable (Table.new_player "Bot 5" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
-  Table.add_player gametable (Table.new_player "Bot 4" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
-  Table.add_player gametable (Table.new_player "Bot 3" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
-  Table.add_player gametable (Table.new_player "Bot 2" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
-  Table.add_player gametable (Table.new_player "Bot 1" (Deck.pop gamedeck) (Deck.pop gamedeck) 100);
+  create_bot "Bot 5" 100;
+  create_bot "Bot 4" 100;
+  create_bot "Bot 3" 100;
+  create_bot "Bot 2" 100;
+  create_bot "Bot 1" 100; 
   let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100) in
   Table.add_player gametable player;
 
