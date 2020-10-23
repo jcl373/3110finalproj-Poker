@@ -68,15 +68,20 @@ let compare_pairs pair1 pair2 =
                  else if a > x then -1 
                  else if x > a then 1 
                  else 0) end end
+(*helper for check_straght and check_straight_flush,
+helps for getting rank with n_of_list
+this is just for documentation purposes, edit this later *)
+let get_rank_helper (sorted: Deck.card list) (num: int) = 
+  num |> n_of_list sorted |> extract_value |> getRank
 
 let check_straight h = 
   let hsort = (List.sort compare_cards (Array.to_list h)) in
   let length = List.length hsort in 
   let headrank = getRank (extract_value (h_of_list hsort)) in 
-  let sndrank = getRank (extract_value (n_of_list hsort 1)) in 
-  let thdrank = getRank (extract_value (n_of_list hsort 2)) in 
-  let frthrank = getRank (extract_value (n_of_list hsort 3)) in 
-  let tailrank = getRank (extract_value (n_of_list hsort (length - 1))) in 
+  let sndrank = get_rank_helper hsort 1 in 
+  let thdrank = get_rank_helper hsort 2 in 
+  let frthrank = get_rank_helper hsort 3 in 
+  let tailrank = get_rank_helper hsort (length - 1) in 
   if headrank - tailrank = 4 then Straight (headrank)
   else if headrank = 1 && tailrank = 2 && sndrank = 5 && thdrank + frthrank = 7 then Straight 5
   else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then Straight 1
@@ -86,10 +91,10 @@ let check_straight_flush h =
   let hsort = (List.sort compare_cards (Array.to_list h)) in
   let length = List.length hsort in 
   let headrank = getRank (extract_value (h_of_list hsort)) in 
-  let sndrank = getRank (extract_value (n_of_list hsort 1)) in 
-  let thdrank = getRank (extract_value (n_of_list hsort 2)) in 
-  let frthrank = getRank (extract_value (n_of_list hsort 3)) in 
-  let tailrank = getRank (extract_value (n_of_list hsort (length - 1))) in 
+  let sndrank = get_rank_helper hsort 1 in 
+  let thdrank = get_rank_helper hsort 2 in 
+  let frthrank = get_rank_helper hsort 3 in 
+  let tailrank = get_rank_helper hsort (length - 1) in 
   if headrank - tailrank = 4 then StraightFlush (headrank)
   else if headrank = 1 && tailrank = 2 && sndrank = 5 && thdrank + frthrank = 7 then StraightFlush 5
   else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then RoyalFlush

@@ -9,7 +9,7 @@ let bot_choice (p : Table.person) max_wager: Bet.choice =
   | 1 -> Bet 11 (* TODO : fix AI *)
   | 2 -> Call !max_wager
   | 3 -> Raise 11 (* TODO : fix AI *)
-  | 999 -> AllIn !(p.chips)
+  | 998 -> AllIn !(p.chips)
   | _ -> failwith "impossible"
 
 
@@ -77,8 +77,7 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
           let input = read_line () in 
           let player_bet = parse input p max_wager in  
           let bet_check = Bet.check_wager player_bet !max_wager in
-          if bet_check = false then raise(Bet.InvalidWager) else 
-          if Bet.max_wager player_bet !(p.chips) = false then raise(Bet.InvalidWager) else 
+          if bet_check = false || (Bet.max_wager player_bet !(p.chips) = false) then raise(Bet.InvalidWager) else 
           if (Bet.current_wager player_bet > !max_wager) && (Bet.current_wager player_bet <= !(p.chips))
           then max_wager := Bet.current_wager player_bet;
           Bet.wager player_bet gametable.pot p.chips (Bet.current_wager player_bet) !max_wager;
