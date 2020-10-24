@@ -101,6 +101,7 @@ let add_commcard table deck =
    maybe chain some of the stuff below, i was gonna make this change but then realized
    you need num_in_players later *) 
 let choose_dealer table = 
+  Random.self_init ();
   let num_in_players = List.length table.players in
   let deal_start = Random.int num_in_players in
   let dealer = extract_value (n_of_list table.players deal_start) in
