@@ -2,8 +2,8 @@
 exception InvalidResponse
 
 let bot_choice (p : Table.person) max_wager : Bet.choice =
-  Random.self_init;
-  match Random.int 2 with 
+  Random.self_init ();
+  match Random.int 3 with 
   | 0 -> if !max_wager = 0 && !(p.chips) > 5 then Bet 5
     else if !max_wager < !(p.chips) then Call !max_wager
     else Fold
@@ -22,9 +22,9 @@ let print_choice (c : Bet.choice) (p : Table.person) : unit =
   | Check -> print_endline (p.name ^ " has checked.")
   | Fold -> print_endline (p.name ^ " has folded.")
   | Bet i -> print_endline (p.name ^ " has bet " ^ string_of_int i ^ " chips.")
-  | Call i -> print_endline (p.name ^ " has called.");
+  | Call i -> print_endline (p.name ^ " has called and bet " ^ string_of_int i ^ " chips.");
   | Raise i -> print_endline (p.name ^ " has raised " ^ string_of_int i ^ " chips.")
-  | AllIn i -> print_endline (p.name ^ " has gone all in.")
+  | AllIn i -> print_endline (p.name ^ " has gone all in and bet " ^ string_of_int i ^ " chips.")
 
 let parse str (p : Table.person) max_wager : Bet.choice =
   let lst = String.split_on_char ' ' str in
