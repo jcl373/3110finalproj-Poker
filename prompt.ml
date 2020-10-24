@@ -51,12 +51,18 @@ let parse str (p : Table.person) max_wager : Bet.choice =
 
 
 let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : unit =
+  if List.length gametable.in_players = 1 then () else
   if (p.name = "Bot 1" || p.name = "Bot 2" || p.name = "Bot 3" || p.name = "Bot 4" || p.name = "Bot 5")
   then let bot_bet = bot_choice p max_wager in
+    let bet_check = Bet.check_wager bot_bet !max_wager in
+    if bot_bet = Fold 
+    then (p.position <- Some Folded; Table.next_br_prep gametable)
+    else
     if Bet.current_wager bot_bet > !max_wager then max_wager := Bet.current_wager bot_bet;
     Bet.wager bot_bet gametable.pot p.chips (Bet.current_wager bot_bet) !max_wager;
     print_choice bot_bet p
   else 
+  if p.position = Some Folded then () else
     begin
       try
         begin 
@@ -64,6 +70,7 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
             begin 
               print_endline "What is your choice?";
               print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
+              print_endline ("You have "^ string_of_int !(p.chips) ^ " chips.");
               print_string "Choose between: 'Fold', 'Bet x', or 'AllIn' ";
               print_endline "where x is an amount that you would like to bet.";
               print_string "> ";
@@ -72,6 +79,7 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
             begin
               print_endline "What is your choice?";
               print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
+              print_endline ("You have "^ string_of_int !(p.chips) ^ " chips.");
               print_string "Choose between: 'Fold', 'Call', 'Raise x', or 'AllIn' ";
               print_endline "where x is an amount that you would like to bet.";
               print_string "> ";
@@ -79,6 +87,7 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
           let input = read_line () in 
           let player_bet = parse input p max_wager in  
           let bet_check = Bet.check_wager player_bet !max_wager in
+          if player_bet = Fold then (p.position <- Some Folded; Table.next_br_prep gametable) else
           if bet_check = false || (Bet.max_wager player_bet !(p.chips) = false) then raise(Bet.InvalidWager) else 
           if (Bet.current_wager player_bet > !max_wager) && (Bet.current_wager player_bet <= !(p.chips))
           then max_wager := Bet.current_wager player_bet;
@@ -91,3 +100,6 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
       | Bet.InvalidWager -> print_endline "Invalid Wager Amount. Try again.";
         request_choice max_wager gametable p
     end
+
+
+

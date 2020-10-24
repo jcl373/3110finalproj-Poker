@@ -9,6 +9,8 @@ exception Empty
 
 exception Invalid_player
 
+exception InvalidResponse
+
 (** [nth_of_list] returns the nth element of the list [lst]
     Returns an option as the list may not contain that number 
     [lst] is a valid list
@@ -40,6 +42,10 @@ let rec find_in_list lst x acc =
 let find_list lst x =
   find_in_list lst x 0
 
+let rec print_card_tup tup : string =
+  match tup with
+  | (x,y) -> " the " ^ Deck.print_card x ^ " and the " ^ Deck.print_card y ^ "."
+
 let extract_value = function
   | Some x -> x
   | None -> raise Empty;;
@@ -57,6 +63,7 @@ type table = {pot : Bet.pot;
               blinds: int * int; 
               mutable river: Deck.card list; 
               mutable players : person list; 
+              mutable in_players : person list;
               mutable out_players : person list;
               mutable dealer : person option; 
               mutable round_num : int
@@ -68,7 +75,7 @@ let new_player nm c1 c2 start_amt =
 
 let empty_table small_blind big_blind = 
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
-   river = []; players = []; out_players = []; dealer = None; round_num = 1} 
+   river = []; players = []; in_players = []; out_players = []; dealer = None; round_num = 1} 
 
 let set_hand (p : person) c1 c2 : unit =
   p.hand <- (c1, c2)
@@ -111,13 +118,14 @@ let choose_dealer table =
   let bb_start =  (lb_start + 1) mod num_in_players in
   let bigblinds = extract_value (n_of_list table.players bb_start) in
   bigblinds.position <- Some BB;
-  table.dealer <- Some dealer
+  table.dealer <- Some dealer;
+  table.in_players <- table.players
 
 let next_br_prep table = 
-  let no_folds = List.filter (fun x -> x.position != Some Folded) 
-      table.players in table.players <- no_folds;
+  let no_folds = List.filter (fun x -> x.position <> Some Folded) 
+      table.in_players in table.in_players <- no_folds;
   let folded = List.filter (fun x -> x.position = Some Folded) 
-      table.players in table.out_players <- folded
+      table.in_players in table.out_players <- folded
 
 (* let match_pos table x = 
    match x.position with
@@ -128,7 +136,7 @@ let next_br_prep table =
 (** Extract common functionality  *) 
 let next_round_prep table =
   let players = List.map (fun x -> x.position <- None; x) table.players in 
-  table.players <- players; table.out_players <- []; 
+  table.players <- players; table.in_players <- players; table.out_players <- []; 
   let curr_dealer = find_list table.players (extract_value table.dealer) in
   let curr_deal_int = if curr_dealer != None then extract_value curr_dealer else 0 in
   let length = List.length table.players in
@@ -142,4 +150,59 @@ let next_round_prep table =
   bigblinds.position <- Some BB; 
   table.river <- [];
   Bet.clear table.pot; 
-  table.round_num <- table.round_num + 1;
+  table.round_num <- table.round_num + 1
+
+let auto_remove table (p : person)  : unit =
+  if !(p.chips) < 10 then begin 
+    print_endline (p.name ^ " has left because they ran out of chips.");
+    remove_player table p
+  end else () 
+
+let rec end_prompt x f i  = 
+  print_endline "Do you want to stay? (Yes or No)";
+  print_endline "If you are out of chips, please restart game. ";
+  print_string "> ";
+  try 
+    match read_line () with
+    | "No" | "no" -> print_endline "Thanks for playing!"; exit 0
+    | "Yes" | "yes" -> f (i+1)
+    | _ -> raise (InvalidResponse)
+  with 
+  | InvalidResponse -> print_endline "Please type 'yes' or 'no'!"; 
+    end_prompt 1 f i
+
+let min_players gametable f i = 
+  if List.length gametable.players <= 2 then begin
+    print_endline "There are not enough players to continue. The game is over.";
+    (* maybe add something about how much money i had and how much the max person had?*)
+    exit 0
+  end
+  else end_prompt 1 f i
+
+let winner winner gametable gamedeck f i= 
+  ANSITerminal.(print_string [yellow] ("The winner is " ^ winner.name ^ ".\n" ^ "The winning hand is")); 
+  ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));  (* TODO : make it say what their hand is *)
+  winner.chips := !(winner.chips) + !(gametable.pot);
+  gametable.pot := 0;
+
+  (* new round *)
+  gamedeck := !Deck.create;
+  List.iter (auto_remove gametable) gametable.players;
+
+  let rec reset_hand list =
+    match list with
+    | [] -> ()
+    | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); reset_hand t in
+  min_players gametable f i;
+  end_prompt 1 f i;
+  reset_hand gametable.players
+
+
+
+let last_one_wins table gamedeck round i=
+  if List.length table.in_players = 1 then 
+    let def_win = extract_value (h_of_list table.in_players) in
+    ANSITerminal.(print_string [yellow] ("Everyone folded except for " ^ def_win.name ^ ".\n")); 
+    winner def_win table gamedeck round i
+  else ()
+

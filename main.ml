@@ -11,6 +11,11 @@ let rec print_card_list list : string =
   | h :: [] -> "and the " ^ Deck.print_card h ^ "."
   | h :: t -> "the " ^ Deck.print_card h ^ ", " ^ (print_card_list t)
 
+let rec print_list (list : Table.person list) : string =
+  match list with
+  | [] -> ""
+  | h :: t -> h.name^" " ^ print_list t
+
 let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
   | [] -> failwith "empty iter list"
@@ -18,11 +23,11 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
 
 let choices round = 
   if round = 1 then 
-    let startpos = (!dealer_index + 3) mod (List.length gametable.players) in
+    let startpos = (!dealer_index + 3) mod (List.length gametable.in_players) in
     iter_index startpos (Prompt.request_choice max_wager gametable) gametable.players
   else 
-    let startpos = (!dealer_index + 1) mod (List.length gametable.players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable) gametable.players
+    let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
+    iter_index startpos (Prompt.request_choice max_wager gametable) gametable.in_players
 
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
@@ -61,67 +66,40 @@ let start_game name =
 
     (* Request choices *)
     choices 1;
+    (* Table.next_br_prep gametable; *)
+    Table.last_one_wins gametable gamedeck round i;
 
     (* flop *)
     Table.init_commcard gametable gamedeck; 
-    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ "\n"));
+    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
 
     (* Request choices *)
     choices 2;
+    (* Table.next_br_prep gametable; *)
+    Table.last_one_wins gametable gamedeck round i;
+
 
     (* turn *)
     Table.add_commcard gametable gamedeck;
-    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ "\n"));
+    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
 
     (* Request choices *)
     choices 3;
+    Table.last_one_wins gametable gamedeck round i;
+    (* Table.next_br_prep gametable; *)
 
     (* river *)
     Table.add_commcard gametable gamedeck; 
-    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ "\n"));
+    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
+
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
     (* set winner *)
     let winner : Table.person = Game.evaluate_table gametable in
-    ANSITerminal.(print_string [yellow] ("The winner is " ^ winner.name ^ ".\n")); (* TODO : make it say what their hand is *)
-    winner.chips := !(winner.chips) + !(gametable.pot);
-    gametable.pot := 0;
-
-    (* new round *)
-    gamedeck := !Deck.create;
-    let remove (p : Table.person) : unit =
-      if !(p.chips) < 10 then begin 
-        print_endline (p.name ^ " has left because they ran out of chips.");
-        Table.remove_player gametable p
-      end else () in
-    List.iter remove gametable.players;
-
-    let rec reset_hand list =
-      match list with
-      | [] -> ()
-      | h :: t -> Table.set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); reset_hand t in
-
-    let rec end_prompt x = 
-      print_endline "Do you want to stay? (Yes or No)";
-      print_string "> ";
-      try 
-        match read_line () with
-        | "No" -> print_endline "Thanks for playing!"
-        | "Yes" -> round (i+1)
-        | _ -> raise (InvalidResponse)
-      with 
-      | InvalidResponse -> print_endline "Please type yes or no!"; 
-        end_prompt 1
-    in
-    reset_hand gametable.players;
-    if List.length gametable.players < 2 then begin
-      print_endline "There are not enough players to continue. The game is over.";
-      ()
-    end
-    else end_prompt 1
+    Table.winner winner gametable gamedeck round i;
   in
   round 0
 
