@@ -20,7 +20,7 @@ val new_player : string -> Deck.card -> Deck.card -> int -> person
 
 val add_player : table -> person -> unit
 
-(* val remove_player : table -> person -> unit *)
+val remove_player : table -> person -> unit
 
 val choose_dealer : table -> unit
 

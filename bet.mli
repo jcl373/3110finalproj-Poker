@@ -26,6 +26,8 @@ val amount : bag -> int
 
 val add : bag -> int -> bag 
 
+val set : int -> bag -> unit
+
 val empty_bag : unit -> bag
 
 val empty_pot : unit -> pot

@@ -60,12 +60,11 @@ let start_game name =
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
-    (* TODO : add conditions so folding/betting/checking actually works *)
     choices 1;
 
     (* flop *)
     Table.init_commcard gametable gamedeck; 
-    print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
+    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ "\n"));
     max_wager := 0;
 
     (* Request choices *)
@@ -73,7 +72,7 @@ let start_game name =
 
     (* turn *)
     Table.add_commcard gametable gamedeck;
-    print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
+    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ "\n"));
     max_wager := 0;
 
     (* Request choices *)
@@ -81,18 +80,25 @@ let start_game name =
 
     (* river *)
     Table.add_commcard gametable gamedeck; 
-    print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
+    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ "\n"));
     max_wager := 0;
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
     (* set winner *)
     let winner : Table.person = Game.evaluate_table gametable in
-    print_endline ("The winner is " ^ winner.name ^ "."); (* TODO : make it say what their hand is *)
+    ANSITerminal.(print_string [yellow] ("The winner is " ^ winner.name ^ ".\n")); (* TODO : make it say what their hand is *)
     winner.chips := !(winner.chips) + !(gametable.pot);
     gametable.pot := 0;
 
     (* new round *)
     gamedeck := !Deck.create;
+    let remove (p : Table.person) : unit =
+      if !(p.chips) < 10 then begin 
+        print_endline (p.name ^ " has left because they ran out of chips.");
+        Table.remove_player gametable p
+      end else () in
+    List.iter remove gametable.players;
+
     let rec reset_hand list =
       match list with
       | [] -> ()
@@ -110,8 +116,12 @@ let start_game name =
       | InvalidResponse -> print_endline "Please type yes or no!"; 
         end_prompt 1
     in
-    reset_hand gametable.players; 
-    end_prompt 1
+    reset_hand gametable.players;
+    if List.length gametable.players < 2 then begin
+      print_endline "There are not enough players to continue. The game is over.";
+      ()
+    end
+    else end_prompt 1
   in
   round 0
 
@@ -126,4 +136,4 @@ let main () =
   | name -> start_game name
 
 (* Execute the game engine. *)
-let () =  print_string "h1"; main ()
+let () = main ()

@@ -8,8 +8,7 @@ let bot_choice (p : Table.person) max_wager : Bet.choice =
     else Fold
   | 1 -> if !max_wager = 0 && !(p.chips) > 5 then Bet 5
     else if !max_wager + 5 < !(p.chips) then Raise (!max_wager + 5) 
-    else if !max_wager > !(p.chips) then Fold 
-    else Raise (!(p.chips) - !max_wager)
+    else Fold
   | 2 -> if !max_wager = 0 && !(p.chips) > 5 then Bet 5 
     else if !(p.chips) > !max_wager then AllIn !(p.chips) 
     else Fold

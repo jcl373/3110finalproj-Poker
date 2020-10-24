@@ -81,10 +81,10 @@ let add_player table player =
 
 (** remove_player removes a player from the table. 
     [table] is a valid table
-    [player_name] is a valid player's name *)
-let remove_player table player_name =
+    [player] is a valid person *)
+let remove_player table player =
   let players_list = table.players in 
-  let updated_players = List.filter (fun x -> x.name <> player_name ) players_list in 
+  let updated_players = List.filter (fun x -> x <> player) players_list in 
   table.players <- updated_players
 
 let init_commcard table deck =
@@ -130,7 +130,7 @@ let next_round_prep table =
   let players = List.map (fun x -> x.position <- None; x) table.players in 
   table.players <- players; table.out_players <- []; 
   let curr_dealer = find_list table.players (extract_value table.dealer) in
-  let curr_deal_int = extract_value curr_dealer in
+  let curr_deal_int = if curr_dealer != None then extract_value curr_dealer else 0 in
   let length = List.length table.players in
   let new_dealer =  n_of_list table.players ((curr_deal_int + 1) mod length) in 
   table.dealer <- new_dealer;  

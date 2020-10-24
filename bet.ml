@@ -30,6 +30,9 @@ let add b1 amt =
   b1 := !b1 + amt;
   b1
 
+let set amt b1 =
+  b1 := (amt - !b1)
+
 (** [current_wager] takes in a choice [opt] and returns the amount that 
     the player is contributing to the pot. 
     [opt] is a valid choice *)
@@ -49,7 +52,7 @@ let check_wager (opt: choice) (current_bet: int) =
   match opt with
   | Check -> true
   | Fold -> true
-  | Bet x | Call x-> if x > current_bet then false else true
+  | Bet x | Call x -> if x > current_bet then false else true
   | Raise x -> if x <= current_bet || current_bet = 0 then false else true
   | AllIn x -> true
 
