@@ -101,6 +101,7 @@ let check_straight_flush h =
   else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then RoyalFlush
   else Flush (getRank h.(0),getRank h.(1),getRank h.(2),getRank h.(3),getRank h.(4)) 
 
+
 let check_flush h = 
   let sameSuit (suit : char) (card : Deck.card) = card.suit = suit in
   if (Array.for_all (sameSuit 'C') h) then check_straight_flush h
@@ -137,6 +138,12 @@ let compare_hands_helper (hand: result) =
   | OnePair (_,_,_,_) -> 2
   | HighCard _ -> 1
 
+let fourfullhousecomp a1 a2 b1 b2 =
+  if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a1 then 1 else 0
+
+let kind3pair2comp a1 a2 a3 b1 b2 b3 =
+  if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else 0
+
 let compare_hands (hand1 : result) (hand2 : result) : int =
   let h1 = compare_hands_helper hand1 in
   let h2 = compare_hands_helper hand2 in 
@@ -146,12 +153,12 @@ let compare_hands (hand1 : result) (hand2 : result) : int =
     match (hand1, hand2) with
     | (RoyalFlush, RoyalFlush) -> 0
     | (StraightFlush a, StraightFlush b) -> if a > b then -1 else if a = b then 0 else 1
-    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a1 then 1 else 0
-    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a1 then 1 else 0
+    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> fourfullhousecomp a1 a2 b1 b2
+    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> fourfullhousecomp a1 a2 b1 b2
     | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else if a4 > b4 then -1 else if b4 > a4 then 1 else if a5 > b5 then -1 else if b5 > a5 then 1 else 0
     | (Straight a, Straight b) -> if a > b then -1 else if b > a then 1 else 0
-    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else 0
-    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else 0
+    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> kind3pair2comp a1 a2 a3 b1 b2 b3
+    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> kind3pair2comp a1 a2 a3 b1 b2 b3
     | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> if a1 > b1 then -1 else if b1 > a1 then 1 else if a2 > b2 then -1 else if b2 > a2 then 1 else if a3 > b3 then -1 else if b3 > a3 then 1 else if a4 > b4 then -1 else if b4 > a4 then 1 else 0
     | (HighCard a, HighCard b) -> if a > b then -1 else if b > a then 1 else 0
     | _ -> failwith("faulty comparison")
