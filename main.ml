@@ -5,8 +5,6 @@ let gamedeck = Deck.create
 let max_wager = ref 0
 let dealer_index = ref 0
 
-
-
 let rec print_card_list list : string =
   match list with
   | [] -> failwith "can't print empty deck"
@@ -17,7 +15,6 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
   | [] -> failwith "empty iter list"
   | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
-
 
 let choices round = 
   if round = 1 then 
