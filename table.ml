@@ -82,7 +82,6 @@ let add_player table player =
 (** remove_player removes a player from the table. 
     [table] is a valid table
     [player_name] is a valid player's name *)
-
 let remove_player table player_name =
   let players_list = table.players in 
   let updated_players = List.filter (fun x -> x.name <> player_name ) players_list in 
@@ -120,7 +119,6 @@ let next_br_prep table =
   let folded = List.filter (fun x -> x.position = Some Folded) 
       table.players in table.out_players <- folded
 
-
 (* let match_pos table x = 
    match x.position with
    | Some Dealer | Some BB | Some LB | Some Folded -> None
@@ -145,8 +143,3 @@ let next_round_prep table =
   table.river <- [];
   Bet.clear table.pot; 
   table.round_num <- table.round_num + 1;
-
-
-
-
-

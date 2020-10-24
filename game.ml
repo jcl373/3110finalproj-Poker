@@ -68,9 +68,10 @@ let compare_pairs pair1 pair2 =
                  else if a > x then -1 
                  else if x > a then 1 
                  else 0) end end
+
 (*helper for check_straght and check_straight_flush,
-helps for getting rank with n_of_list
-this is just for documentation purposes, edit this later *)
+  helps for getting rank with n_of_list
+  this is just for documentation purposes, edit this later *)
 let get_rank_helper (sorted: Deck.card list) (num: int) = 
   num |> n_of_list sorted |> extract_value |> getRank
 
@@ -119,7 +120,8 @@ let check41_32_221_2111 x h =
 
 let evaluate_hand (h : Deck.card array) : result =
   let histogram = create_histogram h in
-  check41_32_221_2111 histogram h 
+  check41_32_221_2111 histogram h
+
 (*helper to factor out duplicated code below, if for some reason you didn't want it
   like this change it back -Abhi *)
 let compare_hands_helper (hand: result) =

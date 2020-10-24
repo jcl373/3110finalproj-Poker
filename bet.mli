@@ -3,7 +3,6 @@
     This can change depending on the instance of the game and round. *)
 type bag = int ref
 
-
 (** [pot] represents the pot of money that has been wagered by all players 
     This can change depending on the instance of the game and round. *)
 type pot = int ref
@@ -22,7 +21,6 @@ exception InvalidResponse
 
 exception InvalidWager
 
-
 (** [amount] returns the amount of money in a given bag. *)
 val amount : bag -> int
 
@@ -39,7 +37,5 @@ val current_wager : choice -> int
 val wager : choice -> pot -> bag -> int -> int -> unit
 
 val max_wager : choice -> int -> bool
-
-(*val win_pot : Table.person -> pot -> unit*)
 
 val clear : pot -> unit

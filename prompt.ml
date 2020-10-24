@@ -1,4 +1,3 @@
-
 exception InvalidResponse
 
 let bot_choice (p : Table.person) max_wager : Bet.choice =

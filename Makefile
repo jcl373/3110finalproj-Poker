@@ -17,7 +17,3 @@ test:
 
 play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
-
-
-
-
