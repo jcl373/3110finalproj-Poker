@@ -72,13 +72,8 @@ let start_game name =
     choices 2;
 
     (* turn *)
-<<<<<<< HEAD
-    Table.add_commcard gametable gamedeck; 
-    print_endline ("The community cards are the " ^ print_card_list gametable.river);
-=======
     Table.add_commcard gametable gamedeck;
     print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
->>>>>>> dc2d97d975014ca14a5b550eb08c07eb01ee35bf
     max_wager := 0;
 
     (* Request choices *)
