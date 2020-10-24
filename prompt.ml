@@ -65,7 +65,7 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
             begin 
               print_endline "What is your choice?";
               print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
-              print_string "Choose between: 'Fold', 'Bet x', 'Raise x', or 'AllIn' ";
+              print_string "Choose between: 'Fold', 'Bet x', or 'AllIn' ";
               print_endline "where x is an amount that you would like to bet.";
               print_string "> ";
             end

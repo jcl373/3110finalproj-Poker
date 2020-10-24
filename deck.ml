@@ -42,6 +42,7 @@ let pop (d : deck) : 'a = let first = !d.(0) in
 (* [shuffle d] randomizes the deck [d] using the Knuth shuffle a
    lgorithm before returning the shuffled deck. *)
 let shuffle (d : deck) = 
+  Random.self_init ();
   let swap index1 index2 =
     let temp = Array.get !d index1 in
     Array.set !d index1 (Array.get !d index2);
