@@ -54,7 +54,6 @@ let rec request_choice max_wager (gametable : Table.table) (p : Table.person) : 
   if List.length gametable.in_players = 1 then () else
   if (p.name = "Bot 1" || p.name = "Bot 2" || p.name = "Bot 3" || p.name = "Bot 4" || p.name = "Bot 5")
   then let bot_bet = bot_choice p max_wager in
-    let bet_check = Bet.check_wager bot_bet !max_wager in
     if bot_bet = Fold 
     then (p.position <- Some Folded; Table.next_br_prep gametable)
     else
