@@ -177,9 +177,15 @@ let evaluate_hands (hole : Deck.card array) (community : Deck.card array) =
   | [] -> failwith("empty")
   | h :: _ -> h
 
+let sorted_pairs (p : (Table.person * result) list) =
+  let sort_pair p1 p2 =
+    compare_hands (snd p1) (snd p2) in
+  List.sort sort_pair p
+
+
 let evaluate_table (table : Table.table) : Table.person =
   let rec pairs (list : Table.person list) =
     match list with
     | [] -> []
     | h :: t -> (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] (Array.of_list table.river)) :: pairs t in
-  table.players |> pairs |> h_of_list |> extract_value |> fst
+  table.players |> pairs |> sorted_pairs |> h_of_list |> extract_value |> fst

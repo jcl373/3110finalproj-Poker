@@ -1,0 +1,8 @@
+How to play:
+1) Place the source code in a directory and open VS code in it.
+2) Run 'make play' in the terminal
+3) Wait for the game to finish building
+4) Type in your name when requested and play the game of poker
+5) You will be prompted for possible inputs to use
+6) After the winner is selected you can continue onto another round or end there
+7) If there are <2 players, the game will automatically end
