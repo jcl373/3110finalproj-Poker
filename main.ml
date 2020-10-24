@@ -5,8 +5,6 @@ let gamedeck = Deck.create
 let max_wager = ref 0
 let dealer_index = ref 0
 
-
-
 let rec print_card_list list : string =
   match list with
   | [] -> failwith "can't print empty deck"
@@ -17,7 +15,6 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
   | [] -> failwith "empty iter list"
   | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
-
 
 let choices round = 
   if round = 1 then 
@@ -43,7 +40,6 @@ let start_game name =
   Table.add_player gametable player;
 
   (* Pick random dealer *)
-  Random.init (int_of_float (Unix.gettimeofday ()));
   Table.choose_dealer gametable;
 
   let rec round i =
@@ -60,7 +56,7 @@ let start_game name =
     print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
     print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
-    Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
+    Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (snd gametable.blinds) !max_wager;
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
@@ -69,15 +65,20 @@ let start_game name =
 
     (* flop *)
     Table.init_commcard gametable gamedeck; 
-    print_endline ("The community cards are the " ^ print_card_list gametable.river);
+    print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
     max_wager := 0;
 
     (* Request choices *)
     choices 2;
 
     (* turn *)
+<<<<<<< HEAD
     Table.add_commcard gametable gamedeck; 
     print_endline ("The community cards are the " ^ print_card_list gametable.river);
+=======
+    Table.add_commcard gametable gamedeck;
+    print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
+>>>>>>> dc2d97d975014ca14a5b550eb08c07eb01ee35bf
     max_wager := 0;
 
     (* Request choices *)
@@ -85,7 +86,7 @@ let start_game name =
 
     (* river *)
     Table.add_commcard gametable gamedeck; 
-    print_endline ("The community cards are the " ^ print_card_list gametable.river);
+    print_endline ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot));
     max_wager := 0;
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
