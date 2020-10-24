@@ -76,7 +76,7 @@ let start_game name =
     choices 2;
 
     (* turn *)
-    Table.add_commcard gametable gamedeck;
+    Table.add_commcard gametable gamedeck; 
     print_endline ("The community cards are the " ^ print_card_list gametable.river);
     max_wager := 0;
 
