@@ -98,8 +98,8 @@ let start_game name =
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
     (* set winner *)
-    let winner : Table.person = Game.evaluate_table gametable in
-    Table.winner winner gametable gamedeck round i;
+    let win_list : Table.person = Game.evaluate_table gametable in
+    Table.winner win_list gametable gamedeck round i;
   in
   round 0
 

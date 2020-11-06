@@ -78,6 +78,14 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
                 print_endline "where x is an amount that you would like to bet.";
                 print_string "> ";
               end
+            else if !max_wager >= !(p.chips) then
+              begin
+                print_endline "What is your choice?";
+                print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
+                print_endline ("You have "^ string_of_int !(p.chips) ^ " chips.");
+                print_string "Choose between: 'Fold' or 'AllIn' ";
+                print_string "> ";
+              end
             else 
               begin
                 print_endline "What is your choice?";
@@ -110,3 +118,5 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
 
 
 
+(** need something to keep track of how much each person bets... will help with
+    side pots AND betting*)

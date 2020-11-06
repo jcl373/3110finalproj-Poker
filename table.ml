@@ -71,6 +71,7 @@ type table = {mutable pot : Bet.pot;
               mutable side_pots : (int * person list) list;
              }
 
+
 let new_player nm c1 c2 start_amt =
   {name = nm ; hand = (c1, c2); chips = Bet.add (Bet.empty_bag ()) start_amt;
    position = None}
@@ -130,9 +131,41 @@ let next_br_prep table  =
   let folded = List.filter (fun x -> x.position = Some Folded) 
       table.in_players in table.out_players <- folded
 
+let compare_bags p1 p2 =
+  if !(p1.chips) > !(p2.chips) then -1
+  else if !(p1.chips) < !(p2.chips) then 1
+  else 0
 
+(*wIP*)
+
+let rec updt_players table list amt =
+  match list with 
+  | [] -> ()
+  | h :: t -> h.chips <- !(h.chips) - amt;
+
+
+;;
+
+(*wIP*)
+
+let rec create_side_pots table list =
+  let ct_players_in = List.length table.in_players in 
+  match list with
+  | [] ->  ()
+  | h :: t -> 
+    let sp = !(h.chips)*ct_players_in in
+    table.side_pots <- 
+      (sp, list) :: table.side_pots;
+    table.pot <- !(table.pot) - sp;
+
+;;
+
+
+(*wIP*)
 let side_pots_prep table round =
-  let allin = List.filter (fun x -> x.position = Some (AllIn round)) table.in_players in 
+  let allin = List.filter (fun x -> x.position = Some (AllIn round)) 
+      table.in_players in 
+  let allin_dec = List.sort compare_bags allin in 
   table.side_pots <- (!(table.pot), allin) :: table.side_pots;
   table.pot <- Bet.empty_pot ()
 
@@ -211,6 +244,7 @@ let winner winner gametable gamedeck f i=
   end_prompt 1 f i;
   reset_hand gametable.players
 
+(*wIP*)
 let rec elig_pots gametable player acc=
   let sidepots = gametable.side_pots in
   match sidepots with
@@ -221,14 +255,14 @@ let rec elig_pots gametable player acc=
 
 ;;
 
-(* FInishing this *)
-let winning_player win_list gametable gamedeck f i =
-  let win_p = win_list |> h_of_list |> extract_value |> fst in
-  match win_p.position with
-  | Some (AllIn x) -> elig_pots gametable win_p 0
-  | _ -> failwith "TODO"
-(* | _ -> winner win_p gametable gamedeck f i  *)
-
+(* FInishing this(*wIP*)
+   let winning_player win_list gametable gamedeck f i =
+   let win_p = win_list |> h_of_list |> extract_value |> fst in
+   match win_p.position with
+   | Some (AllIn x) -> elig_pots gametable win_p 0
+   | _ -> win_p
+   (* | _ -> winner win_p gametable gamedeck f i  *)
+*)
 
 
 let last_one_wins table gamedeck round i=
