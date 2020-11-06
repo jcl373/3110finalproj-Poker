@@ -24,10 +24,10 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
 let choices round = 
   if round = 1 then 
     let startpos = (!dealer_index + 3) mod (List.length gametable.in_players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable) gametable.players
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players
   else 
     let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable) gametable.in_players
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.in_players
 
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
@@ -66,8 +66,8 @@ let start_game name =
 
     (* Request choices *)
     choices 1;
-    (* Table.next_br_prep gametable; *)
     Table.last_one_wins gametable gamedeck round i;
+    Table.side_pots_prep gametable 1;
 
     (* flop *)
     Table.init_commcard gametable gamedeck; 
@@ -76,9 +76,9 @@ let start_game name =
 
     (* Request choices *)
     choices 2;
-    (* Table.next_br_prep gametable; *)
-    Table.last_one_wins gametable gamedeck round i;
 
+    Table.last_one_wins gametable gamedeck round i;
+    Table.side_pots_prep gametable 2;
 
     (* turn *)
     Table.add_commcard gametable gamedeck;
@@ -88,7 +88,7 @@ let start_game name =
     (* Request choices *)
     choices 3;
     Table.last_one_wins gametable gamedeck round i;
-    (* Table.next_br_prep gametable; *)
+    Table.side_pots_prep gametable 3;
 
     (* river *)
     Table.add_commcard gametable gamedeck; 

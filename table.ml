@@ -4,6 +4,7 @@ type pos =
   | LB
   | Folded
   | Leave
+  | AllIn of int
 
 exception Empty
 
@@ -59,14 +60,15 @@ type person = {name : string;
                mutable position : pos option
               } 
 
-type table = {pot : Bet.pot; 
+type table = {mutable pot : Bet.pot; 
               blinds: int * int; 
               mutable river: Deck.card list; 
               mutable players : person list; 
               mutable in_players : person list;
               mutable out_players : person list;
               mutable dealer : person option; 
-              mutable round_num : int
+              mutable round_num : int; 
+              mutable side_pots : (int * person list) list;
              }
 
 let new_player nm c1 c2 start_amt =
@@ -75,7 +77,8 @@ let new_player nm c1 c2 start_amt =
 
 let empty_table small_blind big_blind = 
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
-   river = []; players = []; in_players = []; out_players = []; dealer = None; round_num = 1} 
+   river = []; players = []; in_players = []; out_players = []; 
+   dealer = None; round_num = 1; side_pots = []} 
 
 let set_hand (p : person) c1 c2 : unit =
   p.hand <- (c1, c2)
@@ -121,11 +124,18 @@ let choose_dealer table =
   table.dealer <- Some dealer;
   table.in_players <- table.players
 
-let next_br_prep table = 
+let next_br_prep table  = 
   let no_folds = List.filter (fun x -> x.position <> Some Folded) 
       table.in_players in table.in_players <- no_folds;
   let folded = List.filter (fun x -> x.position = Some Folded) 
       table.in_players in table.out_players <- folded
+
+
+let side_pots_prep table round =
+  let allin = List.filter (fun x -> x.position = Some (AllIn round)) table.in_players in 
+  table.side_pots <- (!(table.pot), allin) :: table.side_pots;
+  table.pot <- Bet.empty_pot ()
+
 
 (* let match_pos table x = 
    match x.position with
@@ -179,7 +189,11 @@ let min_players gametable f i =
   end
   else end_prompt 1 f i
 
+
+
 let winner winner gametable gamedeck f i= 
+  (* let winner = win_list |> h_of_list |> extract_value |> fst in  *)
+
   ANSITerminal.(print_string [yellow] ("The winner is " ^ winner.name ^ ".\n" ^ "The winning hand is")); 
   ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));  (* TODO : make it say what their hand is *)
   winner.chips := !(winner.chips) + !(gametable.pot);
@@ -196,6 +210,24 @@ let winner winner gametable gamedeck f i=
   min_players gametable f i;
   end_prompt 1 f i;
   reset_hand gametable.players
+
+let rec elig_pots gametable player acc=
+  let sidepots = gametable.side_pots in
+  match sidepots with
+  | [] -> acc
+  | h :: t -> if List.exists (fun x -> x = player) (snd h) 
+    then elig_pots gametable player (fst h + acc)
+    else elig_pots gametable player acc
+
+;;
+
+(* FInishing this *)
+let winning_player win_list gametable gamedeck f i =
+  let win_p = win_list |> h_of_list |> extract_value |> fst in
+  match win_p.position with
+  | Some (AllIn x) -> elig_pots gametable win_p 0
+  | _ -> failwith "TODO"
+(* | _ -> winner win_p gametable gamedeck f i  *)
 
 
 

@@ -214,9 +214,10 @@ let sorted_pairs (p : (Table.person * result) list) =
   List.sort sort_pair p
 
 
-let evaluate_table (table : Table.table) : Table.person =
+let evaluate_table (table : Table.table)  =
   let rec pairs (list : Table.person list) =
     match list with
     | [] -> []
     | h :: t -> (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] (Array.of_list table.river)) :: pairs t in
-  table.in_players |> pairs |> sorted_pairs |> h_of_list |> extract_value |> fst
+  table.in_players |> pairs |> sorted_pairs 
+(* |> h_of_list |> extract_value |> fst *)

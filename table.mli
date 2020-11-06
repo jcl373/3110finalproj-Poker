@@ -4,6 +4,7 @@ type pos =
   | LB
   | Folded
   | Leave
+  | AllIn of int
 
 exception InvalidResponse
 
@@ -12,10 +13,12 @@ exception InvalidResponse
 type person = {name : string; mutable hand: Deck.card * Deck.card; 
                chips : int ref; mutable position : pos option } 
 
-type table = {pot : int ref ; blinds: int * int; mutable river: Deck.card list; 
+type table = {mutable pot : int ref ; blinds: int * int; 
+              mutable river: Deck.card list; 
               mutable players : person list; mutable in_players : person list; 
               mutable out_players : person list;
-              mutable dealer : person option; mutable round_num : int}
+              mutable dealer : person option; mutable round_num : int;
+              mutable side_pots : (int * person list) list;}
 
 val empty_table : int -> int -> table 
 
@@ -30,6 +33,8 @@ val choose_dealer : table -> unit
 val next_round_prep : table -> unit
 
 val next_br_prep : table -> unit
+
+val side_pots_prep : table -> int -> unit
 
 val find_list : 'a list -> 'a -> int option
 
