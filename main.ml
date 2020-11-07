@@ -36,6 +36,23 @@ let choices round =
 let create_bot name start_amt =
   Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt)
 
+let six_locations = [|(360,250);(175,275);(175,445);(360,470);(545,445);(545,275)|]
+
+let draw_player (x : int) (y : int) (p : Table.person) =
+  set_color (rgb 70 70 70);
+  fill_rect (x-40) (y-25) 80 50;
+  moveto (x-35) (y+10);
+  set_text_size 25;
+  set_color white;
+  draw_string p.name;
+  moveto (x-35) (y-5);
+  draw_string (string_of_int !(p.chips))
+
+let rec draw_players (players : Table.person list) (i : int) =
+  match players with
+  | [] -> ()
+  | h :: t -> draw_player (fst six_locations.(i)) (snd six_locations.(i)) h; draw_players t (i+1)
+
 let start_game name =
   (* Fill table with 5 bots + the player *)
   create_bot "Bot 5" 100;
@@ -45,6 +62,8 @@ let start_game name =
   create_bot "Bot 1" 100; 
   let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100) in
   Table.add_player gametable player;
+
+  draw_players gametable.players 0;
 
   (* Pick random dealer *)
   Table.choose_dealer gametable;
@@ -108,6 +127,10 @@ let start_game name =
 (** [main ()] starts the game *)
 let main () =
   open_graph "localhost:0.0 720x720";
+  set_color (rgb 68 125 35);
+  fill_rect 235 235 250 250;
+  fill_circle 235 360 125;
+  fill_circle 485 360 125;
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to the poker game.\n");
   print_endline "Please enter your name.\n";
