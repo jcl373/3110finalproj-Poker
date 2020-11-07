@@ -174,7 +174,7 @@ let rec end_prompt x f i  =
   print_string "> ";
   try 
     match read_line () with
-    | "No" | "no" -> print_endline "Thanks for playing!"; exit 0
+    | "No" | "no" -> print_endline "Thanks for playing!"; Graphics.close_graph (); exit 0
     | "Yes" | "yes" -> f (i+1)
     | _ -> raise (InvalidResponse)
   with 

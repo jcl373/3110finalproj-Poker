@@ -1,3 +1,5 @@
+open Graphics
+
 exception InvalidResponse
 
 let gametable = Table.empty_table 5 10
@@ -105,6 +107,7 @@ let start_game name =
 
 (** [main ()] starts the game *)
 let main () =
+  open_graph "localhost:0.0 720x720";
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to the poker game.\n");
   print_endline "Please enter your name.\n";

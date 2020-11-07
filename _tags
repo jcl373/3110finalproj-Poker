@@ -1,1 +1,1 @@
-true: package(ounit2),package(ANSITerminal), package(bisect_ppx)
+true: package(ounit2),package(ANSITerminal), package(bisect_ppx), package(graphics)

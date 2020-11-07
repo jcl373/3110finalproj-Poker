@@ -1,8 +1,17 @@
 How to play:
-1) Place the source code in a directory and open VS code in it.
-2) Run 'make play' in the terminal
-3) Wait for the game to finish building
-4) Type in your name when requested and play the game of poker
-5) You will be prompted for possible inputs to use
-6) After the winner is selected you can continue onto another round or end there
-7) If there are <2 players, the game will automatically end
+1) Install VcXsvr
+  i. Go to https://sourceforge.net/projects/vcxsrv/
+  ii. Download it and install it.
+  iii. While installing just press next until you can press finish.
+  iv. Run the application XLaunch
+2) Install OCaml graphics
+  i. Run the command "opam install graphics"
+  ii. If you are prompted about pkg-config try running "opam depext -i graphics"
+  iii. Type Y when prompted and enter your password.
+3) Place the source code in a directory and open VS code in it.
+4) Run 'make play' in the terminal
+5) Wait for the game to finish building
+6) Type in your name when requested and play the game of poker
+7) You will be prompted for possible inputs to use
+8) After the winner is selected you can continue onto another round or end there
+9) If there are <2 players, the game will automatically end
