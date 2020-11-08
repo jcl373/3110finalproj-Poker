@@ -38,11 +38,37 @@ let create_bot name start_amt =
 
 let six_locations = [|(360,250);(175,275);(175,445);(360,470);(545,445);(545,275)|]
 
+let draw_table () =
+  set_color (rgb 68 125 35);
+  fill_rect 235 235 250 250;
+  fill_circle 235 360 125;
+  fill_circle 485 360 125
+
+let draw_table_cards (t : Table.table) =
+  let rec cards (c : Deck.card list) (i : int) =
+    match c with
+    | [] -> ()
+    | h :: t -> begin 
+        set_color white;
+        fill_rect (245 + i * 48) 330 38 60;
+        if h.suit = 'C' || h.suit = 'S' then set_color black else set_color red;
+        moveto (250 + i * 48) 375;
+        (match h.rank with
+         | 1 -> draw_string "A"
+         | 11 -> draw_string "J"
+         | 12 -> draw_string "Q"
+         | 13 -> draw_string "K"
+         | n -> draw_string (string_of_int n));
+        moveto (250 + i * 48) 345;
+        draw_string (Char.escaped h.suit);
+        cards t (i+1);
+      end in
+  cards t.river 0
+
 let draw_player (x : int) (y : int) (p : Table.person) =
   set_color (rgb 70 70 70);
   fill_rect (x-40) (y-25) 80 50;
   moveto (x-35) (y+10);
-  set_text_size 25;
   set_color white;
   draw_string p.name;
   moveto (x-35) (y-5);
@@ -94,6 +120,7 @@ let start_game name =
     Table.init_commcard gametable gamedeck; 
     ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
+    draw_table_cards gametable;
 
     (* Request choices *)
     choices 2;
@@ -105,6 +132,7 @@ let start_game name =
     Table.add_commcard gametable gamedeck;
     ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
+    draw_table_cards gametable;
 
     (* Request choices *)
     choices 3;
@@ -115,6 +143,7 @@ let start_game name =
     Table.add_commcard gametable gamedeck; 
     ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
+    draw_table_cards gametable;
 
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
@@ -127,10 +156,8 @@ let start_game name =
 (** [main ()] starts the game *)
 let main () =
   open_graph "localhost:0.0 720x720";
-  set_color (rgb 68 125 35);
-  fill_rect 235 235 250 250;
-  fill_circle 235 360 125;
-  fill_circle 485 360 125;
+  draw_table ();
+
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to the poker game.\n");
   print_endline "Please enter your name.\n";
