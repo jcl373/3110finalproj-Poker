@@ -44,26 +44,34 @@ let draw_table () =
   fill_circle 235 360 125;
   fill_circle 485 360 125
 
+let draw_card (c : Deck.card) (x : int) (y : int) =
+  set_color white;
+  fill_rect x y 38 60;
+  if c.suit = 'C' || c.suit = 'S' then set_color black else set_color red;
+  moveto (x + 5) (y + 45);
+  (match c.rank with
+   | 1 -> draw_string "A"
+   | 11 -> draw_string "J"
+   | 12 -> draw_string "Q"
+   | 13 -> draw_string "K"
+   | n -> draw_string (string_of_int n));
+  moveto (x + 5) (y + 15);
+  draw_string (Char.escaped c.suit)
+
 let draw_table_cards (t : Table.table) =
   let rec cards (c : Deck.card list) (i : int) =
     match c with
     | [] -> ()
     | h :: t -> begin 
-        set_color white;
-        fill_rect (245 + i * 48) 330 38 60;
-        if h.suit = 'C' || h.suit = 'S' then set_color black else set_color red;
-        moveto (250 + i * 48) 375;
-        (match h.rank with
-         | 1 -> draw_string "A"
-         | 11 -> draw_string "J"
-         | 12 -> draw_string "Q"
-         | 13 -> draw_string "K"
-         | n -> draw_string (string_of_int n));
-        moveto (250 + i * 48) 345;
-        draw_string (Char.escaped h.suit);
+        draw_card h (245 + i * 48) 330;
         cards t (i+1);
       end in
   cards t.river 0
+
+let draw_player_cards (p : Table.person) =
+  set_color white;
+  draw_card (fst p.hand) 409 240;
+  draw_card (snd p.hand) (409 + 48) 240
 
 let draw_player (x : int) (y : int) (p : Table.person) =
   set_color (rgb 70 70 70);
@@ -97,6 +105,7 @@ let start_game name =
   let rec round i =
     (* Print cards in hole *)
     print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
+    draw_player_cards (player);
 
     (* Dealer / advance round *)    
     if i = 0 then () 
