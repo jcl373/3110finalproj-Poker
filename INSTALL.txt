@@ -1,9 +1,16 @@
 How to play:
-1) Install VcXsvr
+FOR Windows:
+1) Install VcXsvr 
   i. Go to https://sourceforge.net/projects/vcxsrv/
   ii. Download it and install it.
   iii. While installing just press next until you can press finish.
   iv. Run the application XLaunch
+Proceed to step 2 below
+FOR Mac:
+1) Install XQuartz from 
+  i. Go to https://www.xquartz.org/
+  ii. Download it and install it.
+  iii. Run XQuartz from the Utilities Folder.
 2) Install OCaml graphics
   i. Run the command "opam install graphics"
   ii. If you are prompted about pkg-config try running "opam depext -i graphics"

@@ -164,7 +164,7 @@ let start_game name =
 
 (** [main ()] starts the game *)
 let main () =
-  open_graph "localhost:0.0 720x720";
+  open_graph " 720x720";
   draw_table ();
 
   ANSITerminal.(print_string [red]
