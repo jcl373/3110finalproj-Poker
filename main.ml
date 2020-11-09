@@ -164,6 +164,10 @@ let start_game name =
 
 (** [main ()] starts the game *)
 let main () =
+  (* FOR WINDOWS USERS *)
+  (*open_graph "localhost:0.0 720x720";*)
+
+  (* FOR MAC USERS *)
   open_graph " 720x720";
   draw_table ();
 
