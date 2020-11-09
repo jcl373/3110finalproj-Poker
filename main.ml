@@ -33,8 +33,8 @@ let choices round =
 
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
-let create_bot name start_amt =
-  Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt)
+let create_bot name start_amt loc =
+  Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt loc)
 
 let six_locations = [|(360,250);(175,275);(175,445);(360,470);(545,445);(545,275)|]
 
@@ -73,7 +73,9 @@ let draw_player_cards (p : Table.person) =
   draw_card (fst p.hand) 409 240;
   draw_card (snd p.hand) (409 + 48) 240
 
-let draw_player (x : int) (y : int) (p : Table.person) =
+let draw_player (p : Table.person) =
+  let x = fst p.location in
+  let y = snd p.location in
   set_color (rgb 70 70 70);
   fill_rect (x-40) (y-25) 80 50;
   moveto (x-35) (y+10);
@@ -85,16 +87,16 @@ let draw_player (x : int) (y : int) (p : Table.person) =
 let rec draw_players (players : Table.person list) (i : int) =
   match players with
   | [] -> ()
-  | h :: t -> draw_player (fst six_locations.(i)) (snd six_locations.(i)) h; draw_players t (i+1)
+  | h :: t -> draw_player h; draw_players t (i+1)
 
 let start_game name =
   (* Fill table with 5 bots + the player *)
-  create_bot "Bot 5" 100;
-  create_bot "Bot 4" 100;
-  create_bot "Bot 3" 100;
-  create_bot "Bot 2" 100;
-  create_bot "Bot 1" 100; 
-  let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100) in
+  create_bot "Bot 5" 100 six_locations.(5);
+  create_bot "Bot 4" 100 six_locations.(4);
+  create_bot "Bot 3" 100 six_locations.(3);
+  create_bot "Bot 2" 100 six_locations.(2);
+  create_bot "Bot 1" 100 six_locations.(1); 
+  let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100 six_locations.(0)) in
   Table.add_player gametable player;
 
   draw_players gametable.players 0;
@@ -165,10 +167,10 @@ let start_game name =
 (** [main ()] starts the game *)
 let main () =
   (* FOR WINDOWS USERS *)
-  (*open_graph "localhost:0.0 720x720";*)
+  open_graph "localhost:0.0 720x720";
 
   (* FOR MAC USERS *)
-  open_graph " 720x720";
+  (*open_graph " 720x720";*)
   draw_table ();
 
   ANSITerminal.(print_string [red]

@@ -57,7 +57,8 @@ let extract_value = function
 type person = {name : string; 
                mutable hand : Deck.card * Deck.card; 
                chips : Bet.bag; 
-               mutable position : pos option
+               mutable position : pos option;
+               location : int * int
               } 
 
 type table = {mutable pot : Bet.pot; 
@@ -71,9 +72,9 @@ type table = {mutable pot : Bet.pot;
               mutable side_pots : (int * person list) list;
              }
 
-let new_player nm c1 c2 start_amt =
+let new_player nm c1 c2 start_amt loc =
   {name = nm ; hand = (c1, c2); chips = Bet.add (Bet.empty_bag ()) start_amt;
-   position = None}
+   position = None; location = loc}
 
 let empty_table small_blind big_blind = 
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
