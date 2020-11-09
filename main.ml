@@ -73,21 +73,18 @@ let draw_player_cards (p : Table.person) =
   draw_card (fst p.hand) 409 240;
   draw_card (snd p.hand) (409 + 48) 240
 
-let draw_player (p : Table.person) =
-  let x = fst p.location in
-  let y = snd p.location in
-  set_color (rgb 70 70 70);
-  fill_rect (x-40) (y-25) 80 50;
-  moveto (x-35) (y+10);
-  set_color white;
-  draw_string p.name;
-  moveto (x-35) (y-5);
-  draw_string (string_of_int !(p.chips))
+let draw_dealer (p : Table.person) =
+  Prompt.draw_player p;
+  set_color (rgb 200 200 200);
+  fill_rect (fst (p.location) - 40) (snd (p.location) + 25) 80 15;
+  moveto (fst (p.location) - 35) (snd (p.location) + 25);
+  set_color black;
+  draw_string "Dealer"
 
 let rec draw_players (players : Table.person list) (i : int) =
   match players with
   | [] -> ()
-  | h :: t -> draw_player h; draw_players t (i+1)
+  | h :: t -> Prompt.draw_player h; draw_players t (i+1)
 
 let start_game name =
   (* Fill table with 5 bots + the player *)
@@ -99,12 +96,15 @@ let start_game name =
   let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100 six_locations.(0)) in
   Table.add_player gametable player;
 
-  draw_players gametable.players 0;
-
   (* Pick random dealer *)
   Table.choose_dealer gametable;
 
   let rec round i =
+    set_color white;
+    draw_rect 0 0 750 750;
+    draw_table ();
+    draw_players gametable.players 0;
+
     (* Print cards in hole *)
     print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
     draw_player_cards (player);
@@ -113,17 +113,27 @@ let start_game name =
     if i = 0 then () 
     else Table.next_round_prep gametable;
     dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
+    draw_dealer (Table.extract_value gametable.dealer);
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
+    Unix.sleepf 2.;
 
     (* Blind bets *)
-    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
-    print_endline ((Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
-    Bet.wager (Bet (fst gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players))).chips (fst gametable.blinds) !max_wager;
+    let sb = Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players)) in
+    print_endline (sb.name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
+    Bet.wager (Bet (fst gametable.blinds)) gametable.pot sb.chips (fst gametable.blinds) !max_wager;
+    Prompt.draw_player sb; set_color yellow; moveto ((fst sb.location)-35) ((snd sb.location)-20); draw_string ("Blind bet " ^ string_of_int (fst gametable.blinds));
+    Unix.sleepf 2.;
+
+    let bb = Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players)) in
+    print_endline (bb.name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (snd gametable.blinds) !max_wager;
+    Prompt.draw_player bb; set_color yellow; moveto ((fst bb.location)-35) ((snd bb.location)-20); draw_string ("Blind bet " ^ string_of_int (snd gametable.blinds));
+    Unix.sleepf 2.;
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
     choices 1;
+    Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 1;
 
@@ -132,10 +142,12 @@ let start_game name =
     ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
     draw_table_cards gametable;
+    draw_players gametable.players 0;
+
 
     (* Request choices *)
     choices 2;
-
+    Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 2;
 
@@ -144,9 +156,11 @@ let start_game name =
     ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
     draw_table_cards gametable;
+    draw_players gametable.players 0;
 
     (* Request choices *)
     choices 3;
+    Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 3;
 
@@ -155,12 +169,15 @@ let start_game name =
     ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
     max_wager := 0;
     draw_table_cards gametable;
+    draw_players gametable.players 0;
 
     (* Also goes to zero, max_wager. Shouldnt have effect. *)
 
     (* set winner *)
     let winner : Table.person = Game.evaluate_table gametable in
     Table.winner winner gametable gamedeck round i;
+
+    (* TODO: fix betting,allin,etc *)
   in
   round 0
 
@@ -171,7 +188,6 @@ let main () =
 
   (* FOR MAC USERS *)
   (*open_graph " 720x720";*)
-  draw_table ();
 
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to the poker game.\n");
