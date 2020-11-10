@@ -81,6 +81,14 @@ let draw_dealer (p : Table.person) =
   set_color black;
   draw_string "Dealer"
 
+let draw_winner (p : Table.person) =
+  Prompt.draw_player p;
+  set_color yellow;
+  fill_rect (fst (p.location) - 40) (snd (p.location) + 25) 80 15;
+  moveto (fst (p.location) - 35) (snd (p.location) + 25);
+  set_color black;
+  draw_string "Winner"
+
 let rec draw_players (players : Table.person list) (i : int) =
   match players with
   | [] -> ()
@@ -122,12 +130,14 @@ let start_game name =
     print_endline (sb.name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
     Bet.wager (Bet (fst gametable.blinds)) gametable.pot sb.chips (fst gametable.blinds) !max_wager;
     Prompt.draw_player sb; set_color yellow; moveto ((fst sb.location)-35) ((snd sb.location)-20); draw_string ("Blind bet " ^ string_of_int (fst gametable.blinds));
+    Prompt.draw_pot gametable;
     Unix.sleepf 2.;
 
     let bb = Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players)) in
     print_endline (bb.name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     Bet.wager (Bet (snd gametable.blinds)) gametable.pot (Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players))).chips (snd gametable.blinds) !max_wager;
     Prompt.draw_player bb; set_color yellow; moveto ((fst bb.location)-35) ((snd bb.location)-20); draw_string ("Blind bet " ^ string_of_int (snd gametable.blinds));
+    Prompt.draw_pot gametable;
     Unix.sleepf 2.;
     max_wager := snd gametable.blinds;
 
@@ -175,9 +185,10 @@ let start_game name =
 
     (* set winner *)
     let winner : Table.person = Game.evaluate_table gametable in
+    draw_winner winner;
     Table.winner winner gametable gamedeck round i;
 
-    (* TODO: fix betting,allin,etc *)
+    (* TODO: side pots; allin not working; gui input; pot not preserving between rounds*)
   in
   round 0
 

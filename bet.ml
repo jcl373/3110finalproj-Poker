@@ -52,7 +52,7 @@ let check_wager (opt: choice) (current_bet: int) =
   match opt with
   | Check -> true
   | Fold -> true
-  | Bet x | Call x -> if x > current_bet then false else true
+  | Bet x | Call x -> if x >= current_bet then true else false
   | Raise x -> if x <= current_bet || current_bet = 0 then false else true
   | AllIn x -> true
 
