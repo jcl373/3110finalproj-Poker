@@ -49,6 +49,15 @@ let parse str (p : Table.person) max_wager : Bet.choice =
       else raise(Bet.InvalidResponse) 
     end 
 
+let player_bet_updt (gametable : Table.table) max_wager bet_check (p : Table.person) player_bet =
+  if bet_check = false || (Bet.max_wager player_bet !(p.chips) = false) 
+  then raise(Bet.InvalidWager) 
+  else if (Bet.current_wager player_bet > !max_wager) && (Bet.current_wager player_bet <= !(p.chips))
+  then max_wager := Bet.current_wager player_bet;
+  Bet.wager player_bet gametable.pot p.chips (Bet.current_wager player_bet) !max_wager;
+  print_choice player_bet p
+
+
 
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
   if List.length gametable.in_players = 1 then () else
@@ -101,13 +110,10 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
             match player_bet with
             | Fold -> p.position <- Some Folded; Table.next_br_prep gametable 
             | AllIn x -> p.position <- Some (AllIn round);
-            | _ ->
-              if bet_check = false || (Bet.max_wager player_bet !(p.chips) = false) 
-              then raise(Bet.InvalidWager) 
-              else if (Bet.current_wager player_bet > !max_wager) && (Bet.current_wager player_bet <= !(p.chips))
-              then max_wager := Bet.current_wager player_bet;
-              Bet.wager player_bet gametable.pot p.chips (Bet.current_wager player_bet) !max_wager;
-              print_choice player_bet p
+            | Raise x | Bet x -> gametable.current_bet <- Some p; 
+              player_bet_updt gametable max_wager bet_check p player_bet
+            | _ -> player_bet_updt gametable max_wager bet_check p player_bet
+
           end
         with 
         | Bet.InvalidResponse -> print_endline "Invalid Choice. Try again.";

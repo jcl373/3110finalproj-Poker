@@ -69,6 +69,8 @@ type table = {mutable pot : Bet.pot;
               mutable dealer : person option; 
               mutable round_num : int; 
               mutable side_pots : (int * person list) list;
+              mutable current_bet : person option;
+              mutable first_better : int;
              }
 
 
@@ -79,7 +81,8 @@ let new_player nm c1 c2 start_amt =
 let empty_table small_blind big_blind = 
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
    river = []; players = []; in_players = []; out_players = []; 
-   dealer = None; round_num = 1; side_pots = []} 
+   dealer = None; round_num = 1; side_pots = []; current_bet = None;
+   first_better = 0} 
 
 let set_hand (p : person) c1 c2 : unit =
   p.hand <- (c1, c2)
@@ -129,7 +132,8 @@ let next_br_prep table  =
   let no_folds = List.filter (fun x -> x.position <> Some Folded) 
       table.in_players in table.in_players <- no_folds;
   let folded = List.filter (fun x -> x.position = Some Folded) 
-      table.in_players in table.out_players <- folded
+      table.in_players in table.out_players <- folded;
+  table.current_bet <- None
 
 let compare_bags p1 p2 =
   if !(p1.chips) > !(p2.chips) then -1
@@ -141,7 +145,7 @@ let compare_bags p1 p2 =
 let rec updt_players table list amt =
   match list with 
   | [] -> ()
-  | h :: t -> h.chips <- !(h.chips) - amt;
+  | h :: t -> h.chips := !(h.chips) - amt
 
 
 ;;
@@ -156,7 +160,7 @@ let rec create_side_pots table list =
     let sp = !(h.chips)*ct_players_in in
     table.side_pots <- 
       (sp, list) :: table.side_pots;
-    table.pot <- !(table.pot) - sp;
+    table.pot := !(table.pot) - sp;
 
 ;;
 

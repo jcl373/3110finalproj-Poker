@@ -5,6 +5,29 @@ let gamedeck = Deck.create
 let max_wager = ref 0
 let dealer_index = ref 0
 
+(** [nth_of_list] returns the nth element of the list [lst]
+    Returns an option as the list may not contain that number 
+    [lst] is a valid list
+    [n] is an int; represents the nth element
+    [acc] is an int; the accumulator *)
+let rec nth_of_list lst n acc = 
+  match lst with
+  | [] -> None
+  | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
+
+(** [n_of_list] returns the first (head) element of the list [lst]
+    Returns an option as the list may not contain anything.
+    [lst] is a valid list*)
+let h_of_list lst =
+  nth_of_list lst 0 0
+
+(** [n_of_list] returns the nth element of the list [lst]
+    Returns an option as the list may not contain that number.
+    [lst] is a valid list
+    [n] is an int; represents the nth element *)
+let n_of_list lst n =
+  nth_of_list lst n 0
+
 let rec print_card_list list : string =
   match list with
   | [] -> failwith "can't print empty deck"
@@ -21,10 +44,21 @@ let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   | [] -> failwith "empty iter list"
   | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
 
-let choices round = 
+let rec return_up_to_in_list lst x acc length =
+  match lst with
+  | [] -> None
+  | h :: t -> if h = x then acc else return_up_to_in_list t x (acc + 1)
+
+let return_list lst x =
+  let length = List.length lst in
+  return_up_to_in_list lst x 0 length
+
+let choices (table : Table.table ) round = 
   if round = 1 then 
     let startpos = (!dealer_index + 3) mod (List.length gametable.in_players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
+    if table.current_bet != n_of_list gametable.in_players startpos then
+    else ()
   else 
     let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
     iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.in_players
@@ -65,7 +99,7 @@ let start_game name =
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
-    choices 1;
+    choices gametable 1;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 1;
 
@@ -75,7 +109,7 @@ let start_game name =
     max_wager := 0;
 
     (* Request choices *)
-    choices 2;
+    choices gametable 2;
 
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 2;
@@ -86,7 +120,7 @@ let start_game name =
     max_wager := 0;
 
     (* Request choices *)
-    choices 3;
+    choices gametable 3;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 3;
 
