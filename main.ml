@@ -6,6 +6,26 @@ let gametable = Table.empty_table 5 10
 let gamedeck = Deck.create
 let max_wager = ref 0
 let dealer_index = ref 0
+let max_name_len = 10
+
+let draw_box str =
+  set_color black;
+  fill_rect 200 350 320 20;
+  set_color white;
+  moveto 205 355;
+  draw_string ("> " ^ str);
+  if String.length str = max_name_len then begin moveto 455 355; set_color red; draw_string "Max length" end
+
+let name_input unit = 
+  let rec text_input str : string =
+    draw_box str;
+    let stat = wait_next_event (Key_pressed :: []) in
+    if stat.key = '\027' || stat.key = '\r' then str 
+    else if stat.key = '\b' then text_input (String.sub str 0 (String.length str - 1))
+    else if (String.length str >= max_name_len) then text_input str
+    else text_input (str ^ (Char.escaped stat.key))
+  in
+  text_input ""
 
 let rec print_card_list list : string =
   match list with
@@ -204,9 +224,18 @@ let main () =
                   "\n\nWelcome to the poker game.\n");
   print_endline "Please enter your name.\n";
   print_string  "> ";
-  match read_line () with
+
+  set_color (rgb 200 200 200);
+  fill_rect 200 350 320 55;
+  set_color black;
+  moveto 205 (355+35);
+  draw_string "Welcome to the poker game.";
+  moveto 205 (355+20);
+  draw_string "Please enter your name.";
+  start_game (name_input ())
+(*match read_line () with
   | exception End_of_file -> ()
-  | name -> start_game name
+  | name -> start_game name*)
 
 (* Execute the game engine. *)
 let () = main ()
