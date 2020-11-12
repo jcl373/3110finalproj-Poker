@@ -103,6 +103,68 @@ let bot_bet_opt max_wager (gametable : Table.table) (p : Table.person)
   draw_string (string_of_choice bot_bet p);
   print_choice bot_bet p
 
+let draw_bet_raise (hover : bool) (bet : bool) =
+  if hover then set_color (rgb 67 131 14) else set_color (rgb 87 175 13);
+  fill_rect (360-40+80+5) (250-25-50-5) 80 50;
+  set_color white;
+  moveto (360-40+80+10) (250-25-15-5);
+  if bet then draw_string "Bet" else draw_string "Raise"
+
+let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
+  if hover then set_color (rgb 188 153 0) else set_color (rgb 255 208 0);
+  fill_rect (360-40) (250-25-50-5) 80 50;
+  set_color white;
+  moveto (360-35) (250-25-15-5);
+  if check then draw_string "Check" else begin draw_string "Call"; moveto (360-35) (250-25-15-5-15); draw_string (string_of_int max_wager) end
+
+let draw_fold (hover : bool) =
+  if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
+  fill_rect (360-80-40-5) (250-25-50-5) 80 50;
+  set_color white;
+  moveto (360-80-40) (250-25-15-5);
+  draw_string "Fold"
+
+let erase_box unit =
+  set_color white;
+  fill_rect (360-80-40-5) (250-25-50-30) (80+80+5+5+80) 20
+
+let erase_options unit =
+  erase_box ();
+  fill_rect (360-80-40-5) (250-25-50-5) (80+80+80+5+5) (50)
+
+let draw_options (max_wager : int) =
+  erase_box ();
+  draw_bet_raise false false;
+  draw_call_check false false max_wager;
+  draw_fold false
+
+let rec text_hover (first : bool) (max_wager : int) : string =
+  let bet_input unit = 
+    let rec text_input str : string =
+      let draw_box str2 =
+        set_color black;
+        fill_rect (360-80-40-5) (250-25-50-30) (80+80+5+5+80) 20;
+        set_color white;
+        moveto (360-80-40) (250-25-50-25);
+        draw_string ("> " ^ str2) in
+      draw_box str;
+      let stat2 = wait_next_event (Key_pressed :: []) in
+      if stat2.key = '\027' then begin erase_box (); text_hover first max_wager end
+      else if stat2.key = '\r' then str 
+      else if stat2.key = '\b' then text_input (String.sub str 0 (String.length str - 1))
+      else if stat2.key = '0' || stat2.key = '1' || stat2.key = '2' || stat2.key = '3' || stat2.key = '4' || stat2.key = '5' || stat2.key = '6' || stat2.key = '7' || stat2.key = '8' || stat2.key = '9'
+      then text_input (str ^ (Char.escaped stat2.key))
+      else text_input str
+    in
+    text_input "" in
+  let stat = wait_next_event (Button_down :: Mouse_motion :: []) in
+  if stat.mouse_x > (360-80-40-5) && stat.mouse_x < (360-80-40-5+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin draw_fold true; if stat.button then "Fold" else text_hover first max_wager end
+  else if stat.mouse_x > (360-40) && stat.mouse_x < (360-40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin draw_call_check true first max_wager; if stat.button then begin if first then "Check" else "Call" end else text_hover first max_wager end
+  else if stat.mouse_x > (360-40+80+5) && stat.mouse_x < (360-40+80+5+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin draw_bet_raise true first; if stat.button then begin if first then "Bet" ^ bet_input () else "Raise " ^ bet_input () end else text_hover first max_wager end
+  else begin draw_options max_wager; text_hover first max_wager end
 
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
   if List.length gametable.in_players = 1 then () else
@@ -129,7 +191,7 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
       begin
         try
           begin 
-            if !max_wager = 0 then 
+            (*if !max_wager = 0 then 
               begin 
                 print_endline "What is your choice?";
                 print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
@@ -138,7 +200,7 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
                 print_endline "where x is an amount that you would like to bet.";
                 print_string "> ";
               end
-            else 
+              else 
               begin
                 print_endline "What is your choice?";
                 print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
@@ -147,7 +209,9 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
                 print_endline "where x is an amount that you would like to bet.";
                 print_string "> ";
               end;
-            let input = read_line () in 
+              let input = read_line () in *)
+            let input = if !max_wager = 0 then text_hover true !max_wager else text_hover false !max_wager in
+            erase_options ();
             let player_bet = parse input p max_wager in  
             let bet_check = Bet.check_wager player_bet !max_wager in
             match player_bet with
