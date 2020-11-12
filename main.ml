@@ -2,6 +2,8 @@ open Graphics
 
 exception InvalidResponse
 
+exception Empty
+
 let gametable = Table.empty_table 5 10
 let gamedeck = Deck.create
 let max_wager = ref 0
@@ -38,18 +40,43 @@ let rec print_list (list : Table.person list) : string =
   | [] -> ""
   | h :: t -> h.name^" " ^ print_list t
 
+
+
 let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
   | [] -> failwith "empty iter list"
   | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
 
-let choices round = 
+let rec find_in_list lst x acc =
+  match lst with
+  | [] -> None
+  | h :: t -> if h = x then Some acc else find_in_list t x (acc + 1)
+
+let find_list lst x =
+  find_in_list lst x 0
+
+let extract_value = function
+  | Some x -> x
+  | None -> raise Empty;;
+
+
+let choices round (table : Table.table) = 
   if round = 1 then 
     let startpos = (!dealer_index + 3) mod (List.length gametable.in_players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
+    if extract_value (find_list table.players (extract_value table.last_bet)) = 
+       startpos then ()
+    else 
+      table.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
   else 
     let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.in_players
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.in_players;
+    if extract_value (find_list table.players (extract_value table.last_bet)) = 
+       startpos then ()
+    else 
+      table.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
+    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players
 
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
@@ -162,7 +189,7 @@ let start_game name =
     max_wager := snd gametable.blinds;
 
     (* Request choices *)
-    choices 1;
+    choices 1 gametable;
     Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 1;
@@ -176,7 +203,7 @@ let start_game name =
 
 
     (* Request choices *)
-    choices 2;
+    choices 2 gametable;
     Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 2;
@@ -189,7 +216,7 @@ let start_game name =
     draw_players gametable.players 0;
 
     (* Request choices *)
-    choices 3;
+    choices 3 gametable;
     Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 3;
@@ -208,7 +235,7 @@ let start_game name =
     draw_winner winner;
     Table.winner winner gametable gamedeck round i;
 
-    (* TODO: side pots; gui input *)
+    (* TODO: side pots; raise max = allin; gui for invalid choices; gui to mark who is going; pot not preserving between rounds*)
   in
   round 0
 

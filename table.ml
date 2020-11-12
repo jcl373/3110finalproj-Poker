@@ -51,6 +51,8 @@ let extract_value = function
   | Some x -> x
   | None -> raise Empty;;
 
+
+
 (** The type [player] represents a player in the game. A player
     has a name, which is an identifier for the player, a hand, which is a pair of
     cards, and chips, which is the amount of money they have. *)
@@ -86,6 +88,9 @@ let empty_table small_blind big_blind =
 
 let set_hand (p : person) c1 c2 : unit =
   p.hand <- (c1, c2)
+
+let remove_folded (list : person list) = 
+  List.filter (fun x -> x.position <> Some Folded) list
 
 (** add_player adds a new player to the table. 
     [table] is a valid table
@@ -129,8 +134,7 @@ let choose_dealer table =
   table.in_players <- table.players
 
 let next_br_prep table  = 
-  let no_folds = List.filter (fun x -> x.position <> Some Folded) 
-      table.in_players in table.in_players <- no_folds;
+  table.in_players <- remove_folded table.in_players;
   let folded = List.filter (fun x -> x.position = Some Folded) 
       table.in_players in table.out_players <- folded
 

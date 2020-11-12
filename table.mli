@@ -43,6 +43,8 @@ val find_list : 'a list -> 'a -> int option
 
 val n_of_list : 'a list -> int -> 'a option
 
+val remove_folded : person list -> person list
+
 val extract_value : 'a option -> 'a
 
 val set_hand : person -> Deck.card -> Deck.card -> unit
