@@ -72,7 +72,7 @@ let choices round  =
       gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
     shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
                     gametable.players) (Table.extract_value gametable.last_bet) 
-      (Prompt.request_choice max_wager gametable round) [] ; 
+      (Prompt.request_choice max_wager gametable round) []; 
     gametable.last_call <- 0; end
   else begin
     let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
@@ -94,68 +94,36 @@ let choices round  =
 let create_bot name start_amt loc =
   Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt loc)
 
-(* let six_locations = [|(360,250);(175,275);(175,445);(360,470);(545,445);(545,275)|]
+let mid_winner round i = 
+  let possible_winner = Table.last_one_wins gametable gamedeck round i in
+  if possible_winner <> None then begin 
+    let winner = Table.extract_value possible_winner in 
+    draw_winner winner;
+    Table.winner winner gametable gamedeck round i end
+  else
+    Table.side_pots_prep gametable 1
 
-   let draw_table () =
-   set_color (rgb 68 125 35);
-   fill_rect 235 235 250 250;
-   fill_circle 235 360 125;
-   fill_circle 485 360 125
-
-   let draw_card (c : Deck.card) (x : int) (y : int) =
-   set_color white;
-   fill_rect x y 38 60;
-   if c.suit = 'C' || c.suit = 'S' then set_color black else set_color red;
-   moveto (x + 5) (y + 45);
-   (match c.rank with
-   | 1 -> draw_string "A"
-   | 11 -> draw_string "J"
-   | 12 -> draw_string "Q"
-   | 13 -> draw_string "K"
-   | n -> draw_string (string_of_int n));
-   moveto (x + 5) (y + 15);
-   draw_string (Char.escaped c.suit)
-
-   let draw_table_cards (t : Table.table) =
-   let rec cards (c : Deck.card list) (i : int) =
-    match c with
-    | [] -> ()
-    | h :: t -> begin 
-        draw_card h (245 + i * 48) 330;
-        cards t (i+1);
-      end in
-   cards t.river 0
-
-   let draw_player_cards (p : Table.person) =
-   set_color white;
-   draw_card (fst p.hand) 409 240;
-   draw_card (snd p.hand) (409 + 48) 240
-
-   let draw_dealer (p : Table.person) =
-   Prompt.draw_player p;
-   set_color (rgb 200 200 200);
-   fill_rect (fst (p.location) - 40) (snd (p.location) + 25) 80 15;
-   moveto (fst (p.location) - 35) (snd (p.location) + 25);
-   set_color black;
-   draw_string "Dealer"
-
-   let draw_winner (p : Table.person) =
-   Prompt.draw_player p;
-   set_color yellow;
-   fill_rect (fst (p.location) - 40) (snd (p.location) + 25) 80 15;
-   moveto (fst (p.location) - 35) (snd (p.location) + 25);
-   set_color black;
-   draw_string "Winner"
-
-   let rec draw_players (players : Table.person list) (i : int) =
-   match players with
-   | [] -> ()
-   | h :: t -> Prompt.draw_player h; draw_players t (i+1) *)
 
 let blinds (person : Table.person) f  = 
   Bet.wager (Bet (snd gametable.blinds)) gametable.pot 
     person.chips (snd gametable.blinds) !max_wager;
   draw_blinds person gametable f
+
+let step n round i =
+  choices n;
+  Unix.sleepf 2.;
+  mid_winner round i;
+  if n = 1 then 
+    Table.init_commcard gametable gamedeck
+  else 
+    Table.add_commcard gametable gamedeck;
+  ("The community cards are the " ^ print_card_list gametable.river ^ 
+   " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n") |>  
+  ANSITerminal.(print_string [green]) ;
+  max_wager := 0;
+  draw_table_cards gametable;
+  draw_players gametable.players 0
+
 
 
 let start_game name =
@@ -200,62 +168,10 @@ let start_game name =
     max_wager := snd gametable.blinds;
     gametable.last_bet <- Some bb;
 
-    (* Request choices *)
-    choices 1 ;
-    Unix.sleepf 2.;
-    let possible_winner = Table.last_one_wins gametable gamedeck round i in
-    if possible_winner <> None then begin 
-      let winner = Table.extract_value possible_winner in 
-      draw_winner winner ;
-      Table.winner winner gametable gamedeck round i end
-    else
-      Table.side_pots_prep gametable 1;
 
-    (* flop *)
-    Table.init_commcard gametable gamedeck; 
-    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
-    max_wager := 0;
-    draw_table_cards gametable;
-    draw_players gametable.players 0;
-
-
-    (* Request choices *)
-    choices 2 ;
-    Unix.sleepf 2.;
-    let possible_winner = Table.last_one_wins gametable gamedeck round i in
-    if possible_winner <> None then begin 
-      let winner = Table.extract_value possible_winner in 
-      draw_winner winner ;
-      Table.winner winner gametable gamedeck round i end
-    else
-      Table.side_pots_prep gametable 2;
-
-    (* turn *)
-    Table.add_commcard gametable gamedeck;
-    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
-    max_wager := 0;
-    draw_table_cards gametable;
-    draw_players gametable.players 0;
-
-    (* Request choices *)
-    choices 3 ;
-    Unix.sleepf 2.;
-    let possible_winner = Table.last_one_wins gametable gamedeck round i in
-    if possible_winner <> None then begin 
-      let winner = Table.extract_value possible_winner in 
-      draw_winner winner ;
-      Table.winner winner gametable gamedeck round i end
-    else
-      Table.side_pots_prep gametable 3;
-
-    (* river *)
-    Table.add_commcard gametable gamedeck; 
-    ANSITerminal.(print_string [green] ("The community cards are the " ^ print_card_list gametable.river ^ " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n"));
-    max_wager := 0;
-    draw_table_cards gametable;
-    draw_players gametable.players 0;
-
-    (* Also goes to zero, max_wager. Shouldnt have effect. *)
+    step 1 round i;
+    step 2 round i;
+    step 3 round i;
 
     (* set winner *)
     let winner : Table.person = Game.evaluate_table gametable in
@@ -268,34 +184,25 @@ let start_game name =
 
 (** [main ()] starts the game *)
 let main () =
-  (* FOR WINDOWS USERS *)
-  (* open_graph "localhost:0.0 720x720";  *)
-
-  (* FOR MAC USERS *)
   try begin 
+    (* FOR WINDOWS USERS *)
+    (* open_graph "localhost:0.0 720x720";  *)
+    (* FOR MAC USERS *)
     open_graph " 720x720";
 
     ANSITerminal.(print_string [red]
                     "\n\nWelcome to the poker game.\n");
     print_endline "Please enter your name.\n";
     print_string  "> ";
-
-    set_color (rgb 200 200 200);
-    fill_rect 200 350 320 55;
-    set_color black;
-    moveto 205 (355+35);
-    draw_string "Welcome to the poker game.";
-    moveto 205 (355+20);
-    draw_string "Please enter your name.";
-    start_game (name_input ())
-  end
+    set_color (rgb 200 200 200); fill_rect 200 350 320 55;
+    set_color black; moveto 205 (355+35);
+    draw_string "Welcome to the poker game."; moveto 205 (355+20);
+    draw_string "Please enter your name."; start_game (name_input ()) end
   with 
-  | End_of_file -> print_newline ();
-    print_endline "The user exited the game.";
-    exit 0
-  | Graphics.Graphic_failure x -> print_newline ();
+  | End_of_file | Graphics.Graphic_failure _ -> print_newline ();
     print_endline "The user closed the window.";
     exit 0
+
 (*match read_line () with
   | exception End_of_file -> ()
   | name -> start_game name*)

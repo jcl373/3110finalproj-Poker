@@ -90,4 +90,3 @@ let draw_blinds blind (gametable : Table.table) f =
   Prompt.draw_pot gametable;
   Unix.sleepf 2.
 
-let mid_winner pwinner = 
