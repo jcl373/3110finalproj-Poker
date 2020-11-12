@@ -191,25 +191,6 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
       begin
         try
           begin 
-            (*if !max_wager = 0 then 
-              begin 
-                print_endline "What is your choice?";
-                print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
-                print_endline ("You have "^ string_of_int !(p.chips) ^ " chips.");
-                print_string "Choose between: 'Fold', 'Check', 'Bet x', or 'AllIn' ";
-                print_endline "where x is an amount that you would like to bet.";
-                print_string "> ";
-              end
-              else 
-              begin
-                print_endline "What is your choice?";
-                print_endline ("Current wager is: " ^ string_of_int !max_wager ^".");
-                print_endline ("You have "^ string_of_int !(p.chips) ^ " chips.");
-                print_string "Choose between: 'Fold', 'Call', 'Raise x', or 'AllIn' ";
-                print_endline "where x is an amount that you would like to bet.";
-                print_string "> ";
-              end;
-              let input = read_line () in *)
             let input = if !max_wager = 0 then text_hover true !max_wager else text_hover false !max_wager in
             erase_options ();
             let player_bet = parse input p max_wager in  

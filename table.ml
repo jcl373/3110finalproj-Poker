@@ -70,6 +70,8 @@ type table = {mutable pot : Bet.pot;
               mutable dealer : person option; 
               mutable round_num : int; 
               mutable side_pots : (int * person list) list;
+              mutable last_bet : person option;
+              mutable last_call : int;
              }
 
 let new_player nm c1 c2 start_amt loc =
@@ -79,7 +81,8 @@ let new_player nm c1 c2 start_amt loc =
 let empty_table small_blind big_blind = 
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
    river = []; players = []; in_players = []; out_players = []; 
-   dealer = None; round_num = 1; side_pots = []} 
+   dealer = None; round_num = 1; side_pots = []; last_bet =  None;
+   last_call = 0;}
 
 let set_hand (p : person) c1 c2 : unit =
   p.hand <- (c1, c2)

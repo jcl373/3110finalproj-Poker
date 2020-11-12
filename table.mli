@@ -19,7 +19,9 @@ type table = {mutable pot : int ref ; blinds: int * int;
               mutable players : person list; mutable in_players : person list; 
               mutable out_players : person list;
               mutable dealer : person option; mutable round_num : int;
-              mutable side_pots : (int * person list) list;}
+              mutable side_pots : (int * person list) list;
+              mutable last_bet : person option;
+              mutable last_call : int;}
 
 val empty_table : int -> int -> table 
 
