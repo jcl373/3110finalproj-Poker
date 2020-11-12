@@ -6,7 +6,7 @@ let gametable = Table.empty_table 5 10
 let gamedeck = Deck.create
 let max_wager = ref 0
 let dealer_index = ref 0
-let max_name_len = 10
+let max_name_len = 12
 
 let draw_box str =
   set_color black;
@@ -215,10 +215,10 @@ let start_game name =
 (** [main ()] starts the game *)
 let main () =
   (* FOR WINDOWS USERS *)
-  (* open_graph "localhost:0.0 720x720"; *)
+  open_graph "localhost:0.0 720x720"; 
 
   (* FOR MAC USERS *)
-  open_graph " 720x720";
+  (*open_graph " 720x720";*)
 
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to the poker game.\n");
