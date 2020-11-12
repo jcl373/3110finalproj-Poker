@@ -83,8 +83,10 @@ let deck_test
 
 let ace_spade = {rank = 1 ; suit = 'S'} (* Ace of Spades Card *)
 let king_spade = {rank = 13 ; suit = 'S'} (* King of Spades card *)
+let king_hearts = {rank = 13; suit = 'H'} (* King of Hearts*)
 let ace_spade_array =  [|ace_spade|] (*Array containing ace of spades *)
 let ace_king_spade_array = [|ace_spade; king_spade|] (*Array with King/ace of spades *)
+let multi_deck = ref [|king_hearts;ace_spade;king_spade|]
 let ace_spade_deck = ref [|ace_spade|] (*Deck containing ace of spades *)
 let empty = empty
 
@@ -126,6 +128,8 @@ let pp_result (r : Game.result) =
     print_card_test "Testing 6 clubs" {rank = 6; suit = 'C'} "6 of Clubs";
     push_test "pushing one card on empty" ace_spade (Deck.empty ()) ace_spade_array;
     push_test "pushing a card on non empty deck" king_spade ace_spade_deck ace_king_spade_array;
+    peek_test "testing deck with one card" ace_spade_deck ace_spade;
+    peek_test "testing deck with multiple cards" multi_deck king_hearts;
     pop_test "popping one card" ace_spade_deck ace_spade;
   ]
 
