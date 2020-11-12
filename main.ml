@@ -235,7 +235,7 @@ let start_game name =
     draw_winner winner;
     Table.winner winner gametable gamedeck round i;
 
-    (* TODO: side pots; gui input *)
+    (* TODO: side pots; raise max = allin; gui for invalid choices; gui to mark who is going; pot not preserving between rounds*)
   in
   round 0
 
