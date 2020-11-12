@@ -167,7 +167,8 @@ let rec text_hover (first : bool) (max_wager : int) : string =
   else begin draw_options max_wager; text_hover first max_wager end
 
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
-  if List.length gametable.in_players = 1 then () else
+  if List.length gametable.in_players = 1 || p.position = Some Folded then () 
+  else
   if (p.name = "Bot 1" || p.name = "Bot 2" || p.name = "Bot 3" || p.name = "Bot 4" || p.name = "Bot 5")
   then let bot_bet = bot_choice p max_wager in
     match bot_bet with 
@@ -191,7 +192,9 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
       begin
         try
           begin 
-            let input = if !max_wager = 0 then text_hover true !max_wager else text_hover false !max_wager in
+            let input = if !max_wager = 0 
+              then text_hover true !max_wager 
+              else text_hover false !max_wager in
             erase_options ();
             let player_bet = parse input p max_wager in  
             let bet_check = Bet.check_wager player_bet !max_wager in
