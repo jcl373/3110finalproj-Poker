@@ -18,6 +18,29 @@ let draw_box str =
   draw_string ("> " ^ str);
   if String.length str = max_name_len then begin moveto 455 355; set_color red; draw_string "Max length" end
 
+(** [nth_of_list] returns the nth element of the list [lst]
+    Returns an option as the list may not contain that number 
+    [lst] is a valid list
+    [n] is an int; represents the nth element
+    [acc] is an int; the accumulator *)
+let rec nth_of_list lst n acc = 
+  match lst with
+  | [] -> None
+  | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
+
+(** [n_of_list] returns the first (head) element of the list [lst]
+    Returns an option as the list may not contain anything.
+    [lst] is a valid list*)
+let h_of_list lst =
+  nth_of_list lst 0 0
+
+(** [n_of_list] returns the nth element of the list [lst]
+    Returns an option as the list may not contain that number.
+    [lst] is a valid list
+    [n] is an int; represents the nth element *)
+let n_of_list lst n =
+  nth_of_list lst n 0
+
 let name_input unit = 
   let rec text_input str : string =
     draw_box str;
@@ -45,7 +68,19 @@ let rec print_list (list : Table.person list) : string =
 let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
   | [] -> failwith "empty iter list"
-  | h :: t -> if (i = 0) then List.iter f list else iter_index (i-1) f (t @ (h :: []))
+  | h :: t -> if (i = 0) then List.iter f list
+    else iter_index (i-1) f (t @ (h :: []))
+
+let rec iter_index_snd (i : int) p (list : 'a list)  =
+  match list with
+  | [] -> failwith "empty iter list"
+  | h :: t -> if (i = 0) then list else iter_index_snd (i-1) p (t @ (h :: []))
+
+let rec shorten_to_p lst p f acc =
+  match lst with 
+  | [] -> failwith "empty iter list"
+  | h :: t -> if h = p then List.iter f (List.rev acc) 
+    else shorten_to_p t p f (h :: acc)
 
 let rec find_in_list lst x acc =
   match lst with
@@ -60,24 +95,37 @@ let extract_value = function
   | None -> raise Empty;;
 
 
-let choices round (table : Table.table) = 
-  if round = 1 then 
+(* (Prompt.request_choice max_wager gametable round) *)
+(* (Prompt.request_choice max_wager gametable round) *)
+let choices round  = 
+  if round = 1 then begin 
+    print_string "round1";
     let startpos = (!dealer_index + 3) mod (List.length gametable.in_players) in
+    gametable.last_bet <- n_of_list gametable.players startpos;
     iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
-    if extract_value (find_list table.players (extract_value table.last_bet)) = 
+    if extract_value (find_list gametable.players (extract_value gametable.last_bet)) = 
        startpos then ()
     else 
-      table.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
-  else 
+      gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
+    shorten_to_p (iter_index_snd startpos (extract_value gametable.last_bet) 
+                    gametable.players) (extract_value gametable.last_bet) 
+      (Prompt.request_choice max_wager gametable round) [] ; 
+    gametable.last_call <- 0; end
+  else begin
+    print_string "round2";
     let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.in_players;
-    if extract_value (find_list table.players (extract_value table.last_bet)) = 
+    gametable.last_bet <- n_of_list gametable.players startpos;
+    let inplayers = gametable.in_players in
+    iter_index startpos (Prompt.request_choice max_wager gametable round) inplayers;
+    if extract_value (find_list gametable.players (extract_value gametable.last_bet)) = 
        startpos then ()
     else 
-      table.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players
-
+      gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
+    shorten_to_p (iter_index_snd startpos (extract_value gametable.last_bet) 
+                    inplayers) (extract_value gametable.last_bet) 
+      (Prompt.request_choice max_wager gametable round) [];
+    gametable.last_call <- 0
+  end
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
 let create_bot name start_amt loc =
@@ -187,9 +235,10 @@ let start_game name =
     Prompt.draw_pot gametable;
     Unix.sleepf 2.;
     max_wager := snd gametable.blinds;
+    gametable.last_bet <- Some bb;
 
     (* Request choices *)
-    choices 1 gametable;
+    choices 1 ;
     Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 1;
@@ -203,7 +252,7 @@ let start_game name =
 
 
     (* Request choices *)
-    choices 2 gametable;
+    choices 2 ;
     Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 2;
@@ -216,7 +265,7 @@ let start_game name =
     draw_players gametable.players 0;
 
     (* Request choices *)
-    choices 3 gametable;
+    choices 3 ;
     Unix.sleepf 2.;
     Table.last_one_wins gametable gamedeck round i;
     Table.side_pots_prep gametable 3;
@@ -242,24 +291,33 @@ let start_game name =
 (** [main ()] starts the game *)
 let main () =
   (* FOR WINDOWS USERS *)
-  open_graph "localhost:0.0 720x720"; 
+  (* open_graph "localhost:0.0 720x720";  *)
 
   (* FOR MAC USERS *)
-  (* open_graph " 720x720"; *)
+  try begin 
+    open_graph " 720x720";
 
-  ANSITerminal.(print_string [red]
-                  "\n\nWelcome to the poker game.\n");
-  print_endline "Please enter your name.\n";
-  print_string  "> ";
+    ANSITerminal.(print_string [red]
+                    "\n\nWelcome to the poker game.\n");
+    print_endline "Please enter your name.\n";
+    print_string  "> ";
 
-  set_color (rgb 200 200 200);
-  fill_rect 200 350 320 55;
-  set_color black;
-  moveto 205 (355+35);
-  draw_string "Welcome to the poker game.";
-  moveto 205 (355+20);
-  draw_string "Please enter your name.";
-  start_game (name_input ())
+    set_color (rgb 200 200 200);
+    fill_rect 200 350 320 55;
+    set_color black;
+    moveto 205 (355+35);
+    draw_string "Welcome to the poker game.";
+    moveto 205 (355+20);
+    draw_string "Please enter your name.";
+    start_game (name_input ())
+  end
+  with 
+  | End_of_file -> print_newline ();
+    print_endline "The user exited the game.";
+    exit 0
+  | Graphics.Graphic_failure x -> print_newline ();
+    print_endline "The user closed the window.";
+    exit 0
 (*match read_line () with
   | exception End_of_file -> ()
   | name -> start_game name*)
