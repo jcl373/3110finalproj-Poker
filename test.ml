@@ -21,6 +21,16 @@ let pp_array (pp_elt : 'a -> string)  (arr : 'a array) = String.concat " " (Arra
 (** [pp_card c] pretty-prints card [c]. *)
 let pp_card (c : Deck.card) = "{" ^ string_of_int c.rank ^ " " ^ Char.escaped c.suit ^ "}"
 
+(** [print_card_test name c expected_output] constructs an OUnit 
+  test named name which asserts the equality of [expected_output]
+    with [print_card c] *)
+let print_card_test 
+    (name : string)
+    (c: Deck.card)
+    (expected_output : string) : test = 
+    name >:: (fun _ -> 
+      assert_equal expected_output (print_card c))
+
 (** [push_test name c d expected_output] constructs an OUnit
     test named [name] that asserts the quality of [expected_output]
     with [push c d]. *)
@@ -74,16 +84,9 @@ let deck_test
 let ace_spade = {rank = 1 ; suit = 'S'} (* Ace of Spades Card *)
 let king_spade = {rank = 13 ; suit = 'S'} (* King of Spades card *)
 let ace_spade_array =  [|ace_spade|] (*Array containing ace of spades *)
-let ace_king_spade_array = [|ace_spade;king_spade|] (*Array with King/ace of spades *)
+let ace_king_spade_array = [|ace_spade; king_spade|] (*Array with King/ace of spades *)
 let ace_spade_deck = ref [|ace_spade|] (*Deck containing ace of spades *)
 let empty = empty
-
-let deck_tests =
-  [
-    push_test "pushing one card on empty" ace_spade (Deck.empty ()) ace_spade_array;
-    push_test "pushing a card on non empty deck" king_spade ace_spade_deck ace_king_spade_array;
-    pop_test "popping one card" ace_spade_deck ace_spade;
-  ]
 
 (** [pp_result r] pretty-prints result [r]. *)
 let pp_result (r : Game.result) = 
@@ -98,6 +101,33 @@ let pp_result (r : Game.result) =
   | TwoPair (a, b, c) -> "Two pairs " ^ string_of_int a ^ " " ^ string_of_int b ^ " " ^ string_of_int c
   | OnePair (a, b, c, d)-> "One Pair " ^ string_of_int a ^ " " ^ string_of_int b ^ " " ^ string_of_int c ^ " " ^ string_of_int d
   | HighCard a -> "High card " ^ string_of_int a
+
+  let deck_tests =
+  [
+    print_card_test "Testing king of hearts" {rank = 13; suit = 'H'} "King of Hearts";
+    print_card_test "Testing king of spades" {rank = 13; suit = 'S'} "King of Spades";
+    print_card_test "Testing king of diamonds" {rank = 13; suit = 'D'} "King of Diamonds";
+    print_card_test "Testing king of clubs" {rank = 13; suit = 'C'} "King of Clubs";
+    print_card_test "Testing queen hearts" {rank = 12; suit = 'H'} "Queen of Hearts";
+    print_card_test "Testing queen spades" {rank = 12; suit = 'S'} "Queen of Spades";
+    print_card_test "Testing queen diamonds" {rank = 12; suit = 'D'} "Queen of Diamonds";
+    print_card_test "Testing queen clubs" {rank = 12; suit = 'C'} "Queen of Clubs";
+    print_card_test "Testing jack hearts" {rank = 11; suit = 'H'} "Jack of Hearts";
+    print_card_test "Testing jack spades" {rank = 11; suit = 'S'} "Jack of Spades";
+    print_card_test "Testing jack diamonds" {rank = 11; suit = 'D'} "Jack of Diamonds";
+    print_card_test "Testing jack clubs" {rank = 11; suit = 'C'} "Jack of Clubs";
+    print_card_test "Testing ace hearts" {rank = 1; suit = 'H'} "Ace of Hearts";
+    print_card_test "Testing ace spades" {rank = 1; suit = 'S'} "Ace of Spades";
+    print_card_test "Testing ace diamonds" {rank = 1; suit = 'D'} "Ace of Diamonds";
+    print_card_test "Testing ace clubs" {rank = 1; suit = 'C'} "Ace of Clubs";
+    print_card_test "Testing 9 hearts" {rank = 9; suit = 'H'} "9 of Hearts";
+    print_card_test "Testing 10 spades" {rank = 10; suit = 'S'} "10 of Spades";
+    print_card_test "Testing 7 diamonds" {rank = 7; suit = 'D'} "7 of Diamonds";
+    print_card_test "Testing 6 clubs" {rank = 6; suit = 'C'} "6 of Clubs";
+    push_test "pushing one card on empty" ace_spade (Deck.empty ()) ace_spade_array;
+    push_test "pushing a card on non empty deck" king_spade ace_spade_deck ace_king_spade_array;
+    pop_test "popping one card" ace_spade_deck ace_spade;
+  ]
 
 (** [hand_test name hand expected_output] constructs an OUnit
     test named [name] that asserts the quality of [expected_output]
@@ -147,9 +177,7 @@ let hand_tests =
                            {rank = 9;suit='D'};{rank = 8;suit='D'};
                            {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8));                         
 
-    push_test "pushing one card on non-empty deck" king_spade (ref ace_spade_array) ace_king_spade_array;
-    pop_test "popping one card" (ref ace_spade_array) ace_spade;
-  ]
+]
 
 let suite =
   "test suite"  >::: List.flatten [
