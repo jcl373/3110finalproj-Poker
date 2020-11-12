@@ -132,7 +132,8 @@ let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
   fill_rect (360-40) (250-25-50-5) 80 50;
   set_color white;
   moveto (360-35) (250-25-15-5);
-  if check then draw_string "Check" else begin draw_string "Call"; moveto (360-35) (250-25-15-5-15); draw_string (string_of_int max_wager) end
+  if check then draw_string "Check" else begin draw_string "Call"; 
+    moveto (360-35) (250-25-15-5-15); draw_string (string_of_int max_wager) end
 
 let draw_fold (hover : bool) =
   if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
@@ -171,8 +172,8 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
       draw_box str;
       let stat2 = wait_next_event (Key_pressed :: []) in
       if stat2.key = '\027' then begin erase_box (); text_hover first max_wager last_call end
-      else if stat2.key = '\r' then str 
-      else if stat2.key = '\b' then text_input (String.sub str 0 (String.length str - 1))
+      else if stat2.key = '\r' then if String.length str = 0 then text_input "" else str 
+      else if stat2.key = '\b' then if String.length str = 0 then text_input "" else text_input (String.sub str 0 (String.length str - 1))
       else if stat2.key = '0' || stat2.key = '1' || stat2.key = '2' || stat2.key = '3' || stat2.key = '4' || stat2.key = '5' || stat2.key = '6' || stat2.key = '7' || stat2.key = '8' || stat2.key = '9'
       then text_input (str ^ (Char.escaped stat2.key))
       else text_input str
@@ -225,6 +226,8 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
                 erase_options ();
                 let player_bet = parse input p max_wager in  
                 let bet_check = Bet.check_wager player_bet !max_wager in
+                set_color white;
+                fill_rect (360-105) 100 210 13;
                 match player_bet with
                 | Fold -> p.position <- Some Folded; 
                   print_choice player_bet p; 
@@ -242,6 +245,9 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
             | Bet.InvalidResponse -> print_endline "Invalid Choice. Try again.";
               request_choice max_wager gametable round p 
             | Bet.InvalidWager -> print_endline "Invalid Wager Amount. Try again.";
+              moveto (360-105) (100);
+              set_color red;
+              draw_string "Invalid Wager Amount. Select again.";
               request_choice max_wager gametable round p 
           end
 
