@@ -214,7 +214,8 @@ let winner winner gametable gamedeck f i=
   let rec reset_hand list =
     match list with
     | [] -> ()
-    | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); reset_hand t in
+    | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
+      reset_hand t in
   min_players gametable f i;
   end_prompt 1 f i;
   reset_hand gametable.players
@@ -242,7 +243,8 @@ let winning_player win_list gametable gamedeck f i =
 let last_one_wins table gamedeck round i=
   if List.length table.in_players = 1 then 
     let def_win = extract_value (h_of_list table.in_players) in
-    ANSITerminal.(print_string [yellow] ("Everyone folded except for " ^ def_win.name ^ ".\n")); 
-    winner def_win table gamedeck round i
-  else ()
+    ("Everyone folded except for " ^ def_win.name ^ ".\n") |>
+    ANSITerminal.(print_string [yellow]); 
+    Some def_win
+  else None;;
 

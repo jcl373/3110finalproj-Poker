@@ -59,7 +59,7 @@ val winner : person -> table -> Deck.deck -> (int -> unit) -> int -> unit
 
 val end_prompt : int -> (int -> unit) -> int -> unit
 
-val last_one_wins : table -> Deck.deck -> (int -> unit) -> int -> unit
+val last_one_wins : table -> 'a -> 'b -> 'c -> person option
 
 val min_players : table -> (int -> unit) -> int -> unit
 
