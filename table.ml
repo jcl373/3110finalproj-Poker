@@ -134,8 +134,8 @@ let next_br_prep table  =
 
 let side_pots_prep table round =
   let allin = List.filter (fun x -> x.position = Some (AllIn round)) table.in_players in 
-  table.side_pots <- (!(table.pot), allin) :: table.side_pots;
-  table.pot <- Bet.empty_pot ()
+  table.side_pots <- (!(table.pot), allin) :: table.side_pots
+(* table.pot <- Bet.empty_pot () *)
 
 
 (* let match_pos table x = 

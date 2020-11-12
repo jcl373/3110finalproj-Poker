@@ -208,17 +208,17 @@ let start_game name =
     draw_winner winner;
     Table.winner winner gametable gamedeck round i;
 
-    (* TODO: side pots; allin not working; gui input; pot not preserving between rounds*)
+    (* TODO: side pots; gui input; pot not preserving between rounds*)
   in
   round 0
 
 (** [main ()] starts the game *)
 let main () =
   (* FOR WINDOWS USERS *)
-  open_graph "localhost:0.0 720x720";
+  (* open_graph "localhost:0.0 720x720"; *)
 
   (* FOR MAC USERS *)
-  (*open_graph " 720x720";*)
+  open_graph " 720x720";
 
   ANSITerminal.(print_string [red]
                   "\n\nWelcome to the poker game.\n");
