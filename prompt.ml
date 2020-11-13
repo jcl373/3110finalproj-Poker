@@ -108,6 +108,7 @@ let player_bet_opt max_wager (gametable : Table.table) (p : Table.person)
 
 let bot_bet_opt max_wager (gametable : Table.table) (p : Table.person) 
     (bot_bet : Bet.choice) =
+  Unix.sleepf 1.;
   if gametable.last_call = 0 then
     match bot_bet with 
     | Raise x | Bet x | AllIn x -> gametable.last_bet <- Some p
@@ -117,7 +118,6 @@ let bot_bet_opt max_wager (gametable : Table.table) (p : Table.person)
   then max_wager := Bet.current_wager bot_bet;
   Bet.wager bot_bet gametable.pot p.chips (Bet.current_wager bot_bet) 
     !max_wager;
-  Unix.sleepf 1.;
   draw_player p; draw_pot gametable; 
   moveto ((fst p.location)-35) ((snd p.location)-20); 
   draw_string (string_of_choice bot_bet p);
@@ -163,6 +163,9 @@ let draw_options (max_wager : int) last_call first =
     draw_fold false;
     draw_call_check false first max_wager end
 
+let rec unclick unit =
+  if button_down () then unclick () else ()
+
 let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
   let bet_input unit = 
     let rec text_input str : string =
@@ -198,10 +201,10 @@ let rc_setup (gametable : Table.table) p max_wager bot =
     else bot_choice_fold p max_wager 
   else begin 
     let input = if gametable.last_call = 1 then 
-        begin draw_options !max_wager 1 false; text_hover false !max_wager 1 end
+        begin draw_options !max_wager 1 false; unclick (); text_hover false !max_wager 1 end
       else if !max_wager = 0 
-      then begin draw_options !max_wager 0 true; text_hover true !max_wager 0 end
-      else begin draw_options !max_wager 0 false; text_hover false !max_wager 0 end in
+      then begin draw_options !max_wager 0 true; unclick (); text_hover true !max_wager 0 end
+      else begin draw_options !max_wager 0 false; unclick (); text_hover false !max_wager 0 end in
     erase_options (); 
     parse input p max_wager end
 
