@@ -61,6 +61,7 @@ let extract_value = function
 type person = {name : string; 
                mutable hand : Deck.card * Deck.card; 
                chips : Bet.bag; 
+               mutable last_bet : int;
                mutable position : pos option;
                location : int * int
               } 
@@ -80,7 +81,7 @@ type table = {mutable pot : Bet.pot;
 
 let new_player nm c1 c2 start_amt loc =
   {name = nm ; hand = (c1, c2); chips = Bet.add (Bet.empty_bag ()) start_amt;
-   position = None; location = loc}
+   last_bet = 0; position = None; location = loc}
 
 let empty_table small_blind big_blind = 
   {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
@@ -187,12 +188,13 @@ let draw_stay (hover : bool) =
   draw_string "Yes"
 
 let rec exit_hover x f i =
-  let stat = wait_next_event (Button_down :: Mouse_motion :: []) in
+  auto_synchronize false;
+  let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_quit true; if stat.button then begin Graphics.close_graph (); exit 0 end else exit_hover x f i end
+  then begin draw_quit true; auto_synchronize true; if stat.button then begin Graphics.close_graph (); exit 0 end else exit_hover x f i end
   else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_stay true; if stat.button then f (i + 1) else exit_hover x f i end
-  else begin draw_quit false; draw_stay false; exit_hover x f i end
+  then begin draw_stay true; auto_synchronize true; if stat.button then f (i + 1) else exit_hover x f i end
+  else begin draw_quit false; auto_synchronize true; draw_stay false; exit_hover x f i end
 
 let auto_remove table (p : person)  : unit =
   if !(p.chips) < 10 then begin 
@@ -225,6 +227,8 @@ let winner winner gametable gamedeck f i=
   (* new round *)
   gamedeck := !Deck.create;
   List.iter (auto_remove gametable) gametable.players;
+  gametable.in_players <- gametable.players;
+  gametable.out_players <- [];
 
   let rec reset_hand list =
     match list with

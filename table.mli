@@ -11,7 +11,8 @@ exception InvalidResponse
 (** The type [player] represents a player in the game. A player
     has a name, which is an identifier for the player, a hand, *)
 type person = {name : string; mutable hand: Deck.card * Deck.card; 
-               chips : int ref; mutable position : pos option; 
+               chips : int ref; mutable last_bet : int;
+               mutable position : pos option; 
                location : int * int } 
 
 type table = {mutable pot : int ref ; blinds: int * int; 

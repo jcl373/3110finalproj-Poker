@@ -87,6 +87,11 @@ let draw_pot (t : Table.table) : unit =
   moveto 300 425;
   draw_string ("Total pot: " ^ (string_of_int !(t.pot)))
 
+let curr_bet max_wager (gametable : Table.table) (p : Table.person) =
+  if gametable.last_call = 0 then
+    !max_wager
+  else !max_wager - p.last_bet
+
 let player_bet_opt max_wager (gametable : Table.table) (p : Table.person) 
     (player_bet : Bet.choice) bet_check =
   if gametable.last_call = 0 then
@@ -94,13 +99,14 @@ let player_bet_opt max_wager (gametable : Table.table) (p : Table.person)
     | Raise x | Bet x | AllIn x -> gametable.last_bet <- Some p
     | _ -> ()
   else ();
+  let curr_wger = Bet.current_wager player_bet in 
   if bet_check = false || Bet.max_wager player_bet !(p.chips) = false
   then raise(Bet.InvalidWager) 
-  else if (Bet.current_wager player_bet > !max_wager) && 
-          (Bet.current_wager player_bet <= !(p.chips))
-  then max_wager := Bet.current_wager player_bet;
-  Bet.wager player_bet gametable.pot p.chips 
-    (Bet.current_wager player_bet) !max_wager;
+  else if (curr_wger > !max_wager) && (curr_wger <= !(p.chips))
+  then max_wager := curr_wger;
+  if gametable.last_call = 0 then p.last_bet <- curr_wger;
+  Bet.wager player_bet gametable.pot p.chips (curr_bet max_wager gametable p) 
+    !max_wager;
   draw_player p; draw_pot gametable; 
   moveto ((fst p.location)-35) ((snd p.location)-20); 
   draw_string (string_of_choice player_bet p);
@@ -114,9 +120,11 @@ let bot_bet_opt max_wager (gametable : Table.table) (p : Table.person)
     | Raise x | Bet x | AllIn x -> gametable.last_bet <- Some p
     | _ -> ()
   else ();
-  if Bet.current_wager bot_bet > !max_wager 
-  then max_wager := Bet.current_wager bot_bet;
-  Bet.wager bot_bet gametable.pot p.chips (Bet.current_wager bot_bet) 
+  let curr_wger = Bet.current_wager bot_bet in 
+  if curr_wger > !max_wager 
+  then max_wager := curr_wger;
+  p.last_bet <- curr_wger;
+  Bet.wager bot_bet gametable.pot p.chips (curr_bet max_wager gametable p) 
     !max_wager;
   draw_player p; draw_pot gametable; 
   moveto ((fst p.location)-35) ((snd p.location)-20); 
@@ -229,11 +237,14 @@ let request_choice_help round (gametable : Table.table) p max_wager bot =
     else player_bet_opt max_wager gametable p p_bet bet_check
 
 let is_bot (p : Table.person) = 
-  (p.name = "Bot 1" || 
-   p.name = "Bot 2" || 
-   p.name = "Bot 3" || 
-   p.name = "Bot 4" || 
-   p.name = "Bot 5") 
+  p.name = "Bot 1" || 
+  p.name = "Bot 2" || 
+  p.name = "Bot 3" || 
+  p.name = "Bot 4" || 
+  p.name = "Bot 5"
+
+
+
 
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
   set_color yellow;
