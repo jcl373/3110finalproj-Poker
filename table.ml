@@ -1,3 +1,5 @@
+open Graphics
+
 type pos = 
   | Dealer
   | BB
@@ -170,24 +172,37 @@ let next_round_prep table =
   Bet.clear table.pot; 
   table.round_num <- table.round_num + 1
 
+let draw_quit (hover : bool) =
+  if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
+  fill_rect (360-80-40-5+40) (250-25-50-5) 80 50;
+  set_color white;
+  moveto (360-80-40+40) (250-25-15-5);
+  draw_string "No"
+
+let draw_stay (hover : bool) =
+  if hover then set_color (rgb 67 131 14) else set_color (rgb 87 175 13);
+  fill_rect (360-40+80+5-40) (250-25-50-5) 80 50;
+  set_color white;
+  moveto (360-40+80+10-40) (250-25-15-5);
+  draw_string "Yes"
+
+let rec exit_hover x f i =
+  let stat = wait_next_event (Button_down :: Mouse_motion :: []) in
+  if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin draw_quit true; if stat.button then begin Graphics.close_graph (); exit 0 end else exit_hover x f i end
+  else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin draw_stay true; if stat.button then f (i + 1) else exit_hover x f i end
+  else begin draw_quit false; draw_stay false; exit_hover x f i end
+
 let auto_remove table (p : person)  : unit =
   if !(p.chips) < 10 then begin 
     print_endline (p.name ^ " has left because they ran out of chips.");
     remove_player table p
   end else () 
 
-let rec end_prompt x f i  = 
-  print_endline "Do you want to stay? (Yes or No)";
-  print_endline "If you are out of chips, please restart game. ";
-  print_string "> ";
-  try 
-    match read_line () with
-    | "No" | "no" -> print_endline "Thanks for playing!"; Graphics.close_graph (); exit 0
-    | "Yes" | "yes" -> f (i+1)
-    | _ -> raise (InvalidResponse)
-  with 
-  | InvalidResponse -> print_endline "Please type 'yes' or 'no'!"; 
-    end_prompt 1 f i
+let end_prompt x f i  = 
+  draw_quit false; draw_stay false;
+  exit_hover x f i
 
 let min_players gametable f i = 
   if List.length gametable.players <= 2 then begin
@@ -214,7 +229,8 @@ let winner winner gametable gamedeck f i=
   let rec reset_hand list =
     match list with
     | [] -> ()
-    | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); reset_hand t in
+    | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
+      reset_hand t in
   min_players gametable f i;
   end_prompt 1 f i;
   reset_hand gametable.players
@@ -242,7 +258,8 @@ let winning_player win_list gametable gamedeck f i =
 let last_one_wins table gamedeck round i=
   if List.length table.in_players = 1 then 
     let def_win = extract_value (h_of_list table.in_players) in
-    ANSITerminal.(print_string [yellow] ("Everyone folded except for " ^ def_win.name ^ ".\n")); 
-    winner def_win table gamedeck round i
-  else ()
+    ("Everyone folded except for " ^ def_win.name ^ ".\n") |>
+    ANSITerminal.(print_string [yellow]); 
+    Some def_win
+  else None;;
 
