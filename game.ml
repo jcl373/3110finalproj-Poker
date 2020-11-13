@@ -150,6 +150,10 @@ let rec compare_lists x y =
   else if comp <> 0 then comp 
   else compare_lists (t_of_list x) (t_of_list y)
 
+(** [compare_hands] returns an integer based on which one of 2 hands 
+is better in terms of poker rules. If [hand1] has a higher score than [hand2],
+it returns -1. If [hand2] is better than [hand1], it returns 1. *)
+
 let compare_hands (hand1 : result) (hand2 : result) : int =
   let h1 = compare_hands_helper hand1 in
   let h2 = compare_hands_helper hand2 in 
