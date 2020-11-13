@@ -105,8 +105,8 @@ let mid_winner round i =
 
 
 let blinds (person : Table.person) f  = 
-  Bet.wager (Bet (snd gametable.blinds)) gametable.pot 
-    person.chips (snd gametable.blinds) !max_wager;
+  Bet.wager (Bet (f gametable.blinds)) gametable.pot 
+    person.chips (f gametable.blinds) !max_wager;
   draw_blinds person gametable f
 
 let step n round i =
@@ -186,7 +186,7 @@ let start_game name =
 let main () =
   try begin 
     (* FOR WINDOWS USERS *)
-    (* open_graph "localhost:0.0 720x720";  *)
+    (*open_graph "localhost:0.0 720x720"; *) 
     (* FOR MAC USERS *)
     open_graph " 720x720";
 
