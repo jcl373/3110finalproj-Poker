@@ -119,8 +119,10 @@ let step n round i =
     Table.add_commcard gametable gamedeck;
   ("The community cards are the " ^ print_card_list gametable.river ^ 
    " The pot is " ^ string_of_int !(gametable.pot) ^ ".\n") |>  
-  ANSITerminal.(print_string [green]) ;
-  max_wager := 0;
+  ANSITerminal.(print_string [green]);
+  begin if n <> 3 then
+      max_wager := 0 end;
+
   draw_table_cards gametable;
   draw_players gametable.players 0
 
@@ -188,7 +190,7 @@ let main () =
     (* FOR WINDOWS USERS *)
     open_graph "localhost:0.0 720x720";
     (* FOR MAC USERS *)
-    (*open_graph " 720x720";*)
+    (* open_graph " 720x720"; *)
 
     ANSITerminal.(print_string [red]
                     "\n\nWelcome to the poker game.\n");
