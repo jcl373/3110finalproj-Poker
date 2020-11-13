@@ -213,11 +213,29 @@ let compare_hand_tests =
     compare_hand_test "both 4kind, hand1 better,4pair same" (FourOfKind (9,3)) (FourOfKind (9,2)) ~-1;
     compare_hand_test "both 4kind, hand2 better,4pair same" (FourOfKind (7,3)) (FourOfKind (7,6)) 1;
     compare_hand_test "both 4kind, equal" (FourOfKind (7,2)) (FourOfKind (7,2)) 0;
-    compare_hand_test "both fhouse, hand1 better diff 3kind" (FullHouse (8,3)) (FullHouse (7,4)) ~-1;
-    compare_hand_test "both fhouse, hand1 better same 3kind" (FullHouse (7,3)) (FullHouse (7,2)) ~-1;
-    compare_hand_test "both fhouse, hand2 better diff 3kind" (FullHouse (8,3)) (FullHouse (9,4)) 1;
-    compare_hand_test "both fhouse, hand2 better same 3kind" (FullHouse (11,3)) (FullHouse (11,6)) 1;
+    compare_hand_test "both fhouse, hand1 better, diff 3kind" (FullHouse (8,3)) (FullHouse (7,4)) ~-1;
+    compare_hand_test "both fhouse, hand1 better, same 3kind" (FullHouse (7,3)) (FullHouse (7,2)) ~-1;
+    compare_hand_test "both fhouse, hand2 better, diff 3kind" (FullHouse (8,3)) (FullHouse (9,4)) 1;
+    compare_hand_test "both fhouse, hand2 better, same 3kind" (FullHouse (11,3)) (FullHouse (11,6)) 1;
     compare_hand_test "both fhouse, equal" (FullHouse (7,2)) (FullHouse (7,2)) 0;
+    compare_hand_test "both flush, hand2 better" (Flush (8,6,4,2,1)) (Flush(10,8,5,3,2)) 1;
+    compare_hand_test "both flush, hand1 better" (Flush (10,8,5,3,2)) (Flush (8,6,4,2,1)) ~-1;
+    compare_hand_test "both flush, equal" (Flush (8,6,4,2,1)) (Flush (8,6,4,2,1)) 0;
+    compare_hand_test "both straight, hand1 better" (Straight 9) (Straight 7) ~-1;
+    compare_hand_test "both straight, hand2 better" (Straight 7) (Straight 9) 1;
+    compare_hand_test "both straight, equal" (Straight 7) (Straight 7) 0;
+    compare_hand_test "both 3kind, hand1 better" (ThreeOfKind (7,2,1)) (ThreeOfKind (5,4,3)) ~-1;
+    compare_hand_test "both 3kind, hand2 better" (ThreeOfKind (5,4,3)) (ThreeOfKind(7,2,1)) 1;
+    compare_hand_test "both 3kind, equal" (ThreeOfKind (5,4,3)) (ThreeOfKind (5,4,3)) 0;
+    compare_hand_test "both 2pair, hand1 better" (TwoPair (7,2,1)) (TwoPair (5,4,3)) ~-1;
+    compare_hand_test "both 2pair, hand2 better" (TwoPair (5,4,3)) (TwoPair(7,2,1)) 1;
+    compare_hand_test "both 2pair, equal" (TwoPair (5,4,3)) (TwoPair (5,4,3)) 0;
+    compare_hand_test "both pair, hand1 better" (OnePair (7,4,2,1)) (OnePair (5,4,3,2)) ~-1;
+    compare_hand_test "both pair, hand2 better" (OnePair (5,4,3,1)) (OnePair(7,4,2,1)) 1;
+    compare_hand_test "both pair, equal" (OnePair (10,5,4,3)) (OnePair (10,5,4,3)) 0;
+    compare_hand_test "both hcard, hand1 better" (HighCard 10) (HighCard 7) ~-1;
+    compare_hand_test "both hcard, hand2 better" (HighCard 3) (HighCard 5) 1;
+    compare_hand_test "both hcard, equal" (HighCard 6) (HighCard 6) 0;
 ]
 
 (* Tests for game.ml end here *)
