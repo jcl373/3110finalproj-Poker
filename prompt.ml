@@ -33,13 +33,14 @@ let string_of_choice (c : Bet.choice) (p : Table.person) : string =
   | AllIn i -> set_color green; "All In"
 
 let print_choice (c : Bet.choice) (p : Table.person) : unit =
-  match c with
-  | Check -> print_endline (p.name ^ " has checked.")
-  | Fold -> print_endline (p.name ^ " has folded.")
-  | Bet i -> print_endline (p.name ^ " has bet " ^ string_of_int i ^ " chips.")
-  | Call i -> print_endline (p.name ^ " has called and bet " ^ string_of_int i ^ " chips.")
-  | Raise i -> print_endline (p.name ^ " has raised " ^ string_of_int i ^ " chips.")
-  | AllIn i -> print_endline (p.name ^ " has gone all in and bet " ^ string_of_int i ^ " chips.")
+  (*match c with
+    | Check -> print_endline (p.name ^ " has checked.")
+    | Fold -> print_endline (p.name ^ " has folded.")
+    | Bet i -> print_endline (p.name ^ " has bet " ^ string_of_int i ^ " chips.")
+    | Call i -> print_endline (p.name ^ " has called and bet " ^ string_of_int i ^ " chips.")
+    | Raise i -> print_endline (p.name ^ " has raised " ^ string_of_int i ^ " chips.")
+    | AllIn i -> print_endline (p.name ^ " has gone all in and bet " ^ string_of_int i ^ " chips.")*)
+  ()
 
 let parse str (p : Table.person) max_wager : Bet.choice =
   let lst = String.split_on_char ' ' str in
