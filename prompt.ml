@@ -74,7 +74,11 @@ let draw_player (p : Table.person) =
   set_color white;
   draw_string p.name;
   moveto (x-35) (y-5);
-  draw_string (string_of_int !(p.chips))
+  draw_string (string_of_int !(p.chips));
+  match p.position with
+  | Some Folded -> moveto ((fst p.location)-35) ((snd p.location)-20); set_color red; draw_string "Fold"; ()
+  | Some AllIn x -> moveto ((fst p.location)-35) ((snd p.location)-20); set_color green; draw_string ("All in " ^ string_of_int x); ()
+  | _ -> ()
 
 let draw_pot (t : Table.table) : unit =
   set_color (rgb 68 125 35);
