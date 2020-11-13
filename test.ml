@@ -21,6 +21,8 @@ let pp_array (pp_elt : 'a -> string)  (arr : 'a array) = String.concat " " (Arra
 (** [pp_card c] pretty-prints card [c]. *)
 let pp_card (c : Deck.card) = "{" ^ string_of_int c.rank ^ " " ^ Char.escaped c.suit ^ "}"
 
+(*Tests for Deck.ml start here *)
+
 (** [print_card_test name c expected_output] constructs an OUnit 
   test named name which asserts the equality of [expected_output]
     with [print_card c] *)
@@ -182,6 +184,10 @@ let hand_tests =
                            {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8));                         
 
 ]
+
+(*Tests for Deck.ml end here *)
+
+(*Tests for table.ml start here *)
 
 let suite =
   "test suite"  >::: List.flatten [
