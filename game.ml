@@ -123,8 +123,6 @@ let evaluate_hand (h : Deck.card array) : result =
   let histogram = create_histogram h in
   check41_32_221_2111 histogram h
 
-(*helper to factor out duplicated code below, if for some reason you didn't want it
-  like this change it back -Abhi *)
 let compare_hands_helper (hand: result) =
   match hand with
   | RoyalFlush -> 10
@@ -157,6 +155,18 @@ let comp_3kind_2pair a1 a2 a3 b1 b2 b3 =
 let highcard_straightflush_comp a b =
   if a > b then -1 else if a = b then 0 else 1
 
+let flush_helper_compare a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 = 
+  if a1 > b1 then -1 
+  else if b1 > a1 then 1 
+  else if a2 > b2 then -1 
+  else if b2 > a2 then 1 
+  else if a3 > b3 then -1 
+  else if b3 > a3 then 1 
+  else if a4 > b4 then -1 
+  else if b4 > a4 then 1 
+  else if a5 > b5 then -1 
+  else if b5 > a5 then 1 else 0
+
 let compare_hands (hand1 : result) (hand2 : result) : int =
   let h1 = compare_hands_helper hand1 in
   let h2 = compare_hands_helper hand2 in 
@@ -168,17 +178,7 @@ let compare_hands (hand1 : result) (hand2 : result) : int =
     | (StraightFlush a, StraightFlush b) -> highcard_straightflush_comp a b
     | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> fourofking_fullhouse_comp a1 a2 b1 b2
     | (FullHouse (a1, a2), FullHouse (b1, b2)) -> fourofking_fullhouse_comp a1 a2 b1 b2
-    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> begin 
-        if a1 > b1 then -1 
-        else if b1 > a1 then 1 
-        else if a2 > b2 then -1 
-        else if b2 > a2 then 1 
-        else if a3 > b3 then -1 
-        else if b3 > a3 then 1 
-        else if a4 > b4 then -1 
-        else if b4 > a4 then 1 
-        else if a5 > b5 then -1 
-        else if b5 > a5 then 1 else 0 end
+    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> flush_helper_compare a1 a2 a3 a4 a5 b1 b2 b3 b4 b5
     | (Straight a, Straight b) -> highcard_straightflush_comp a b
     | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> comp_3kind_2pair a1 a2 a3 b1 b2 b3
     | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> comp_3kind_2pair a1 a2 a3 b1 b2 b3
