@@ -26,7 +26,7 @@ bisect: clean test
 zip:
 	zip poker.zip *.ml* _tags Makefile *.txt
 
-	docs: docs-public docs-private
+	
 
 docs-public: build
 	mkdir -p doc.public
