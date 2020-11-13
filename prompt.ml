@@ -185,14 +185,15 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
       else text_input str
     in
     text_input "" in
-  let stat = wait_next_event (Button_down :: Mouse_motion :: []) in
+  auto_synchronize false;
+  let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   if stat.mouse_x > (360-80-40-5) && stat.mouse_x < (360-80-40-5+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_fold true; if stat.button then "Fold" else text_hover first max_wager last_call end
+  then begin draw_fold true; auto_synchronize true; if stat.button then "Fold" else text_hover first max_wager last_call end
   else if stat.mouse_x > (360-40) && stat.mouse_x < (360-40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_call_check true first max_wager; if stat.button then begin if first && last_call = 0 then "Check" else "Call" end else text_hover first max_wager last_call end
+  then begin draw_call_check true first max_wager; auto_synchronize true; if stat.button then begin if first && last_call = 0 then "Check" else "Call" end else text_hover first max_wager last_call end
   else if last_call <> 1 && stat.mouse_x > (360-40+80+5) && stat.mouse_x < (360-40+80+5+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_bet_raise true first; if stat.button then begin if first then "Bet " ^ bet_input () else "Raise " ^ bet_input () end else text_hover first max_wager last_call end
-  else begin draw_options max_wager last_call first; text_hover first max_wager last_call end
+  then begin draw_bet_raise true first; auto_synchronize true; if stat.button then begin if first then "Bet " ^ bet_input () else "Raise " ^ bet_input () end else text_hover first max_wager last_call end
+  else begin draw_options max_wager last_call first; auto_synchronize true; text_hover first max_wager last_call end
 
 let rc_setup (gametable : Table.table) p max_wager bot = 
   if bot then
@@ -207,7 +208,6 @@ let rc_setup (gametable : Table.table) p max_wager bot =
       else begin draw_options !max_wager 0 false; unclick (); text_hover false !max_wager 0 end in
     erase_options (); 
     parse input p max_wager end
-
 
 let request_choice_help round (gametable : Table.table) p max_wager bot =
   let p_bet = rc_setup gametable p max_wager bot in 
