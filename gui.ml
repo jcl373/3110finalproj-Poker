@@ -88,5 +88,5 @@ let draw_blinds blind (gametable : Table.table) f =
   moveto ((fst blind.location)-35) ((snd blind.location)-20); 
   draw_string ("Blind bet " ^ string_of_int (f gametable.blinds));
   Prompt.draw_pot gametable;
-  Unix.sleepf 2.
+  Unix.sleepf 0.5
 

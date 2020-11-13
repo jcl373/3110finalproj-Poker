@@ -155,7 +155,7 @@ let start_game name =
     dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
     draw_dealer (Table.extract_value gametable.dealer);
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
-    Unix.sleepf 2.;
+    Unix.sleepf 0.5;
 
     (* Blind bets *)
     let sb = Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players)) in
@@ -186,7 +186,7 @@ let start_game name =
 let main () =
   try begin 
     (* FOR WINDOWS USERS *)
-    (*open_graph "localhost:0.0 720x720"; *) 
+    (*open_graph "localhost:0.0 720x720";*)
     (* FOR MAC USERS *)
     open_graph " 720x720";
 

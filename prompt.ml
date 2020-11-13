@@ -114,7 +114,7 @@ let bot_bet_opt max_wager (gametable : Table.table) (p : Table.person)
   then max_wager := Bet.current_wager bot_bet;
   Bet.wager bot_bet gametable.pot p.chips (Bet.current_wager bot_bet) 
     !max_wager;
-  Unix.sleepf 2.;
+  Unix.sleepf 1.;
   draw_player p; draw_pot gametable; 
   moveto ((fst p.location)-35) ((snd p.location)-20); 
   draw_string (string_of_choice bot_bet p);
@@ -189,6 +189,8 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
   else begin draw_options max_wager last_call; text_hover first max_wager last_call end
 
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
+  set_color yellow;
+  draw_rect ((fst p.location)-40) ((snd p.location)-25) 80 50;
   if List.length gametable.in_players = 1 then () else 
     match p.position with
     | Some Folded | Some AllIn _ -> ()
@@ -200,7 +202,6 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
         match bot_bet with 
         | Fold -> p.position <- Some Folded; 
           print_choice bot_bet p; 
-          Unix.sleepf 2.; 
           draw_player p; 
           draw_pot gametable; 
           moveto ((fst p.location)-35) ((snd p.location)-20); 
@@ -217,12 +218,12 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
         | _ ->
           begin
             try
-              begin 
+              begin
                 let input = if gametable.last_call = 1 then 
-                    text_hover true !max_wager 1
+                    begin draw_options !max_wager 1; text_hover true !max_wager 1 end
                   else if !max_wager = 0 
-                  then text_hover true !max_wager 0
-                  else text_hover false !max_wager 0 in
+                  then begin draw_options !max_wager 0; text_hover true !max_wager 0 end
+                  else begin draw_options !max_wager 0; text_hover false !max_wager 0 end in
                 erase_options ();
                 let player_bet = parse input p max_wager in  
                 let bet_check = Bet.check_wager player_bet !max_wager in
