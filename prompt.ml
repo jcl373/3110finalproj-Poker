@@ -164,7 +164,7 @@ let draw_options (max_wager : int) last_call first =
     draw_call_check false first max_wager end
 
 let rec unclick unit =
-  if button_down () then unclick () else ()
+  if button_down () then unclick () else begin Unix.sleepf 0.2; () end
 
 let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
   let bet_input unit = 
