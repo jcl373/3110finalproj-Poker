@@ -154,15 +154,15 @@ let erase_options unit =
   erase_box ();
   fill_rect (360-80-40-5) (250-25-50-5) (80+80+80+5+5) (50)
 
-let draw_options (max_wager : int) last_call =
+let draw_options (max_wager : int) last_call first =
   erase_box ();
   if last_call = 0 then begin
-    draw_bet_raise false false;
-    draw_call_check false false max_wager;
+    draw_bet_raise false first;
+    draw_call_check false first max_wager;
     draw_fold false; end
   else begin
     draw_fold false;
-    draw_call_check false false max_wager end
+    draw_call_check false first max_wager end
 
 let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
   let bet_input unit = 
@@ -189,8 +189,8 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
   else if stat.mouse_x > (360-40) && stat.mouse_x < (360-40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
   then begin draw_call_check true first max_wager; if stat.button then begin if first && last_call = 0 then "Check" else "Call" end else text_hover first max_wager last_call end
   else if last_call <> 1 && stat.mouse_x > (360-40+80+5) && stat.mouse_x < (360-40+80+5+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_bet_raise true first; if stat.button then begin if first then "Bet" ^ bet_input () else "Raise " ^ bet_input () end else text_hover first max_wager last_call end
-  else begin draw_options max_wager last_call; text_hover first max_wager last_call end
+  then begin draw_bet_raise true first; if stat.button then begin if first then "Bet " ^ bet_input () else "Raise " ^ bet_input () end else text_hover first max_wager last_call end
+  else begin draw_options max_wager last_call first; text_hover first max_wager last_call end
 
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
   set_color yellow;
@@ -224,10 +224,10 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
             try
               begin
                 let input = if gametable.last_call = 1 then 
-                    begin draw_options !max_wager 1; text_hover true !max_wager 1 end
+                    begin draw_options !max_wager 1 false; text_hover false !max_wager 1 end
                   else if !max_wager = 0 
-                  then begin draw_options !max_wager 0; text_hover true !max_wager 0 end
-                  else begin draw_options !max_wager 0; text_hover false !max_wager 0 end in
+                  then begin draw_options !max_wager 0 true; text_hover true !max_wager 0 end
+                  else begin draw_options !max_wager 0 false; text_hover false !max_wager 0 end in
                 erase_options ();
                 let player_bet = parse input p max_wager in  
                 let bet_check = Bet.check_wager player_bet !max_wager in
