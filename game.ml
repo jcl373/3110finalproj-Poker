@@ -37,6 +37,11 @@ let h_of_list lst =
 let n_of_list lst n =
   nth_of_list lst n 0
 
+let t_of_list lst =
+  match lst with 
+  | h::t -> t
+  | [] -> failwith "Empty list has no tail"
+
 let extract_value = function
   | Some x -> x
   | None -> raise Empty ;;
@@ -136,36 +141,14 @@ let compare_hands_helper (hand: result) =
   | OnePair (_,_,_,_) -> 2
   | HighCard _ -> 1
 
-let fourofking_fullhouse_comp a1 a2 b1 b2 =
-  if a1 > b1 then -1 
-  else if b1 > a1 then 1 
-  else if a2 > b2 then -1 
-  else if b2 > a1 then 1 
-  else 0
-
-let comp_3kind_2pair a1 a2 a3 b1 b2 b3 =
-  if a1 > b1 then -1 
-  else if b1 > a1 then 1 
-  else if a2 > b2 then -1
-  else if b2 > a2 then 1 
-  else if a3 > b3 then -1 
-  else if b3 > a3 then 1 
-  else 0
-
-let highcard_straightflush_comp a b =
-  if a > b then -1 else if a = b then 0 else 1
-
-let flush_helper_compare a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 = 
-  if a1 > b1 then -1 
-  else if b1 > a1 then 1 
-  else if a2 > b2 then -1 
-  else if b2 > a2 then 1 
-  else if a3 > b3 then -1 
-  else if b3 > a3 then 1 
-  else if a4 > b4 then -1 
-  else if b4 > a4 then 1 
-  else if a5 > b5 then -1 
-  else if b5 > a5 then 1 else 0
+(*helper for compare_hands *)
+let rec compare_lists x y =
+  let first_ele = h_of_list x in 
+  let second_ele = h_of_list y in 
+  let comp = compare second_ele first_ele in 
+  if first_ele = None then 0 
+  else if comp <> 0 then comp 
+  else compare_lists (t_of_list x) (t_of_list y)
 
 let compare_hands (hand1 : result) (hand2 : result) : int =
   let h1 = compare_hands_helper hand1 in
@@ -175,23 +158,15 @@ let compare_hands (hand1 : result) (hand2 : result) : int =
   else
     match (hand1, hand2) with
     | (RoyalFlush, RoyalFlush) -> 0
-    | (StraightFlush a, StraightFlush b) -> highcard_straightflush_comp a b
-    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> fourofking_fullhouse_comp a1 a2 b1 b2
-    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> fourofking_fullhouse_comp a1 a2 b1 b2
-    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> flush_helper_compare a1 a2 a3 a4 a5 b1 b2 b3 b4 b5
-    | (Straight a, Straight b) -> highcard_straightflush_comp a b
-    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> comp_3kind_2pair a1 a2 a3 b1 b2 b3
-    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> comp_3kind_2pair a1 a2 a3 b1 b2 b3
-    | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> begin 
-        if a1 > b1 then -1 
-        else if b1 > a1 then 1 
-        else if a2 > b2 then -1 
-        else if b2 > a2 then 1 
-        else if a3 > b3 then -1 
-        else if b3 > a3 then 1 
-        else if a4 > b4 then -1 
-        else if b4 > a4 then 1 else 0 end
-    | (HighCard a, HighCard b) -> highcard_straightflush_comp a b
+    | (StraightFlush a, StraightFlush b) -> compare_lists [a] [b]
+    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> compare_lists [a1;a2] [b1;b2]
+    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> compare_lists [a1;a2] [b1;b2]
+    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> compare_lists [a1;a2;a3;a4;a5] [b1;b2;b3;b4;b5]
+    | (Straight a, Straight b) -> compare_lists [a] [b]
+    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> compare_lists [a1;a2;a3] [b1;b2;b3]
+    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> compare_lists [a1;a2;a3] [b1;b2;b3]
+    | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> compare_lists [a1;a2;a3;a4] [b1;b2;b3;b4]
+    | (HighCard a, HighCard b) -> compare_lists [a] [b]
     | _ -> failwith("faulty comparison")
 
 let rec choose n k =
