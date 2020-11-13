@@ -141,7 +141,7 @@ let start_game name =
 
   let rec round i =
     set_color white;
-    draw_rect 0 0 750 750;
+    fill_rect 0 0 750 750;
     draw_table ();
     draw_players gametable.players 0;
 
