@@ -201,6 +201,7 @@ let auto_remove table (p : person)  : unit =
   end else () 
 
 let end_prompt x f i  = 
+  draw_quit false; draw_stay false;
   exit_hover x f i
 
 let min_players gametable f i = 
