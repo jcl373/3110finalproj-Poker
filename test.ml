@@ -138,6 +138,13 @@ let pp_result (r : Game.result) =
 (** [hand_test name hand expected_output] constructs an OUnit
     test named [name] that asserts the quality of [expected_output]
     with [evaluate_hand hand]. *)
+
+(*Tests for Deck.ml end here *)
+
+(*Tests for table.ml start here *)
+(*Tests for table.ml end here *)
+
+(*Tests for game.ml start here *)
 let hand_test
     (name : string) 
     (hand : Deck.card array)
@@ -185,14 +192,40 @@ let hand_tests =
 
 ]
 
-(*Tests for Deck.ml end here *)
+let compare_hand_test
+    (name : string) 
+    (hand1 : Game.result)
+    (hand2 : Game.result)
+    (expected_output : int) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (compare_hands hand1 hand2)  ~printer:string_of_int)
 
-(*Tests for table.ml start here *)
+let compare_hand_tests =
+  [   
+    compare_hand_test "Different hands, hand1 better" (RoyalFlush) (StraightFlush 7) ~-1;
+    compare_hand_test "Different hands, hand2 better" (StraightFlush 7) (RoyalFlush) 1;
+    compare_hand_test "both royalflush" (RoyalFlush) (RoyalFlush) 0;
+    compare_hand_test "both sflush, hand1 better" (StraightFlush 9) (StraightFlush 7) ~-1;
+    compare_hand_test "both sflush, hand2 better" (StraightFlush 7) (StraightFlush 9) 1;
+    compare_hand_test "both sflush, equal" (StraightFlush 7) (StraightFlush 7) 0;
+    compare_hand_test "both 4kind, hand1 better" (FourOfKind (9,3)) (FourOfKind (7,2)) ~-1;
+    compare_hand_test "both 4kind, hand2 better" (FourOfKind (7,3)) (FourOfKind (11,2)) 1;
+    compare_hand_test "both 4kind, hand1 better,4pair same" (FourOfKind (9,3)) (FourOfKind (9,2)) ~-1;
+    compare_hand_test "both 4kind, hand2 better,4pair same" (FourOfKind (7,3)) (FourOfKind (7,6)) 1;
+    compare_hand_test "both 4kind, equal" (FourOfKind (7,2)) (FourOfKind (7,2)) 0;
+    compare_hand_test "both fhouse, hand1 better diff 3kind" (FullHouse (8,3)) (FullHouse (7,4)) ~-1;
+    compare_hand_test "both fhouse, hand1 better same 3kind" (FullHouse (7,3)) (FullHouse (7,2)) ~-1;
+    compare_hand_test "both fhouse, hand2 better diff 3kind" (FullHouse (8,3)) (FullHouse (9,4)) 1;
+    compare_hand_test "both fhouse, hand2 better same 3kind" (FullHouse (11,3)) (FullHouse (11,6)) 1;
+    compare_hand_test "both fhouse, equal" (FullHouse (7,2)) (FullHouse (7,2)) 0;
+]
 
+(* Tests for game.ml end here *)
 let suite =
   "test suite"  >::: List.flatten [
     deck_tests;
-    hand_tests
+    hand_tests;
+    compare_hand_tests
   ]
 
 let _ = run_test_tt_main suite
