@@ -49,21 +49,20 @@ let parse str (p : Table.person) max_wager : Bet.choice =
   | h :: t -> 
     begin 
       if !max_wager = 0 then 
-        begin 
-          if h = "Check" then Check
-          else if h = "Fold" then Fold
-          else if h = "Bet" then Bet (int_of_string (String.concat "" t))
-          else if h = "Raise" then Raise (int_of_string (String.concat "" t))
-          else if h = "AllIn" || h = "Allin" then AllIn !(p.chips)
-          else raise(Bet.InvalidResponse) 
-        end
+        match h with 
+        | "Check" -> Check
+        | "Fold" -> Fold
+        | "Bet" -> Bet (int_of_string (String.concat "" t))
+        | "AllIn" | "Allin" -> AllIn !(p.chips)
+        | _ -> raise(Bet.InvalidResponse) 
+
       else 
-      if h = "Check" then Check
-      else if h = "Fold" then Fold
-      else if h = "Call" then Call !max_wager
-      else if h = "Raise" then Raise (int_of_string (String.concat "" t))
-      else if h = "AllIn" || h = "Allin" then AllIn !(p.chips)
-      else raise(Bet.InvalidResponse) 
+        match h with 
+        | "Call" -> Call !max_wager
+        | "Fold" -> Fold
+        | "Raise" -> Raise (int_of_string (String.concat "" t))
+        | "AllIn" | "Allin" -> AllIn !(p.chips)
+        | _ -> raise(Bet.InvalidResponse) 
     end 
 
 let draw_player (p : Table.person) =
@@ -188,6 +187,47 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int): string =
   then begin draw_bet_raise true first; if stat.button then begin if first then "Bet" ^ bet_input () else "Raise " ^ bet_input () end else text_hover first max_wager last_call end
   else begin draw_options max_wager last_call; text_hover first max_wager last_call end
 
+let rc_setup (gametable : Table.table) p max_wager bot = 
+  if bot then
+    if gametable.last_call = 0 
+    then bot_choice p max_wager 
+    else bot_choice_fold p max_wager 
+  else begin 
+    let input = if gametable.last_call = 1 then 
+        begin draw_options !max_wager 1; text_hover true !max_wager 1 end
+      else if !max_wager = 0 
+      then begin draw_options !max_wager 0; text_hover true !max_wager 0 end
+      else begin draw_options !max_wager 0; text_hover false !max_wager 0 end in
+    erase_options (); 
+    parse input p max_wager end
+
+
+let request_choice_help round (gametable : Table.table) p max_wager bot =
+  let p_bet = rc_setup gametable p max_wager bot in 
+  let bet_check = Bet.check_wager p_bet !max_wager in
+  set_color white; fill_rect (360-105) 100 210 13;
+  match p_bet with
+  | Fold -> p.position <- Some Folded; 
+    print_choice p_bet p; 
+    draw_player p; 
+    draw_pot gametable; 
+    moveto ((fst p.location)-35) ((snd p.location)-20); 
+    draw_string (string_of_choice p_bet p); 
+    Table.next_br_prep gametable 
+  | AllIn x -> p.position <- Some (AllIn round); 
+    if bot then bot_bet_opt max_wager gametable p p_bet 
+    else player_bet_opt max_wager gametable p p_bet bet_check
+  | _ ->   
+    if bot then bot_bet_opt max_wager gametable p p_bet 
+    else player_bet_opt max_wager gametable p p_bet bet_check
+
+let is_bot (p : Table.person) = 
+  (p.name = "Bot 1" || 
+   p.name = "Bot 2" || 
+   p.name = "Bot 3" || 
+   p.name = "Bot 4" || 
+   p.name = "Bot 5") 
+
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
   set_color yellow;
   draw_rect ((fst p.location)-40) ((snd p.location)-25) 80 50;
@@ -195,62 +235,17 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
     match p.position with
     | Some Folded | Some AllIn _ -> ()
     | _ ->
-      if (p.name = "Bot 1" || p.name = "Bot 2" || p.name = "Bot 3" || p.name = "Bot 4" || p.name = "Bot 5")
-      then let bot_bet = if gametable.last_call = 0 
-             then bot_choice p max_wager 
-             else bot_choice_fold p max_wager in
-        match bot_bet with 
-        | Fold -> p.position <- Some Folded; 
-          print_choice bot_bet p; 
-          draw_player p; 
-          draw_pot gametable; 
-          moveto ((fst p.location)-35) ((snd p.location)-20); 
-          draw_string (string_of_choice bot_bet p); 
-          Table.next_br_prep gametable 
-        | AllIn x -> p.position <- Some (AllIn round); 
-          bot_bet_opt max_wager gametable p bot_bet
-        | _ -> bot_bet_opt max_wager gametable p bot_bet 
+      try 
+        request_choice_help round gametable p max_wager (is_bot p)
+      with 
+      | Bet.InvalidResponse -> print_endline "Invalid Choice. Try again.";
+        request_choice max_wager gametable round p 
+      | Bet.InvalidWager -> print_endline "Invalid Wager Amount. Try again.";
+        moveto (360-105) (100);
+        set_color red;
+        draw_string "Invalid Wager Amount. Select again.";
+        request_choice max_wager gametable round p 
 
-      else 
-        match p.position with 
-        | Some Folded   -> ()
-        | Some (AllIn _) -> ()
-        | _ ->
-          begin
-            try
-              begin
-                let input = if gametable.last_call = 1 then 
-                    begin draw_options !max_wager 1; text_hover true !max_wager 1 end
-                  else if !max_wager = 0 
-                  then begin draw_options !max_wager 0; text_hover true !max_wager 0 end
-                  else begin draw_options !max_wager 0; text_hover false !max_wager 0 end in
-                erase_options ();
-                let player_bet = parse input p max_wager in  
-                let bet_check = Bet.check_wager player_bet !max_wager in
-                set_color white;
-                fill_rect (360-105) 100 210 13;
-                match player_bet with
-                | Fold -> p.position <- Some Folded; 
-                  print_choice player_bet p; 
-                  draw_player p; 
-                  draw_pot gametable; 
-                  moveto ((fst p.location)-35) ((snd p.location)-20); 
-                  draw_string (string_of_choice player_bet p); 
-                  Table.next_br_prep gametable 
-                | AllIn x -> p.position <- Some (AllIn round); 
-                  player_bet_opt max_wager gametable p player_bet bet_check
-                | _ -> player_bet_opt max_wager gametable p player_bet bet_check
-
-              end
-            with 
-            | Bet.InvalidResponse -> print_endline "Invalid Choice. Try again.";
-              request_choice max_wager gametable round p 
-            | Bet.InvalidWager -> print_endline "Invalid Wager Amount. Try again.";
-              moveto (360-105) (100);
-              set_color red;
-              draw_string "Invalid Wager Amount. Select again.";
-              request_choice max_wager gametable round p 
-          end
 
 
 
