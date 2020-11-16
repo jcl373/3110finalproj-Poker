@@ -238,12 +238,66 @@ let compare_hand_tests =
     compare_hand_test "both hcard, equal" (HighCard 6) (HighCard 6) 0;
 ]
 
+let evaluate_hands_test
+    (name : string) 
+    (hole : Deck.card array)
+    (community : Deck.card array)
+    (expected_output : result) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (evaluate_hands hole community) ~printer:pp_result)
+
+  let evaluate_hands_tests = 
+    [
+      evaluate_hands_test "High card evaluated" [|{rank = 2;suit='C'};{rank = 4;suit='S'}|] 
+                          [|{rank = 6;suit='C'};{rank = 8;suit='S'};
+                          {rank = 12;suit='D'};{rank = 10;suit='D'};
+                          {rank = 1; suit = 'H'}|] (HighCard 12); 
+      evaluate_hands_test "OnePair evaluated" [|{rank = 2;suit='C'};{rank = 4;suit='S'}|] 
+                          [|{rank = 9;suit='C'};{rank = 5;suit='S'};
+                          {rank = 11;suit='D'};{rank = 8;suit='D'};
+                          {rank = 11; suit = 'H'}|] (OnePair (11,9,8,5)); 
+      evaluate_hands_test "TwoPair evaluated" [|{rank = 2;suit='C'};{rank = 4;suit='S'}|] 
+                          [|{rank = 9;suit='C'};{rank = 5;suit='S'};
+                          {rank = 11;suit='D'};{rank = 9;suit='D'};
+                          {rank = 11; suit = 'H'}|] (TwoPair (11,9,5)); 
+      evaluate_hands_test "ThreeKind evaluated" [|{rank = 2;suit='C'};{rank = 4;suit='S'}|] 
+                          [|{rank = 9;suit='C'};{rank = 5;suit='S'};
+                          {rank = 11;suit='D'};{rank = 11;suit='C'};
+                          {rank = 11; suit = 'H'}|] (ThreeOfKind (11,9,5)); 
+      evaluate_hands_test "Straight evaluated" [|{rank = 7;suit='S'};{rank = 4;suit='S'}|] 
+                          [|{rank = 8;suit='C'};{rank = 3;suit='S'};
+                          {rank = 9;suit='D'};{rank = 10;suit='C'};
+                          {rank = 11; suit = 'H'}|] (Straight (11)); 
+      evaluate_hands_test "Flush evaluated" [|{rank = 6;suit='H'};{rank = 3;suit='H'}|] 
+                          [|{rank = 2;suit='H'};{rank = 3;suit='S'};
+                          {rank = 9;suit='D'};{rank = 10;suit='H'};
+                          {rank = 11; suit = 'H'}|] (Flush (6,3,2,10,11)); 
+      evaluate_hands_test "Fullhouse evaluated" [|{rank = 6;suit='H'};{rank = 6;suit='D'}|] 
+                          [|{rank = 2;suit='D'};{rank = 3;suit='C'};
+                          {rank = 6;suit='C'};{rank = 10;suit='H'};
+                          {rank = 10; suit = 'D'}|] (FullHouse (6,10)); 
+      evaluate_hands_test "4Kind evaluated" [|{rank = 11;suit='S'};{rank = 4;suit='S'}|] 
+                          [|{rank = 9;suit='C'};{rank = 5;suit='S'};
+                          {rank = 11;suit='D'};{rank = 11;suit='C'};
+                          {rank = 11; suit = 'H'}|] (FourOfKind (11,9));
+      evaluate_hands_test "4Kind evaluated" [|{rank = 8;suit='S'};{rank = 7;suit='S'}|] 
+                          [|{rank = 9;suit='C'};{rank = 5;suit='S'};
+                          {rank = 10;suit='S'};{rank = 9;suit='S'};
+                          {rank = 11; suit = 'S'}|] (StraightFlush (11));
+      evaluate_hands_test "4Kind evaluated" [|{rank = 12;suit='S'};{rank = 10;suit='S'}|] 
+                          [|{rank = 3;suit='C'};{rank = 5;suit='D'};
+                          {rank = 11;suit='S'};{rank = 13;suit='S'};
+                          {rank = 1; suit = 'S'}|] (RoyalFlush);
+                      
+    ]
+
 (* Tests for game.ml end here *)
 let suite =
   "test suite"  >::: List.flatten [
     deck_tests;
     hand_tests;
-    compare_hand_tests
+    compare_hand_tests;
+    evaluate_hands_tests
   ]
 
 let _ = run_test_tt_main suite
