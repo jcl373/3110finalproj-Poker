@@ -123,7 +123,7 @@ let bot_bet_opt max_wager (gametable : Table.table) (p : Table.person)
   let curr_wger = Bet.current_wager bot_bet in 
   if curr_wger > !max_wager 
   then max_wager := curr_wger;
-  p.last_bet <- curr_wger;
+  if gametable.last_call = 0 then p.last_bet <- curr_wger;
   Bet.wager bot_bet gametable.pot p.chips (curr_bet max_wager gametable p) 
     !max_wager;
   draw_player p; draw_pot gametable; 
