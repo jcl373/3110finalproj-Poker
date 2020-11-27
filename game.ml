@@ -87,10 +87,11 @@ let check_straight h =
   let hsort = (List.sort compare_cards (Array.to_list h)) in
   let length = List.length hsort in 
   let headrank = getRank (extract_value (h_of_list hsort)) in 
-  let sndrank = get_rank_helper hsort 1 in 
-  let thdrank = get_rank_helper hsort 2 in 
-  let frthrank = get_rank_helper hsort 3 in 
-  let tailrank = get_rank_helper hsort (length - 1) in 
+  let app_func = get_rank_helper hsort in 
+  let sndrank = app_func 1 in 
+  let thdrank = app_func 2 in 
+  let frthrank = app_func 3 in 
+  let tailrank = app_func (length - 1) in 
   if headrank - tailrank = 4 then Straight (headrank)
   else if check_straight_helper headrank tailrank sndrank thdrank frthrank then Straight 5 
   else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then Straight 1
