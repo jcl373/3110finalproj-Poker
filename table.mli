@@ -15,6 +15,18 @@ type person = {name : string; mutable hand: Deck.card * Deck.card;
                mutable position : pos option; 
                location : int * int } 
 
+(** The type [table] represents a poker table.
+  [pot] is a mutable int ref which represents the amount in the pot
+  [blinds] is an int tuple representing the SB and the BB respectively
+  [river] are the river cards in the middle of the table
+  [players] are the players in the game
+  [in_players] is ....
+  [out_players] are the players which have left the game
+  [dealer] is the person who is the dealer
+  [round_num] represents the round number of the entire game
+  [side_pots] handles any side potss
+  [last_bet] is the person who made the ...
+  [last_call] is the latest call value *)
 type table = {mutable pot : int ref ; blinds: int * int; 
               mutable river: Deck.card list; 
               mutable players : person list; mutable in_players : person list; 
@@ -24,14 +36,24 @@ type table = {mutable pot : int ref ; blinds: int * int;
               mutable last_bet : person option;
               mutable last_call : int;}
 
+(**[empty_table sb bb] initalizes an empty table with sb as the 
+    small blind value and bb as the big blind value *)
 val empty_table : int -> int -> table 
+
 
 val new_player : string -> Deck.card -> Deck.card -> int -> int * int -> person
 
+(** [add_player tab player] adds a new person 
+    [player] to the poker table [table] *)
 val add_player : table -> person -> unit
 
+(** [remove_player tab player] removes a new person 
+    [player] to the poker table [table] *)
 val remove_player : table -> person -> unit
 
+(** [choose_dealer table] chooses a new dealer in the current table
+    Dealer responbilities are assigned clockwise, and at the beginning 
+    of the round a dealer is chosen arbitrarily *)
 val choose_dealer : table -> unit
 
 val next_round_prep : table -> unit
@@ -42,8 +64,8 @@ val side_pots_prep : table -> int -> unit
 
 val find_list : 'a list -> 'a -> int option
 
-val n_of_list : 'a list -> int -> 'a option
-
+(** [remove_folded lst] removes the players who have folded from list of
+    players lst *)
 val remove_folded : person list -> person list
 
 val extract_value : 'a option -> 'a

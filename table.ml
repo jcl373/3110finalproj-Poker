@@ -95,9 +95,6 @@ let set_hand (p : person) c1 c2 : unit =
 let remove_folded (list : person list) = 
   List.filter (fun x -> x.position <> Some Folded) list
 
-(** add_player adds a new player to the table. 
-    [table] is a valid table
-    [player] is a valid player *)
 let add_player table player =
   table.players <- player :: table.players 
 
