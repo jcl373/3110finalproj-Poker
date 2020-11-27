@@ -87,7 +87,7 @@ let ace_spade = {rank = 1 ; suit = 'S'} (* Ace of Spades Card *)
 let king_spade = {rank = 13 ; suit = 'S'} (* King of Spades card *)
 let king_hearts = {rank = 13; suit = 'H'} (* King of Hearts*)
 let ace_spade_array =  [|ace_spade|] (*Array containing ace of spades *)
-let ace_king_spade_array = [|ace_spade; king_spade|] (*Array with King/ace of spades *)
+let ace_king_spade_array = [|ace_spade; king_spade|] 
 let multi_deck = ref [|king_hearts;ace_spade;king_spade|]
 let ace_spade_deck = ref [|ace_spade|] (*Deck containing ace of spades *)
 let empty = empty
