@@ -348,12 +348,12 @@ let evaluate_hands_test
                           [|{rank = 9;suit='C'};{rank = 5;suit='S'};
                           {rank = 11;suit='D'};{rank = 11;suit='C'};
                           {rank = 11; suit = 'H'}|] (FourOfKind (11,9));
-      evaluate_hands_test "4Kind evaluated" 
+      evaluate_hands_test "StraightFlush evaluated" 
                           [|{rank = 8;suit='S'};{rank = 7;suit='S'}|] 
                           [|{rank = 9;suit='C'};{rank = 5;suit='S'};
                           {rank = 10;suit='S'};{rank = 9;suit='S'};
                           {rank = 11; suit = 'S'}|] (StraightFlush (11));
-      evaluate_hands_test "4Kind evaluated" 
+      evaluate_hands_test "RoyalFlush evaluated" 
                           [|{rank = 12;suit='S'};{rank = 10;suit='S'}|] 
                           [|{rank = 3;suit='C'};{rank = 5;suit='D'};
                           {rank = 11;suit='S'};{rank = 13;suit='S'};
