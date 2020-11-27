@@ -45,9 +45,6 @@ let current_wager (opt : choice) =
   | Raise x -> x
   | AllIn x -> x
 
-(**[Check_wager] takes in a choice [opt] and the current minimum bet
-   [current_bet] that a player can make. It checks to see if the wager is a 
-   valid one, returning true if it is valid and false if it is not valid. *)
 let check_wager (opt: choice) (current_bet: int) =
   match opt with
   | Check -> true
