@@ -102,8 +102,8 @@ let player_bet_opt max_wager (gametable : Table.table) (p : Table.person)
   let curr_wger = Bet.current_wager player_bet in 
   if bet_check = false || Bet.max_wager player_bet !(p.chips) = false
   then raise(Bet.InvalidWager) 
-  else if (curr_wger > !max_wager) && (curr_wger <= !(p.chips))
-  then max_wager := curr_wger;
+  else if (curr_wger > !max_wager) && (curr_wger <= !(p.chips)) then
+    max_wager := curr_wger;
   if gametable.last_call = 0 then p.last_bet <- curr_wger;
   Bet.wager player_bet gametable.pot p.chips (curr_bet max_wager gametable p) 
     !max_wager;

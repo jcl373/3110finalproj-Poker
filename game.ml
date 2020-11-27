@@ -7,7 +7,7 @@ type result =
   | Straight of int (* int is the highest card *)
   | ThreeOfKind of int * int * int (* trips, kicker, kicker *)
   | TwoPair of int * int * int (* pair, pair, kicker *)
-  | OnePair of int * int * int * int (* first int is the pair, rest are kickers *)
+  | OnePair of int * int * int * int (* first int is pair,rest are kickers *)
   | HighCard of int (* int is highest card *)
 
 exception Empty
@@ -80,6 +80,9 @@ let compare_pairs pair1 pair2 =
 let get_rank_helper (sorted: Deck.card list) (num: int) = 
   num |> n_of_list sorted |> extract_value |> getRank
 
+let check_straight_helper hd tl snd thd frth = 
+  (hd,tl,snd) = (1,2,5) && thd + frth = 7 
+
 let check_straight h = 
   let hsort = (List.sort compare_cards (Array.to_list h)) in
   let length = List.length hsort in 
@@ -89,10 +92,10 @@ let check_straight h =
   let frthrank = get_rank_helper hsort 3 in 
   let tailrank = get_rank_helper hsort (length - 1) in 
   if headrank - tailrank = 4 then Straight (headrank)
-  else if headrank = 1 && tailrank = 2 && sndrank = 5 && thdrank + frthrank = 7 then Straight 5
+  else if check_straight_helper headrank tailrank sndrank thdrank frthrank then Straight 5 
   else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then Straight 1
   else HighCard (headrank) 
-
+ 
 let check_straight_flush h = 
   let hsort = (List.sort compare_cards (Array.to_list h)) in
   let length = List.length hsort in 
@@ -102,7 +105,7 @@ let check_straight_flush h =
   let frthrank = get_rank_helper hsort 3 in 
   let tailrank = get_rank_helper hsort (length - 1) in 
   if headrank - tailrank = 4 then StraightFlush (headrank)
-  else if headrank = 1 && tailrank = 2 && sndrank = 5 && thdrank + frthrank = 7 then StraightFlush 5
+  else if check_straight_helper headrank tailrank sndrank thdrank frthrank  then StraightFlush 5
   else if tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 then RoyalFlush
   else Flush (getRank h.(0),getRank h.(1),getRank h.(2),getRank h.(3),getRank h.(4)) 
 
@@ -169,13 +172,19 @@ let compare_hands (hand1 : result) (hand2 : result) : int =
     match (hand1, hand2) with
     | (RoyalFlush, RoyalFlush) -> 0
     | (StraightFlush a, StraightFlush b) -> compare_lists [a] [b]
-    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> compare_lists [a1;a2] [b1;b2]
-    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> compare_lists [a1;a2] [b1;b2]
-    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> compare_lists [a1;a2;a3;a4;a5] [b1;b2;b3;b4;b5]
+    | (FourOfKind (a1, a2), FourOfKind (b1, b2)) -> 
+        compare_lists [a1;a2] [b1;b2]
+    | (FullHouse (a1, a2), FullHouse (b1, b2)) -> 
+        compare_lists [a1;a2] [b1;b2]
+    | (Flush (a1, a2, a3, a4, a5), Flush (b1, b2, b3, b4, b5)) -> 
+        compare_lists [a1;a2;a3;a4;a5] [b1;b2;b3;b4;b5]
     | (Straight a, Straight b) -> compare_lists [a] [b]
-    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> compare_lists [a1;a2;a3] [b1;b2;b3]
-    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> compare_lists [a1;a2;a3] [b1;b2;b3]
-    | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> compare_lists [a1;a2;a3;a4] [b1;b2;b3;b4]
+    | (ThreeOfKind (a1, a2, a3), ThreeOfKind (b1, b2, b3)) -> 
+        compare_lists [a1;a2;a3] [b1;b2;b3]
+    | (TwoPair (a1, a2, a3), TwoPair (b1, b2, b3)) -> 
+        compare_lists [a1;a2;a3] [b1;b2;b3]
+    | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> 
+        compare_lists [a1;a2;a3;a4] [b1;b2;b3;b4]
     | (HighCard a, HighCard b) -> compare_lists [a] [b]
     | _ -> failwith("faulty comparison")
 
@@ -184,9 +193,9 @@ let rec choose n k =
   else match k with
     | [] -> []
     | h :: t ->
-      let before = List.map (fun x -> h :: x) (choose (n-1) t) in
-      let after = choose n t in
-      before @ after
+        let before = List.map (fun x -> h :: x) (choose (n-1) t) in
+        let after = choose n t in
+        before @ after
 
 (**[evaluate_hands] takes in a player's pair of cards [hole] and 
   the current community cards on the table [community] and computes the players 
@@ -195,7 +204,9 @@ let rec choose n k =
   [hole] is a valid Deck.card array of length 2
   [community] is a valid Deck.card array of length 5 *)
 let evaluate_hands (hole : Deck.card array) (community : Deck.card array) =
-  match List.sort compare_hands (List.map evaluate_hand (List.map Array.of_list (choose 5 (Array.to_list(Array.append hole community))))) with
+  let get_deck = community |> Array.append hole |> Array.to_list |> choose 5 in 
+  let hands =  get_deck |> List.map Array.of_list |> List.map evaluate_hand  in 
+  match List.sort compare_hands hands with
   | [] -> failwith("empty")
   | h :: _ -> h
 
@@ -209,5 +220,12 @@ let evaluate_table (table : Table.table)  =
   let rec pairs (list : Table.person list) =
     match list with
     | [] -> []
-    | h :: t -> (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] (Array.of_list table.river)) :: pairs t in
-  table.in_players |> pairs |> sorted_pairs |> h_of_list |> extract_value |> fst
+    | h :: t -> 
+      (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] 
+      (Array.of_list table.river)) :: pairs t in
+      table.in_players 
+      |> pairs 
+      |> sorted_pairs 
+      |> h_of_list 
+      |> extract_value 
+      |> fst

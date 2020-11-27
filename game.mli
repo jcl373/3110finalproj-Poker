@@ -14,6 +14,12 @@ val evaluate_hand : Deck.card array -> result
 
 val compare_hands : result -> result -> int 
 
+(**[evaluate_hands] takes in a player's pair of cards [hole] and 
+  the current community cards on the table [community] and computes the players 
+  best possible hand from this,
+  Returns a result
+  [hole] is a valid Deck.card array of length 2
+  [community] is a valid Deck.card array of length 5 *)
 val evaluate_hands : Deck.card array -> Deck.card array -> result
 
 val evaluate_table : Table.table -> Table.person

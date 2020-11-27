@@ -18,7 +18,8 @@ let max_name_len = 12
    set_color white;
    moveto 205 355;
    draw_string ("> " ^ str);
-   if String.length str = max_name_len then begin moveto 455 355; set_color red; draw_string "Max length" end *)
+   if String.length str = max_name_len then begin moveto 455 355; set_color red; 
+   draw_string "Max length" end *)
 
 
 (* let name_input unit = 
