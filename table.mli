@@ -16,17 +16,17 @@ type person = {name : string; mutable hand: Deck.card * Deck.card;
                location : int * int } 
 
 (** The type [table] represents a poker table.
-  [pot] is a mutable int ref which represents the amount in the pot
-  [blinds] is an int tuple representing the SB and the BB respectively
-  [river] are the river cards in the middle of the table
-  [players] are the players in the game
-  [in_players] is ....
-  [out_players] are the players which have left the game
-  [dealer] is the person who is the dealer
-  [round_num] represents the round number of the entire game
-  [side_pots] handles any side potss
-  [last_bet] is the person who made the ...
-  [last_call] is the latest call value *)
+    [pot] is a mutable int ref which represents the amount in the pot
+    [blinds] is an int tuple representing the SB and the BB respectively
+    [river] are the river cards in the middle of the table
+    [players] are the players in the game
+    [in_players] is ....
+    [out_players] are the players which have left the game
+    [dealer] is the person who is the dealer
+    [round_num] represents the round number of the entire game
+    [side_pots] handles any side potss
+    [last_bet] is the person who made the ...
+    [last_call] is the latest call value *)
 type table = {mutable pot : int ref ; blinds: int * int; 
               mutable river: Deck.card list; 
               mutable players : person list; mutable in_players : person list; 
@@ -61,6 +61,10 @@ val next_round_prep : table -> unit
 val next_br_prep : table -> unit
 
 val side_pots_prep : table -> int -> unit
+
+val n_of_list : 'a list -> int -> 'a option
+
+val h_of_list : 'a list -> 'a option
 
 val find_list : 'a list -> 'a -> int option
 

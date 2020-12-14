@@ -62,38 +62,65 @@ let rec shorten_to_p lst p f acc =
     else shorten_to_p t p f (h :: acc)
 
 
-let choices round  = 
+
+
+let rec choices round  = 
   if round = 1 then begin 
-    let startpos = (!dealer_index + 3) mod (List.length gametable.in_players) in
-    gametable.last_bet <- Table.n_of_list gametable.players startpos;
-    iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
-    if Table.extract_value (Table.find_list gametable.players (Table.extract_value gametable.last_bet)) = 
+    let startpos = 
+      (List.length gametable.in_players)
+      |> (mod) (!dealer_index + 3) in
+    choices_helper startpos round gametable.players
+    (* gametable.last_bet <- Table.n_of_list gametable.players startpos; *)
+    (* iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
+       if Table.extract_value (Table.find_list gametable.players (Table.extract_value gametable.last_bet)) = 
        startpos then ()
-    else 
-      gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
-    shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
+       else 
+       gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
+       shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
                     gametable.players) (Table.extract_value gametable.last_bet) 
-      (Prompt.request_choice max_wager gametable round) []; 
-    gametable.last_call <- 0; end
-  else begin
-    let startpos = (!dealer_index - (List.length gametable.out_players) + 1) mod (List.length gametable.in_players) in
-    gametable.last_bet <- Table.n_of_list gametable.players startpos;
-    let inplayers = gametable.in_players in
-    iter_index startpos (Prompt.request_choice max_wager gametable round) inplayers;
-    if Table.extract_value (Table.find_list gametable.players (Table.extract_value gametable.last_bet)) = 
-       startpos then ()
-    else 
-      gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
-    shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
-                    inplayers) (Table.extract_value gametable.last_bet) 
-      (Prompt.request_choice max_wager gametable round) [];
-    gametable.last_call <- 0
+       (Prompt.request_choice max_wager gametable round) []; 
+       gametable.last_call <- 0; end *)
   end
+  else begin
+
+    let startpos = 
+      List.length gametable.in_players 
+      |> (mod) (!dealer_index - (List.length gametable.out_players) + 1) in
+    let inplayers = gametable.in_players in
+    (* gametable.last_bet <- Table.n_of_list gametable.players startpos; *)
+    choices_helper startpos round inplayers
+    (* let inplayers = gametable.in_players in
+       iter_index startpos (Prompt.request_choice max_wager gametable round) inplayers;
+       if Table.extract_value (Table.find_list gametable.players (Table.extract_value gametable.last_bet)) = 
+       startpos then ()
+       else 
+       gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
+       shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
+                    inplayers) (Table.extract_value gametable.last_bet) 
+       (Prompt.request_choice max_wager gametable round) [];
+       gametable.last_call <- 0 *)
+  end
+
+and choices_helper startpos round inplayers =
+  gametable.last_bet <- Table.n_of_list gametable.players startpos;
+  (* let inplayers = gametable.in_players in *)
+  inplayers |>
+  iter_index startpos (Prompt.request_choice max_wager gametable round);
+  let last_bet = Table.extract_value gametable.last_bet in
+  if Table.extract_value (Table.find_list gametable.players (last_bet)) = 
+     startpos then ()
+  else 
+    gametable.last_call <- 1;
+  shorten_to_p (iter_index_snd startpos last_bet inplayers) last_bet
+    (Prompt.request_choice max_wager gametable round) [];
+  gametable.last_call <- 0
 
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
 let create_bot name start_amt loc =
-  Table.add_player gametable (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) start_amt loc)
+  let card1 = Deck.pop gamedeck in
+  let card2 = Deck.pop gamedeck in
+  Table.add_player gametable (Table.new_player name card1 card2 start_amt loc)
 
 let mid_winner round i = 
   let possible_winner = Table.last_one_wins gametable gamedeck round i in
@@ -127,17 +154,24 @@ let step n round i =
   draw_table_cards gametable;
   draw_players gametable.players 0
 
-
-
-let start_game name =
-  (* Fill table with 5 bots + the player *)
+let create_bots = 
   create_bot "Bot 5" 100 six_locations.(5);
   create_bot "Bot 4" 100 six_locations.(4);
   create_bot "Bot 3" 100 six_locations.(3);
   create_bot "Bot 2" 100 six_locations.(2);
-  create_bot "Bot 1" 100 six_locations.(1); 
-  let player = (Table.new_player name (Deck.pop gamedeck) (Deck.pop gamedeck) 100 six_locations.(0)) in
+  create_bot "Bot 1" 100 six_locations.(1)
+
+let create_player name = 
+  let card1 = Deck.pop gamedeck in
+  let card2 = Deck.pop gamedeck in
+  let player = Table.new_player name card1 card2 100 six_locations.(0) in
   Table.add_player gametable player;
+  player
+
+let start_game name =
+  (* Fill table with 5 bots + the player *)
+  create_bots;
+  let player = create_player name in
 
   (* Pick random dealer *)
   Table.choose_dealer gametable;
@@ -149,13 +183,16 @@ let start_game name =
     draw_players gametable.players 0;
 
     (* Print cards in hole *)
-    print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ ".");
+    (* print_endline ("Your cards are the " ^ Deck.print_card (fst player.hand) ^ " and the " ^ Deck.print_card (snd player.hand) ^ "."); *)
     draw_player_cards (player);
 
     (* Dealer / advance round *)    
     if i = 0 then () 
     else Table.next_round_prep gametable;
-    dealer_index := Table.extract_value(Table.find_list gametable.players (Table.extract_value gametable.dealer));
+    dealer_index := 
+      (Table.extract_value gametable.dealer) 
+      |> Table.find_list gametable.players 
+      |>  Table.extract_value;
     draw_dealer (Table.extract_value gametable.dealer);
     print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
     Unix.sleepf 0.5;
