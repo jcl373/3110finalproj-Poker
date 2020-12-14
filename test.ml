@@ -59,7 +59,8 @@ let push_test
     (d : Deck.deck)
     (expected_output : card array) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output ((!) (push c d)) ~cmp:(cmp_arrays) ~printer:(pp_array pp_card))
+      assert_equal expected_output ((!) (push c d)) ~cmp:(cmp_arrays) 
+        ~printer:(pp_array pp_card))
 
 (** [peek_test name d expected_output] constructs an OUnit
     test named [name] that asserts the quality of [expected_output]
