@@ -2,6 +2,23 @@ open OUnit2
 open Deck
 open Game
 
+(**Test plan:
+    Our team wrote tests to make sure that the game functionality was working
+    properly; however, some aspects of the game simply had to be tested by
+    playing the game. This includes the GUI portion of the program, as well as 
+    other front-end aspects. For our the rest of our tests, we used white-box 
+    testing in order to test that the deck was fnuctioning properly within the 
+    game. Furthermore, we tested that hands were evaluated correctly. In order 
+    to test that our bots were functioning properly and that winners were 
+    given the correct amount of money/the correct person won, we simply played
+    the game.
+    
+    Our test suite ensures that our program is correct because we simply need to
+    test the "backbone" of a poker game: in other words we need to ensure
+    that the deck is working properly and that our functions evaluate hands and
+    handle winnings correctly. The rest is testable through playing the game 
+    multiple times in order to ensure functionality. *)
+
 (** [cmp_arrays a1 a2] compares two arrays to see whether
     they are equivalent arrays.  They must contain the same elements,
     though not necessarily in the same order. *)
