@@ -202,12 +202,6 @@ let rec choose n k =
       let after = choose n t in
       before @ after
 
-(**[evaluate_hands] takes in a player's pair of cards [hole] and 
-   the current community cards on the table [community] and computes the players 
-   best possible hand from this,
-   Returns a result
-   [hole] is a valid Deck.card array of length 2
-   [community] is a valid Deck.card array of length 5 *)
 let evaluate_hands (hole : Deck.card array) (community : Deck.card array) =
   let get_deck = 
     community 
