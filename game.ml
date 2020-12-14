@@ -136,9 +136,6 @@ let check41_32_221_2111 x h =
   | [(x, 2); (y, 1); (z, 1); (w, 1)] -> OnePair (x,y,z,w)
   | _ -> check_flush h
 
-(** evaluate_hand computes the poker hand given a Deck.card array 
-    Returns an instance of type result
-    [hand] is a Deck.card array of length 5 *)
 let evaluate_hand (hand : Deck.card array) : result =
   let histogram = create_histogram hand in
   check41_32_221_2111 histogram hand
@@ -165,12 +162,6 @@ let rec compare_lists x y =
   else if comp <> 0 then comp 
   else compare_lists (t_of_list x) (t_of_list y)
 
-(*informal, clean it up *)
-(** [compare_hands] returns an integer based on which one of 2 hands 
-    is better in terms of poker rules. If [hand1] has a higher score than [hand2],
-    it returns -1. If [hand2] is better than [hand1], it returns 1.
-    [hand1] is a valid hand
-    [hand2] is a valid hand *)
 
 let compare_hands (hand1 : result) (hand2 : result) : int =
   let h1 = compare_hands_helper hand1 in
