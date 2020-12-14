@@ -19,13 +19,17 @@ let name_input unit =
     draw_box str;
     let stat = wait_next_event (Key_pressed :: []) in
     if stat.key = '\027' || stat.key = '\r' then str 
-    else if stat.key = '\b' then text_input (String.sub str 0 (String.length str - 1))
-    else if (String.length str >= max_name_len) then text_input str
+    else if stat.key = '\b' then 
+      String.length str - 1 
+      |> String.sub str 0 
+      |> text_input 
+    else if String.length str >= max_name_len then text_input str
     else text_input (str ^ (Char.escaped stat.key))
   in
   text_input ""
 
-let six_locations = [|(360,250);(175,275);(175,445);(360,470);(545,445);(545,275)|]
+let six_locations = 
+  [|(360,250);(175,275);(175,445);(360,470);(545,445);(545,275)|]
 
 let draw_table () =
   set_color (rgb 68 125 35);

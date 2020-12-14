@@ -14,6 +14,10 @@ exception Invalid_player
 
 exception InvalidResponse
 
+let win_sf = "The winner is "
+
+let win_ss = ".\n" ^ "The winning hand is"
+
 (** [nth_of_list] returns the nth element of the list [lst]
     Returns an option as the list may not contain that number 
     [lst] is a valid list
@@ -138,7 +142,9 @@ let next_br_prep table  =
 
 
 let side_pots_prep table round =
-  let allin = List.filter (fun x -> x.position = Some (AllIn round)) table.in_players in 
+  let allin = 
+    table.in_players 
+    |> List.filter (fun x -> x.position = Some (AllIn round)) in 
   table.side_pots <- (!(table.pot), allin) :: table.side_pots
 (* table.pot <- Bet.empty_pot () *)
 
@@ -152,9 +158,12 @@ let side_pots_prep table round =
 (** Extract common functionality  *) 
 let next_round_prep table =
   let players = List.map (fun x -> x.position <- None; x) table.players in 
-  table.players <- players; table.in_players <- players; table.out_players <- []; 
+  table.players <- players; 
+  table.in_players <- players; 
+  table.out_players <- []; 
   let curr_dealer = find_list table.players (extract_value table.dealer) in
-  let curr_deal_int = if curr_dealer != None then extract_value curr_dealer else 0 in
+  let curr_deal_int = 
+    if curr_dealer != None then extract_value curr_dealer else 0 in
   let length = List.length table.players in
   let new_dealer =  n_of_list table.players ((curr_deal_int + 1) mod length) in 
   table.dealer <- new_dealer;  
@@ -212,15 +221,12 @@ let min_players gametable f i =
 
 
 let winner winner gametable gamedeck f i= 
-  (* let winner = win_list |> h_of_list |> extract_value |> fst in  *)
-
-  ANSITerminal.(print_string [yellow] ("The winner is " ^ winner.name ^ ".\n" ^ "The winning hand is")); 
+  ANSITerminal.(print_string [yellow] (win_sf ^ winner.name ^ win_ss)); 
   ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));  (* TODO : make it say what their hand is *)
   winner.chips := !(winner.chips) + !(gametable.pot);
   gametable.pot := 0;
 
-  (* new round *)
-  gamedeck := !Deck.create;
+  gamedeck := !Deck.create;  (* new round *)
   List.iter (auto_remove gametable) gametable.players;
   gametable.in_players <- gametable.players;
   gametable.out_players <- [];
