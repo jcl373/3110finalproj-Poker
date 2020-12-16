@@ -62,23 +62,11 @@ val next_br_prep : table -> unit
 
 val side_pots_prep : table -> int -> unit
 
-val n_of_list : 'a list -> int -> 'a option
-
-val h_of_list : 'a list -> 'a option
-
-val find_list : 'a list -> 'a -> int option
-
 (** [remove_folded lst] removes the players who have folded from list of
     players lst *)
 val remove_folded : person list -> person list
 
-val extract_value : 'a option -> 'a
-
 val set_hand : person -> Deck.card -> Deck.card -> unit
-
-val init_commcard : table -> Deck.deck -> unit
-
-val add_commcard : table -> Deck.deck -> unit
 
 val auto_remove : table -> person -> unit
 

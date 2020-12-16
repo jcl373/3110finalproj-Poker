@@ -102,9 +102,7 @@ let remove_folded (list : person list) =
 let add_player table player =
   table.players <- player :: table.players 
 
-(** remove_player removes a player from the table. 
-    [table] is a valid table
-    [player] is a valid person *)
+
 let remove_player table player =
   let players_list = table.players in 
   let updated_players = List.filter (fun x -> x <> player) players_list in 
@@ -155,7 +153,6 @@ let side_pots_prep table round =
    | Some Leave -> remove_player table x
    | None -> None *)
 
-(** Extract common functionality  *) 
 let next_round_prep table =
   let players = List.map (fun x -> x.position <- None; x) table.players in 
   table.players <- players; 
@@ -194,11 +191,23 @@ let draw_stay (hover : bool) =
 let rec exit_hover x f i =
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
-  if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_quit true; auto_synchronize true; if stat.button then begin Graphics.close_graph (); exit 0 end else exit_hover x f i end
-  else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_stay true; auto_synchronize true; if stat.button then f (i + 1) else exit_hover x f i end
-  else begin draw_quit false; auto_synchronize true; draw_stay false; exit_hover x f i end
+  if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && 
+    stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin draw_quit true; auto_synchronize true; 
+    if stat.button 
+      then begin 
+        Graphics.close_graph (); 
+      exit 0 end 
+      else exit_hover x f i end
+  else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) 
+    && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  then begin 
+    draw_stay true; auto_synchronize true; 
+  if stat.button then f (i + 1) else exit_hover x f i end
+  else begin draw_quit false; 
+    auto_synchronize true; 
+    draw_stay false; 
+    exit_hover x f i end
 
 let auto_remove table (p : person)  : unit =
   if !(p.chips) < 10 then begin 
