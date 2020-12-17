@@ -21,7 +21,6 @@ let max_name_len = 12
    if String.length str = max_name_len then begin moveto 455 355; set_color red; 
    draw_string "Max length" end *)
 
-
 (* let name_input unit = 
    let rec text_input str : string =
     draw_box str;
@@ -60,9 +59,6 @@ let rec shorten_to_p lst p f acc =
   | [] -> failwith "empty iter list"
   | h :: t -> if h = p then List.iter f (List.rev acc) 
     else shorten_to_p t p f (h :: acc)
-
-
-
 
 let rec choices round  = 
   if round = 1 then begin 
