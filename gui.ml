@@ -93,4 +93,3 @@ let draw_blinds blind (gametable : Table.table) f =
   draw_string ("Blind bet " ^ string_of_int (f gametable.blinds));
   Prompt.draw_pot gametable;
   Unix.sleepf 0.5
-

@@ -5,7 +5,7 @@ MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
-PKGS= unix,ounit2
+PKGS= unix,ounit2,graphics,ANSITerminal
 
 
 default: build
