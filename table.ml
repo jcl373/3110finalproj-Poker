@@ -229,9 +229,9 @@ let min_players gametable f i =
 
 
 
-let winner winner gametable gamedeck f i= 
+let winner winner gametable gamedeck f i = 
   ANSITerminal.(print_string [yellow] (win_sf ^ winner.name ^ win_ss)); 
-  ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));  (* TODO : make it say what their hand is *)
+  ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));
   winner.chips := !(winner.chips) + !(gametable.pot);
   gametable.pot := 0;
 
@@ -276,4 +276,3 @@ let last_one_wins table gamedeck round i=
     ANSITerminal.(print_string [yellow]); 
     Some def_win
   else None;;
-

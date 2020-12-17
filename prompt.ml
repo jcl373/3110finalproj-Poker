@@ -249,9 +249,6 @@ let is_bot (p : Table.person) =
   p.name = "Bot 4" || 
   p.name = "Bot 5"
 
-
-
-
 let rec request_choice max_wager (gametable : Table.table) round (p : Table.person) : unit =
   set_color yellow;
   draw_rect ((fst p.location)-40) ((snd p.location)-25) 80 50;
