@@ -78,6 +78,15 @@ val last_one_wins : table -> 'a -> 'b -> 'c -> person option
 
 val min_players : table -> (int -> unit) -> int -> unit
 
+val n_of_list : 'a list -> int -> 'a option
+
+val extract_value : 'a option -> 'a
+
+val find_list : 'a list -> 'a -> int option
+
+val init_commcard : table -> Deck.deck -> unit
+
+val add_commcard : table -> Deck.deck -> unit
 
 
 exception Empty

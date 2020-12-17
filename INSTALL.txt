@@ -21,9 +21,6 @@ FOR Mac:
 
 3) Place the source code in a directory and open VS code in it.
 
-4) Uncomment the "open_graph9" line for your OS and comment out the other in the 
-   function main in main.ml (toward the bottom)
-
 4) Run 'make play' in the terminal
 
 5) Wait for the game to finish building

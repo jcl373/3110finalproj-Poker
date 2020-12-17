@@ -192,18 +192,18 @@ let rec exit_hover x f i =
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && 
-    stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+     stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
   then begin draw_quit true; auto_synchronize true; 
     if stat.button 
-      then begin 
-        Graphics.close_graph (); 
+    then begin 
+      Graphics.close_graph (); 
       exit 0 end 
-      else exit_hover x f i end
+    else exit_hover x f i end
   else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) 
-    && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+          && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
   then begin 
     draw_stay true; auto_synchronize true; 
-  if stat.button then f (i + 1) else exit_hover x f i end
+    if stat.button then f (i + 1) else exit_hover x f i end
   else begin draw_quit false; 
     auto_synchronize true; 
     draw_stay false; 

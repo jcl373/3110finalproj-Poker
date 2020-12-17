@@ -225,10 +225,8 @@ let start_game name =
 (** [main ()] starts the game *)
 let main () =
   try begin 
-    (* FOR WINDOWS USERS *)
-    (* open_graph "localhost:0.0 720x720"; *)
-    (* FOR MAC USERS *)
-    open_graph " 720x720";
+    begin try   open_graph " 720x720" with
+      | Graphics.Graphic_failure _ -> open_graph "localhost:0.0 720x720" end;
 
     ANSITerminal.(print_string [red]
                     "\n\nWelcome to the poker game.\n");
