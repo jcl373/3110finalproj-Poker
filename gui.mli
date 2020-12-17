@@ -13,19 +13,20 @@ val six_locations : (int * int) array
 (** [draw_table ()] draws the poker table in the window background. *)
 val draw_table : unit -> unit
 
-(** [draw_card c x y] draws the card [c] at the coordinates [x],[y]. *)
+(** [draw_card card x y] draws the card [card] at the coordinates [x],[y]. *)
 val draw_card : Deck.card -> int -> int -> unit
 
-(** [draw_table_cards t] draws the cards in the river for table [t]. *)
+(** [draw_table_cards table] draws the cards in the river for table [table]. *)
 val draw_table_cards : Table.table -> unit
 
-(** [draw_player_cards p] draws the cards in the hand of player [p]. *)
+(** [draw_player_cards player] draws the cards in the hand of player 
+    [player]. *)
 val draw_player_cards : Table.person -> unit
 
-(** [draw_dealer p] draws the dealer tag above player [p]. *)
+(** [draw_dealer player] draws the dealer tag above player [player]. *)
 val draw_dealer : Table.person -> unit
 
-(** [draw_winner p] draws the winner tag above player [p]. *)
+(** [draw_winner player] draws the winner tag above player [player]. *)
 val draw_winner : Table.person -> unit
 
 (** [draw_players players i] recursively draws the graphical panes for the 

@@ -8,11 +8,10 @@ let draw_box str =
   set_color white;
   moveto 205 355;
   draw_string ("> " ^ str);
-  if String.length str = max_name_len then 
-    begin 
-      moveto 455 355; 
-      set_color red; 
-      draw_string "Max length" end
+  if String.length str = max_name_len then begin 
+    moveto 455 355; 
+    set_color red; 
+    draw_string "Max length" end
 
 let name_input unit = 
   let rec text_input str : string =
@@ -37,48 +36,48 @@ let draw_table () =
   fill_circle 235 360 125;
   fill_circle 485 360 125
 
-let draw_card (c : Deck.card) (x : int) (y : int) =
+let draw_card (card : Deck.card) (x : int) (y : int) =
   set_color white;
   fill_rect x y 38 60;
-  if c.suit = 'C' || c.suit = 'S' then set_color black else set_color red;
+  if card.suit = 'C' || card.suit = 'S' then set_color black else set_color red;
   moveto (x + 5) (y + 45);
-  (match c.rank with
+  (match card.rank with
    | 1 -> draw_string "A"
    | 11 -> draw_string "J"
    | 12 -> draw_string "Q"
    | 13 -> draw_string "K"
    | n -> draw_string (string_of_int n));
   moveto (x + 5) (y + 15);
-  draw_string (Char.escaped c.suit)
+  draw_string (Char.escaped card.suit)
 
-let draw_table_cards (t : Table.table) =
-  let rec cards (c : Deck.card list) (i : int) =
-    match c with
+let draw_table_cards (table : Table.table) =
+  let rec cards (card : Deck.card list) (i : int) =
+    match card with
     | [] -> ()
     | h :: t -> begin 
         draw_card h (245 + i * 48) 330;
         cards t (i+1);
       end in
-  cards t.river 0
+  cards table.river 0
 
-let draw_player_cards (p : Table.person) =
+let draw_player_cards (player : Table.person) =
   set_color white;
-  draw_card (fst p.hand) 409 240;
-  draw_card (snd p.hand) (409 + 48) 240
+  draw_card (fst player.hand) 409 240;
+  draw_card (snd player.hand) (409 + 48) 240
 
-let draw_dealer (p : Table.person) =
-  Prompt.draw_player p;
+let draw_dealer (player : Table.person) =
+  Prompt.draw_player player;
   set_color (rgb 200 200 200);
-  fill_rect (fst (p.location) - 40) (snd (p.location) + 25) 80 15;
-  moveto (fst (p.location) - 35) (snd (p.location) + 25);
+  fill_rect (fst (player.location) - 40) (snd (player.location) + 25) 80 15;
+  moveto (fst (player.location) - 35) (snd (player.location) + 25);
   set_color black;
   draw_string "Dealer"
 
-let draw_winner (p : Table.person) =
-  Prompt.draw_player p;
+let draw_winner (player : Table.person) =
+  Prompt.draw_player player;
   set_color yellow;
-  fill_rect (fst (p.location) - 40) (snd (p.location) + 25) 80 15;
-  moveto (fst (p.location) - 35) (snd (p.location) + 25);
+  fill_rect (fst (player.location) - 40) (snd (player.location) + 25) 80 15;
+  moveto (fst (player.location) - 35) (snd (player.location) + 25);
   set_color black;
   draw_string "Winner"
 

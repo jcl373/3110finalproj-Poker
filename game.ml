@@ -46,45 +46,45 @@ let extract_value = function (* REMOVE, replace w librayr*)
   | Some x -> x
   | None -> raise Empty ;;
 
-let create_histogram h = 
-  let x : (int * int) list ref = ref [] in
+let create_histogram hand = 
+  let hist : (int * int) list ref = ref [] in
   let add_to_histogram (card : Deck.card) : unit =
-    match List.assoc_opt card.rank !x with
-    | None -> x := (card.rank, 1) :: !x
-    | Some i -> x := (card.rank, i + 1) :: List.remove_assoc card.rank !x in
-  List.iter add_to_histogram (Array.to_list h);
-  !x 
+    match List.assoc_opt card.rank !hist with
+    | None -> hist := (card.rank, 1) :: !hist
+    | Some i -> hist := (card.rank, i + 1) :: List.remove_assoc card.rank !hist 
+  in
+  List.iter add_to_histogram (Array.to_list hand);
+  !hist
 
-let compare_cards (c1 : Deck.card) (c2 : Deck.card) = 
-  if getRank c1 = getRank c2 then 0
-  else if getRank c1 = 1 then -1 
-  else if getRank c2 = 1 then 1 
-  else if getRank c1 > getRank c2 then -1
+let compare_cards (card1 : Deck.card) (card2 : Deck.card) = 
+  if getRank card1 = getRank card2 then 0
+  else if getRank card1 = 1 then -1 
+  else if getRank card2 = 1 then 1 
+  else if getRank card1 > getRank card2 then -1
   else 1 
 
 let compare_pairs pair1 pair2 = 
   match (pair1, pair2) with
   | ((a,b),(x,y)) -> 
     if b > y then -1 
-    else 
-      begin if b < y then 1 else (* Needs to be cleaned up / broken up*)
-          begin (if a = 1 then -1 
-                 else if x = 1 then 1 
-                 else if a > x then -1 
-                 else if x > a then 1 
-                 else 0) end end
+    else if b < y then 1 
+    else begin 
+      if a = 1 then -1 
+      else if x = 1 then 1 
+      else if a > x then -1 
+      else if x > a then 1 
+      else 0 end
 
-(*helper for check_straght and check_straight_flush,
-  helps for getting rank with n_of_list
-  this is just for documentation purposes, edit this later *)
-let get_rank_helper (sorted: Deck.card list) (num: int) = 
+(* helper for check_straght and check_straight_flush,
+   helps for getting rank with n_of_list *)
+let get_rank_helper (sorted : Deck.card list) (num : int) = 
   num |> n_of_list sorted |> extract_value |> getRank
 
 let check_straight_helper hd tl snd thd frth = 
   (hd,tl,snd) = (1,2,5) && thd + frth = 7 
 
-let check_straight h = 
-  let hsort = List.sort compare_cards (Array.to_list h) in
+let check_straight hand = 
+  let hsort = List.sort compare_cards (Array.to_list hand) in
   let length = List.length hsort in 
   let headrank = getRank (extract_value (h_of_list hsort)) in 
   let app_func = get_rank_helper hsort in 
@@ -100,8 +100,8 @@ let check_straight h =
   then Straight 1
   else HighCard (headrank) 
 
-let check_straight_flush h = 
-  let hsort = List.sort compare_cards (Array.to_list h) in
+let check_straight_flush hand = 
+  let hsort = List.sort compare_cards (Array.to_list hand) in
   let length = List.length hsort in 
   let headrank = getRank (extract_value (h_of_list hsort)) in 
   let sndrank = get_rank_helper hsort 1 in 
@@ -115,32 +115,33 @@ let check_straight_flush h =
     tailrank = 10 && headrank = 1 && frthrank = 11 && sndrank + thdrank = 25 
   then RoyalFlush
   else 
-    let h0 = getRank h.(0) in
-    Flush (h0,getRank h.(1),getRank h.(2),getRank h.(3),getRank h.(4)) 
+    let h0 = getRank hand.(0) in
+    Flush (h0, getRank hand.(1), getRank hand.(2), getRank hand.(3), 
+           getRank hand.(4)) 
 
 
-let check_flush h = 
+let check_flush hand = 
   let sameSuit (suit : char) (card : Deck.card) = card.suit = suit in
-  if (Array.for_all (sameSuit 'C') h) then check_straight_flush h
-  else if (Array.for_all (sameSuit 'D') h) then check_straight_flush h
-  else if (Array.for_all (sameSuit 'H') h) then check_straight_flush h
-  else if (Array.for_all (sameSuit 'S') h) then check_straight_flush h
-  else check_straight h 
+  if (Array.for_all (sameSuit 'C') hand) then check_straight_flush hand
+  else if (Array.for_all (sameSuit 'D') hand) then check_straight_flush hand
+  else if (Array.for_all (sameSuit 'H') hand) then check_straight_flush hand
+  else if (Array.for_all (sameSuit 'S') hand) then check_straight_flush hand
+  else check_straight hand 
 
-let check41_32_221_2111 x h = 
+let check41_32_221_2111 x hand = 
   match List.sort compare_pairs x with
   | [(x, 4); (y, 1)] -> FourOfKind (x, y)
   | [(x, 3); (y, 2)] -> FullHouse (x, y)
   | [(x, 3); (y, 1); (z, 1)] -> ThreeOfKind (x, y, z)
   | [(x, 2); (y, 2); (z, 1)] -> TwoPair (x, y, z)
   | [(x, 2); (y, 1); (z, 1); (w, 1)] -> OnePair (x,y,z,w)
-  | _ -> check_flush h
+  | _ -> check_flush hand
 
 let evaluate_hand (hand : Deck.card array) : result =
   let histogram = create_histogram hand in
   check41_32_221_2111 histogram hand
 
-let compare_hands_helper (hand: result) =
+let compare_hands_helper (hand : result) =
   match hand with
   | RoyalFlush -> 10
   | StraightFlush _ -> 9
@@ -153,15 +154,14 @@ let compare_hands_helper (hand: result) =
   | OnePair (_,_,_,_) -> 2
   | HighCard _ -> 1
 
-(*helper for compare_hands *)
-let rec compare_lists x y =
-  let first_ele = h_of_list x in 
-  let second_ele = h_of_list y in 
+(* helper for compare_hands *)
+let rec compare_lists lst1 lst2 =
+  let first_ele = h_of_list lst1 in 
+  let second_ele = h_of_list lst2 in 
   let comp = compare second_ele first_ele in 
   if first_ele = None then 0 
   else if comp <> 0 then comp 
-  else compare_lists (t_of_list x) (t_of_list y)
-
+  else compare_lists (t_of_list lst1) (t_of_list lst2)
 
 let compare_hands (hand1 : result) (hand2 : result) : int =
   let h1 = compare_hands_helper hand1 in
@@ -182,8 +182,9 @@ let compare_hands (hand1 : result) (hand2 : result) : int =
       compare_lists [a1;a2;a3] [b1;b2;b3]
     | (OnePair (a1, a2, a3, a4), OnePair (b1, b2, b3, b4)) -> 
       compare_lists [a1;a2;a3;a4] [b1;b2;b3;b4]
-    | _ -> failwith("faulty comparison")
+    | _ -> failwith("Faulty comparison")
 
+(* n choose k mathematical operation *)
 let rec choose n k =
   if n <= 0 then [ [] ]
   else match k with
@@ -202,24 +203,21 @@ let evaluate_hands (hole : Deck.card array) (community : Deck.card array) =
   let hands =  
     get_deck 
     |> List.map Array.of_list 
-    |> List.map evaluate_hand  in 
+    |> List.map evaluate_hand in 
   match List.sort compare_hands hands with
-  | [] -> failwith("empty")
+  | [] -> failwith("No hands")
   | h :: _ -> h
 
-let sorted_pairs (p : (Table.person * result) list) =
-  let sort_pair p1 p2 =
-    compare_hands (snd p1) (snd p2) in
-  List.sort sort_pair p
-
+let sorted_pairs (pairs : (Table.person * result) list) =
+  let sort_pair p1 p2 = compare_hands (snd p1) (snd p2) in
+  List.sort sort_pair pairs
 
 let evaluate_table (table : Table.table)  =
   let rec pairs (list : Table.person list) =
     match list with
     | [] -> []
-    | h :: t -> 
-      (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] 
-         (Array.of_list table.river)) :: pairs t in
+    | h :: t -> (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] 
+                   (Array.of_list table.river)) :: pairs t in
   table.in_players 
   |> pairs 
   |> sorted_pairs 

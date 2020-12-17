@@ -25,13 +25,13 @@ exception InvalidResponse
 (** Raised when a wager is impossible or not allowed by the response. *)
 exception InvalidWager
 
-(** [amount b1] returns the amount of money in bag [b1]. *)
+(** [amount bag] returns the amount of money in bag [bag]. *)
 val amount : bag -> int
 
-(** [add b1 amt] add the amount [amt] to bag [b1]. *)
+(** [add bag amt] add the amount [amt] to bag [bag]. *)
 val add : bag -> int -> bag 
 
-(** [set amt b1] sets the amount of pot [b1] to [amt] - ![b1]. *)
+(** [set amt bag] sets the amount of bat [bag] to [amt] - ![bag]. *)
 val set : int -> bag -> unit
 
 (** [empty_bag ()] returns a reference to a new empty bag. *)
@@ -50,14 +50,14 @@ val check_wager : choice -> int -> bool
     the player is contributing to the pot from a valid choice [opt]. *)
 val current_wager : choice -> int
 
-(** [wager opt p1 b1 amt current_bet] places the amount [amt] from a player's bag [b1] into
-    the pot [p1] with the current bet being [current_bet].
+(** [wager opt pot bag amt current_bet] places the amount [amt] from a player's 
+    bag [bag] into the pot [pot] with the current bet being [current_bet].
     Precondition: 
-    [amt] is an int >= 0 and <= ![b1] *)
+    [amt] is an int >= 0 and <= ![bag] *)
 val wager : choice -> pot -> bag -> int -> int -> unit
 
-(** [max_wager opt p] returns whether the response [opt] exceeds the 
-    value [p]. *)
+(** [max_wager opt max] returns whether the response [opt] exceeds the 
+    value [max]. *)
 val max_wager : choice -> int -> bool
 
 (** [clear pot] sets the value of [pot] to 0. *)

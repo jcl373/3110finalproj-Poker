@@ -6,8 +6,8 @@ type card = {rank : int; suit : char}
 (** [deck] represents a mutable array of cards. *)
 type deck = card array ref
 
-(* [print_card c] is the string representation of the card [c]. *)
-let print_card (c : card) : string = 
+(* [print_card card] is the string representation of the card [c]. *)
+let print_card (card : card) : string = 
   let print_suit (c : char) : string =
     match c with
     | 'C' -> "Clubs"
@@ -15,7 +15,7 @@ let print_card (c : card) : string =
     | 'D' -> "Diamonds"
     | 'S' -> "Spades" 
     | _ -> failwith "invalid suit" in
-  match c with
+  match card with
   | {rank = 13; suit = c} -> "King of " ^ print_suit c
   | {rank = 12; suit = c} -> "Queen of " ^ print_suit c
   | {rank = 11; suit = c} -> "Jack of " ^ print_suit c
@@ -27,35 +27,33 @@ let empty () = ref [||]
 
 let push_unit (c : card) (d : deck) = d := (Array.append [|c|] !d)
 
-(* To push [c] onto [d], we create a new array with value [c] at the 
-   beginning followed by the values of [d]. *)
-let push (c : card) (d : deck) = push_unit c d; d
+let push (card : card) (deck : deck) = push_unit card deck; deck
 
-(* [peek d] is the first element of [d].*)
-let peek (d : deck) : 'a = !d.(0)
+(* [peek deck] is the first element of [deck].*)
+let peek (deck : deck) : 'a = !deck.(0)
 
-(* [pop d] removes and then returns the first element of [d]. *)
-let pop (d : deck) : 'a = let first = !d.(0) in
-  d := Array.sub !d 1 (Array.length !d - 1);
+(* [pop deck] removes and then returns the first element of [deck]. *)
+let pop (deck : deck) : 'a = let first = !deck.(0) in
+  deck := Array.sub !deck 1 (Array.length !deck - 1);
   first
 
 (* [shuffle d] randomizes the deck [d] using the Knuth shuffle a
    lgorithm before returning the shuffled deck. *)
-let shuffle (d : deck) = 
+let shuffle (deck : deck) = 
   Random.self_init ();
   let swap index1 index2 =
-    let temp = Array.get !d index1 in
-    Array.set !d index1 (Array.get !d index2);
-    Array.set !d index2 temp in
-  for i = Array.length !d - 1 downto 1 do
+    let temp = Array.get !deck index1 in
+    Array.set !deck index1 (Array.get !deck index2);
+    Array.set !deck index2 temp in
+  for i = Array.length !deck - 1 downto 1 do
     let j : int = Random.int (i + 1) in
     swap i j;
   done;
-  d
+  deck
 
-(* [create_help s] initializes a new deck s times with the standard 
+(* [create_help size] initializes a new deck s times with the standard 
    52-card deck.*)
-let create_help s = 
+let create_help size = 
   let d = ref [||] in
   for i = 1 to 13 do
     push_unit {rank = i; suit = 'C'} d;
@@ -70,8 +68,8 @@ let create_help s =
 let create : deck =
   create_help 1 
 
-(* [create_size s] calls [create_help s] to intialize a new deck with s number 
+(* [create_size size] calls [create_help s] to intialize a new deck with s number 
    of standard 52-card decks in random order.
    [s] is an int >= 1*)
-let create_size s : deck =
-  create_help s
+let create_size size : deck =
+  create_help size

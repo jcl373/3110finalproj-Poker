@@ -14,26 +14,26 @@ val print_card : card -> string
 (** [empty] is the empty deck. *)
 val empty : unit -> deck
 
-(** [push c d] creates a new array with value [c] at the 
-    beginning of [d] followed by the original values of [d] before returning 
-    [d]. *)
+(** [push card deck] creates a new array with value [card] at the 
+    beginning of [deck] followed by the original values of [deck] before 
+    returning it. *)
 val push : card -> deck -> deck
 
-(** [peek d] is the first element of [d]. *)
+(** [peek deck] is the first element of [deck]. *)
 val peek : deck -> card
 
-(** [pop d] removes and then returns the first element of [d]. *)
+(** [pop deck] removes and then returns the first element of [deck]. *)
 val pop : deck -> card
 
-(** [shuffle d] randomizes the deck [d] using the Knuth shuffle algorithm before 
-    returning the shuffled deck. *)
-val shuffle: deck -> deck
+(** [shuffle deck] randomizes the deck [deck] using the Knuth shuffle algorithm 
+    before returning the shuffled deck. *)
+val shuffle : deck -> deck
 
 (** [create] calls [create_help 1] to initialize a new deck with the standard 
     52-card deck in random order. *)
 val create : deck
 
-(** [create_size s] calls [create_help s] to intialize a new deck with s number 
-    of standard 52-card decks in random order.
-    [s] is an int >= 1. *)
+(** [create_size size] calls [create_help size] to intialize a new deck with 
+    [size] number of standard 52-card decks in random order.
+    [size] is an int >= 1. *)
 val create_size : int -> deck
