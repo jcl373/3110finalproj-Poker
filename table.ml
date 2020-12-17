@@ -55,9 +55,7 @@ let rec print_card_tup tup : string =
 
 let extract_value = function (* REMOVE, replace w librayr*)
   | Some x -> x
-  | None -> raise Empty;;
-
-
+  | None -> raise Empty
 
 (** The type [player] represents a player in the game. A player
     has a name, which is an identifier for the player, a hand, which is a pair of
@@ -67,8 +65,7 @@ type person = {name : string;
                chips : Bet.bag; 
                mutable last_bet : int;
                mutable position : pos option;
-               location : int * int
-              } 
+               location : int * int} 
 
 type table = {mutable pot : Bet.pot; 
               blinds: int * int; 
@@ -80,28 +77,37 @@ type table = {mutable pot : Bet.pot;
               mutable round_num : int; 
               mutable side_pots : (int * person list) list;
               mutable last_bet : person option;
-              mutable last_call : int;
-             }
+              mutable last_call : int}
 
-let new_player nm c1 c2 start_amt loc =
-  {name = nm ; hand = (c1, c2); chips = Bet.add (Bet.empty_bag ()) start_amt;
-   last_bet = 0; position = None; location = loc}
+let new_player nm card1 card2 start_amt loc =
+  {name = nm ; 
+   hand = (card1, card2); 
+   chips = Bet.add (Bet.empty_bag ()) start_amt;
+   last_bet = 0; 
+   position = None; 
+   location = loc}
 
 let empty_table small_blind big_blind = 
-  {pot = (Bet.empty_pot ()); blinds = (small_blind, big_blind); 
-   river = []; players = []; in_players = []; out_players = []; 
-   dealer = None; round_num = 1; side_pots = []; last_bet =  None;
+  {pot = (Bet.empty_pot ()); 
+   blinds = (small_blind, big_blind); 
+   river = []; 
+   players = []; 
+   in_players = []; 
+   out_players = []; 
+   dealer = None; 
+   round_num = 1; 
+   side_pots = []; 
+   last_bet =  None;
    last_call = 0;}
 
-let set_hand (p : person) c1 c2 : unit =
-  p.hand <- (c1, c2)
+let set_hand (player : person) card1 card2 : unit =
+  player.hand <- (card1, card2)
 
 let remove_folded (list : person list) = 
   List.filter (fun x -> x.position <> Some Folded) list
 
 let add_player table player =
   table.players <- player :: table.players 
-
 
 let remove_player table player =
   let players_list = table.players in 
@@ -145,7 +151,6 @@ let side_pots_prep table round =
     |> List.filter (fun x -> x.position = Some (AllIn round)) in 
   table.side_pots <- (!(table.pot), allin) :: table.side_pots
 (* table.pot <- Bet.empty_pot () *)
-
 
 (* let match_pos table x = 
    match x.position with
@@ -209,20 +214,20 @@ let rec exit_hover x f i =
     draw_stay false; 
     exit_hover x f i end
 
-let auto_remove table (p : person)  : unit =
-  if !(p.chips) < 10 then begin 
-    print_endline (p.name ^ " has left because they ran out of chips.");
-    remove_player table p
-  end else () 
+let auto_remove table (player : person)  : unit =
+  if !(player.chips) < 10 then begin 
+    print_endline (player.name ^ " has left because they ran out of chips.");
+    remove_player table player end 
+  else () 
 
 let end_prompt x f i  = 
-  draw_quit false; draw_stay false;
+  draw_quit false; 
+  draw_stay false;
   exit_hover x f i
 
 let min_players gametable f i = 
   if List.length gametable.players <= 2 then begin
     print_endline "There are not enough players to continue. The game is over.";
-    (* maybe add something about how much money i had and how much the max person had?*)
     exit 0
   end
   else end_prompt 1 f i
@@ -232,14 +237,13 @@ let winner winner gametable gamedeck f i =
   ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));
   winner.chips := !(winner.chips) + !(gametable.pot);
   gametable.pot := 0;
-
   gamedeck := !Deck.create;  (* new round *)
   List.iter (auto_remove gametable) gametable.players;
   gametable.in_players <- gametable.players;
   gametable.out_players <- [];
 
-  let rec reset_hand list =
-    match list with
+  let rec reset_hand lst =
+    match lst with
     | [] -> ()
     | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
       reset_hand t in
@@ -247,15 +251,13 @@ let winner winner gametable gamedeck f i =
   end_prompt 1 f i;
   reset_hand gametable.players
 
-let rec elig_pots gametable player acc=
+let rec elig_pots gametable player acc =
   let sidepots = gametable.side_pots in
   match sidepots with
   | [] -> acc
-  | h :: t -> if List.exists (fun x -> x = player) (snd h) 
-    then elig_pots gametable player (fst h + acc)
+  | h :: t -> if List.exists (fun x -> x = player) (snd h) then 
+      elig_pots gametable player (fst h + acc)
     else elig_pots gametable player acc
-
-;;
 
 (* FInishing this *)
 let winning_player win_list gametable gamedeck f i =
@@ -264,8 +266,6 @@ let winning_player win_list gametable gamedeck f i =
   | Some (AllIn x) -> elig_pots gametable win_p 0
   | _ -> failwith "TODO"
 (* | _ -> winner win_p gametable gamedeck f i  *)
-
-
 
 let last_one_wins table gamedeck round i =
   if List.length table.in_players = 1 then 

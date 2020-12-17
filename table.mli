@@ -53,8 +53,9 @@ type table = {mutable pot : int ref ; blinds: int * int;
     big blind [bb]. *)
 val empty_table : int -> int -> table 
 
-(** [new_player nm c1 c2 start_amt loc] creates a new player with name [nm], 
-    hand [c1 * c2], starting amount [start_amt], and location [loc]. *)
+(** [new_player nm card1 card2 start_amt loc] creates a new player with name 
+    [nm], hand [card1 * card2], starting amount [start_amt], and location 
+    [loc]. *)
 val new_player : string -> Deck.card -> Deck.card -> int -> int * int -> person
 
 (** [add_player tab player] adds a new person 
@@ -86,11 +87,12 @@ val side_pots_prep : table -> int -> unit
     players [lst]. *)
 val remove_folded : person list -> person list
 
-(** [set_hand p c1 c2] sets player [p]'s hand to [c1 * c2]. *)
+(** [set_hand player card1 card2] sets player [player]'s hand to 
+    [card1 * card2]. *)
 val set_hand : person -> Deck.card -> Deck.card -> unit
 
-(** [auto_remove table p] removes player [p] from table [table] if they have 
-    too few chips. *)
+(** [auto_remove table player] removes player [player] from table [table] if 
+    they have too few chips. *)
 val auto_remove : table -> person -> unit
 
 (** [winner winner gametable gamedeck f i] announces the winner [winner] of 
