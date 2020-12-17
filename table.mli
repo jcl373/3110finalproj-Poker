@@ -78,6 +78,8 @@ val last_one_wins : table -> 'a -> 'b -> 'c -> person option
 
 val min_players : table -> (int -> unit) -> int -> unit
 
+(* remove following vals once replaced in table *)
+
 val n_of_list : 'a list -> int -> 'a option
 
 val extract_value : 'a option -> 'a
