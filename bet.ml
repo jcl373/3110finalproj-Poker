@@ -45,7 +45,7 @@ let current_wager (opt : choice) =
   | Raise x -> x
   | AllIn x -> x
 
-let check_wager (opt: choice) (current_bet: int) =
+let check_wager (opt : choice) (current_bet: int) =
   match opt with
   | Check -> true
   | Fold -> true
@@ -53,7 +53,7 @@ let check_wager (opt: choice) (current_bet: int) =
   | Raise x -> if x <= current_bet || current_bet = 0 then false else true
   | AllIn x -> true
 
-let max_wager (opt: choice) (p : int) = 
+let max_wager (opt : choice) (p : int) = 
   match opt with
   | Bet x | Call x | Raise x -> if x > p then false else true
   | _ -> true
@@ -64,7 +64,7 @@ let max_wager (opt: choice) (p : int) =
     [p1] is a valid pot
     [b1] is a valid bag
     [amt] is an int >= 0 and <= !b1 *)
-let wager (opt : choice) (p1 : pot) (b1 : bag) amt (current_bet: int) =  
+let wager (opt : choice) (p1 : pot) (b1 : bag) amt (current_bet : int) =  
   if (current_wager opt > !b1) && not (check_wager opt current_bet) then 
     raise InvalidWager else
     p1 := !p1 + amt; 
