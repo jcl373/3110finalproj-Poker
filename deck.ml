@@ -1,12 +1,12 @@
-(** The type [card] represents a playing card with a rank from 1-13 and a suit
+(** [card] represents a playing card with a rank from 1-13 and a suit
     denoted by the first character of the suit's name. A card with the rank of
     1 represents an ace, 11 is a Jack, 12 a Queen, and 13 a King.*)
 type card = {rank : int; suit : char}
 
-(** The type [deck] represents a mutable array of cards. *)
+(** [deck] represents a mutable array of cards. *)
 type deck = card array ref
 
-(* [print_card c] is the string representation of the card [c] *)
+(* [print_card c] is the string representation of the card [c]. *)
 let print_card (c : card) : string = 
   let print_suit (c : char) : string =
     match c with
@@ -22,7 +22,7 @@ let print_card (c : card) : string =
   | {rank = 1; suit = c} -> "Ace of " ^ print_suit c
   | {rank = n; suit = c} -> string_of_int n ^ " of " ^ print_suit c
 
-(* [empty] is the empty deck *)
+(* [empty] is the empty deck. *)
 let empty () = ref [||]
 
 let push_unit (c : card) (d : deck) = d := (Array.append [|c|] !d)
