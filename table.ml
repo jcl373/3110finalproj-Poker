@@ -23,7 +23,7 @@ let win_ss = ".\n" ^ "The winning hand is"
     [lst] is a valid list
     [n] is an int; represents the nth element
     [acc] is an int; the accumulator *)
-let rec nth_of_list lst n acc = 
+let rec nth_of_list lst n acc =  (* REMOVE, replace w librayr*)
   match lst with
   | [] -> None
   | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
@@ -31,14 +31,14 @@ let rec nth_of_list lst n acc =
 (** [n_of_list] returns the first (head) element of the list [lst]
     Returns an option as the list may not contain anything.
     [lst] is a valid list*)
-let h_of_list lst =
+let h_of_list lst = (* REMOVE, replace w librayr*)
   nth_of_list lst 0 0
 
 (** [n_of_list] returns the nth element of the list [lst]
     Returns an option as the list may not contain that number.
     [lst] is a valid list
     [n] is an int; represents the nth element *)
-let n_of_list lst n =
+let n_of_list lst n = (* REMOVE, replace w librayr*)
   nth_of_list lst n 0
 
 let rec find_in_list lst x acc =
@@ -192,18 +192,18 @@ let rec exit_hover x f i =
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && 
-    stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+     stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
   then begin draw_quit true; auto_synchronize true; 
     if stat.button 
-      then begin 
-        Graphics.close_graph (); 
+    then begin 
+      Graphics.close_graph (); 
       exit 0 end 
-      else exit_hover x f i end
+    else exit_hover x f i end
   else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) 
-    && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+          && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
   then begin 
     draw_stay true; auto_synchronize true; 
-  if stat.button then f (i + 1) else exit_hover x f i end
+    if stat.button then f (i + 1) else exit_hover x f i end
   else begin draw_quit false; 
     auto_synchronize true; 
     draw_stay false; 

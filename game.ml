@@ -19,7 +19,7 @@ let getRank (card : Deck.card) = card.rank
     [lst] is a valid list
     [n] is an int; represents the nth element
     [acc] is an int; the accumulator *)
-let rec nth_of_list lst n acc = 
+let rec nth_of_list lst n acc =  (* REMOVE, replace w librayr*)
   match lst with
   | [] -> None
   | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
@@ -27,17 +27,17 @@ let rec nth_of_list lst n acc =
 (** [n_of_list] returns the first (head) element of the list [lst]
     Returns an option as the list may not contain anything.
     [lst] is a valid list*)
-let h_of_list lst =
+let h_of_list lst = (* REMOVE, replace w librayr*)
   nth_of_list lst 0 0
 
 (** [n_of_list] returns the nth element of the list [lst]
     Returns an option as the list may not contain that number.
     [lst] is a valid list
     [n] is an int; represents the nth element *)
-let n_of_list lst n =
+let n_of_list lst n = (* REMOVE, replace w librayr*)
   nth_of_list lst n 0
 
-let t_of_list lst =
+let t_of_list lst = (* REMOVE, replace w librayr*)
   match lst with 
   | h::t -> t
   | [] -> failwith "Empty list has no tail"
