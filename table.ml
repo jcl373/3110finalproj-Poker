@@ -41,19 +41,19 @@ let h_of_list lst = (* REMOVE, replace w librayr*)
 let n_of_list lst n = (* REMOVE, replace w librayr*)
   nth_of_list lst n 0
 
-let rec find_in_list lst x acc =
+let rec find_in_list lst x acc = (* REMOVE, replace w librayr*)
   match lst with
   | [] -> None
   | h :: t -> if h = x then Some acc else find_in_list t x (acc + 1)
 
-let find_list lst x =
+let find_list lst x = (* REMOVE, replace w librayr*)
   find_in_list lst x 0
 
 let rec print_card_tup tup : string =
   match tup with
   | (x,y) -> " the " ^ Deck.print_card x ^ " and the " ^ Deck.print_card y ^ "."
 
-let extract_value = function
+let extract_value = function (* REMOVE, replace w librayr*)
   | Some x -> x
   | None -> raise Empty;;
 

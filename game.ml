@@ -42,7 +42,7 @@ let t_of_list lst = (* REMOVE, replace w librayr*)
   | h::t -> t
   | [] -> failwith "Empty list has no tail"
 
-let extract_value = function
+let extract_value = function (* REMOVE, replace w librayr*)
   | Some x -> x
   | None -> raise Empty ;;
 
