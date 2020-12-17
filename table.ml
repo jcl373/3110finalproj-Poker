@@ -227,8 +227,6 @@ let min_players gametable f i =
   end
   else end_prompt 1 f i
 
-
-
 let winner winner gametable gamedeck f i = 
   ANSITerminal.(print_string [yellow] (win_sf ^ winner.name ^ win_ss)); 
   ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));
@@ -269,7 +267,7 @@ let winning_player win_list gametable gamedeck f i =
 
 
 
-let last_one_wins table gamedeck round i=
+let last_one_wins table gamedeck round i =
   if List.length table.in_players = 1 then 
     let def_win = extract_value (h_of_list table.in_players) in
     ("Everyone folded except for " ^ def_win.name ^ ".\n") |>
