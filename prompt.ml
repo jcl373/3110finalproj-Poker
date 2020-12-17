@@ -41,10 +41,10 @@ let print_choice (c : Bet.choice) (p : Table.person) : unit =
   | Fold -> print_endline (p.name ^ " has folded.")
   | Bet i -> print_endline (p.name ^ " has bet " ^ print_choice_helper i)
   | Call i -> print_endline (p.name ^ " has called and bet " ^ 
-    print_choice_helper i)
+                             print_choice_helper i)
   | Raise i -> print_endline (p.name ^ " has raised " ^ print_choice_helper i)
   | AllIn i -> print_endline (p.name ^ " has gone all in and bet " ^ 
-    print_choice_helper i)
+                              print_choice_helper i)
 
 let parse str (p : Table.person) max_wager : Bet.choice =
   let lst = String.split_on_char ' ' str in
@@ -60,7 +60,6 @@ let parse str (p : Table.person) max_wager : Bet.choice =
         | "Bet" -> Bet (int_of_string (String.concat "" t))
         | "AllIn" | "Allin" -> AllIn !(p.chips)
         | _ -> raise(Bet.InvalidResponse) 
-
       else 
         match h with 
         | "Call" -> Call !max_wager
@@ -270,7 +269,3 @@ let rec request_choice max_wager (gametable : Table.table) round (p : Table.pers
         set_color red;
         draw_string "Invalid Wager Amount. Select again.";
         request_choice max_wager gametable round p 
-
-
-
-

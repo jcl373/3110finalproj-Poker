@@ -1,4 +1,4 @@
-(** Handles drawing graphical elements, *)
+(** Handles drawing graphical elements. *)
 
 (** [max_name_len] is the maximum allowed length of a name string. *)
 val max_name_len : int
