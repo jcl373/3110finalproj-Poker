@@ -336,7 +336,7 @@ let evaluate_hands_tests =
     evaluate_hands_test "High card evaluated" 
       [|{rank = 2;suit='C'};{rank = 4;suit='S'}|] 
       [|{rank = 6;suit='C'};{rank = 8;suit='S'};
-        {rank = 12;suit='D'};{rank = 10;suit='D'};
+        {rank = 12;suit='D'};{rank = 10;suit='D'};  
         {rank = 1; suit = 'H'}|] (HighCard 12); 
     evaluate_hands_test "OnePair evaluated" 
       [|{rank = 2;suit='C'};{rank = 4;suit='S'}|] 
@@ -354,7 +354,7 @@ let evaluate_hands_tests =
         {rank = 11;suit='D'};{rank = 11;suit='C'};
         {rank = 11; suit = 'H'}|] (ThreeOfKind (11,9,5)); 
     evaluate_hands_test "Straight evaluated" 
-      [|{rank = 7;suit='S'};{rank = 4;suit='S'}|] 
+      [|{rank = 7;suit='S'};{rank = 4;suit='S'}|]
       [|{rank = 8;suit='C'};{rank = 3;suit='S'};
         {rank = 9;suit='D'};{rank = 10;suit='C'};
         {rank = 11; suit = 'H'}|] (Straight (11)); 

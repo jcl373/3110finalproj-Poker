@@ -56,8 +56,7 @@ let shuffle (deck : deck) =
 
 (* [create_help size] initializes a new deck s times with the standard 
    52-card deck.*)
-let create_help size = 
-  let deck = ref [||] in
+let create_help size deck = 
   for i = 1 to 13 do
     push_unit {rank = i; suit = 'C'} deck;
     push_unit {rank = i; suit = 'D'} deck;
@@ -68,8 +67,10 @@ let create_help size =
 
 (* [create] calls [create_help 1] to initialize a new deck with the standard 
    52-card deck in random order. *)
-let create : deck =
-  create_help 1 
+let create () : deck =
+  let deck = ref [||] in
+  create_help 1 deck
 
 let create_size size : deck =
-  create_help size
+  let deck = ref [||] in
+  create_help size deck
