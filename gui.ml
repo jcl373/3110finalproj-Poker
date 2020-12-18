@@ -23,8 +23,7 @@ let name_input unit =
       |> String.sub str 0 
       |> text_input 
     else if String.length str >= max_name_len then text_input str
-    else text_input (str ^ (Char.escaped stat.key))
-  in
+    else text_input (str ^ (Char.escaped stat.key)) in
   text_input ""
 
 let six_locations = 
@@ -56,14 +55,13 @@ let draw_table_cards (table : Table.table) =
     | [] -> ()
     | h :: t -> begin 
         draw_card h (245 + i * 48) 330;
-        cards t (i+1);
-      end in
+        cards t (i + 1) end in
   cards table.river 0
 
 let draw_player_cards (player : Table.person) =
   set_color white;
   draw_card (fst player.hand) 409 240;
-  draw_card (snd player.hand) (409 + 48) 240
+  draw_card (snd player.hand) 457 240
 
 let draw_dealer (player : Table.person) =
   Prompt.draw_player player;
@@ -88,7 +86,7 @@ let rec draw_players (players : Table.person list) (i : int) =
 
 let draw_blinds blind (gametable : Table.table) f =
   Prompt.draw_player blind; set_color yellow; 
-  moveto ((fst blind.location)-35) ((snd blind.location)-20); 
+  moveto ((fst blind.location) - 35) ((snd blind.location) - 20); 
   draw_string ("Blind bet " ^ string_of_int (f gametable.blinds));
   Prompt.draw_pot gametable;
   Unix.sleepf 0.5

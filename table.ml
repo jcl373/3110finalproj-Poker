@@ -144,7 +144,6 @@ let next_br_prep table  =
   let folded = List.filter (fun x -> x.position = Some Folded) 
       table.in_players in table.out_players <- folded
 
-
 let side_pots_prep table round =
   let allin = 
     table.in_players 
@@ -181,35 +180,38 @@ let next_round_prep table =
 
 let draw_quit (hover : bool) =
   if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
-  fill_rect (360-80-40-5+40) (250-25-50-5) 80 50;
+  fill_rect 275 170 80 50;
   set_color white;
-  moveto (360-80-40+40) (250-25-15-5);
-  draw_string "No"
+  moveto 280 205;
+  draw_string "Quit"
 
 let draw_stay (hover : bool) =
   if hover then set_color (rgb 67 131 14) else set_color (rgb 87 175 13);
-  fill_rect (360-40+80+5-40) (250-25-50-5) 80 50;
+  fill_rect 365 170 80 50;
   set_color white;
-  moveto (360-40+80+10-40) (250-25-15-5);
-  draw_string "Yes"
+  moveto 370 205;
+  draw_string "Stay"
 
 let rec exit_hover x f i =
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
-  if stat.mouse_x > (360-80-40-5+40) && stat.mouse_x < (360-80-40-5+40+80) && 
-     stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
-  then begin draw_quit true; auto_synchronize true; 
-    if stat.button 
-    then begin 
+  if stat.mouse_x > 275 && stat.mouse_x < 355 && 
+     stat.mouse_y > 170 && stat.mouse_y < 220
+  then begin 
+    draw_quit true; 
+    auto_synchronize true; 
+    if stat.button then begin 
       Graphics.close_graph (); 
       exit 0 end 
     else exit_hover x f i end
-  else if stat.mouse_x > (360-40+80+5-40) && stat.mouse_x < (360-40+80+5-40+80) 
-          && stat.mouse_y > (250-25-50-5) && stat.mouse_y < (250-25-50-5+50)
+  else if stat.mouse_x > 365 && stat.mouse_x < 445 && 
+          stat.mouse_y > 170 && stat.mouse_y < 220
   then begin 
-    draw_stay true; auto_synchronize true; 
+    draw_stay true; 
+    auto_synchronize true; 
     if stat.button then f (i + 1) else exit_hover x f i end
-  else begin draw_quit false; 
+  else begin 
+    draw_quit false; 
     auto_synchronize true; 
     draw_stay false; 
     exit_hover x f i end
@@ -241,7 +243,6 @@ let winner winner gametable gamedeck f i =
   List.iter (auto_remove gametable) gametable.players;
   gametable.in_players <- gametable.players;
   gametable.out_players <- [];
-
   let rec reset_hand lst =
     match lst with
     | [] -> ()
@@ -259,7 +260,7 @@ let rec elig_pots gametable player acc =
       elig_pots gametable player (fst h + acc)
     else elig_pots gametable player acc
 
-(* FInishing this *)
+(* Finishing this *)
 let winning_player win_list gametable gamedeck f i =
   let win_p = win_list |> h_of_list |> extract_value |> fst in
   match win_p.position with
@@ -273,4 +274,4 @@ let last_one_wins table gamedeck round i =
     ("Everyone folded except for " ^ def_win.name ^ ".\n") |>
     ANSITerminal.(print_string [yellow]); 
     Some def_win
-  else None;;
+  else None

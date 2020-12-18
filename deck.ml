@@ -14,7 +14,7 @@ let print_card (card : card) : string =
     | 'H' -> "Hearts"
     | 'D' -> "Diamonds"
     | 'S' -> "Spades" 
-    | _ -> failwith "invalid suit" in
+    | _ -> failwith "Invalid suit" in
   match card with
   | {rank = 13; suit = c} -> "King of " ^ print_suit c
   | {rank = 12; suit = c} -> "Queen of " ^ print_suit c
@@ -25,15 +25,18 @@ let print_card (card : card) : string =
 (* [empty] is the empty deck. *)
 let empty () = ref [||]
 
-let push_unit (c : card) (d : deck) = d := (Array.append [|c|] !d)
+let push_unit (card : card) (deck : deck) = deck := Array.append [|card|] !deck
 
-let push (card : card) (deck : deck) = push_unit card deck; deck
+let push (card : card) (deck : deck) = 
+  push_unit card deck; 
+  deck
 
 (* [peek deck] is the first element of [deck].*)
 let peek (deck : deck) : 'a = !deck.(0)
 
 (* [pop deck] removes and then returns the first element of [deck]. *)
-let pop (deck : deck) : 'a = let first = !deck.(0) in
+let pop (deck : deck) : 'a = 
+  let first = !deck.(0) in
   deck := Array.sub !deck 1 (Array.length !deck - 1);
   first
 
@@ -54,22 +57,19 @@ let shuffle (deck : deck) =
 (* [create_help size] initializes a new deck s times with the standard 
    52-card deck.*)
 let create_help size = 
-  let d = ref [||] in
+  let deck = ref [||] in
   for i = 1 to 13 do
-    push_unit {rank = i; suit = 'C'} d;
-    push_unit {rank = i; suit = 'D'} d;
-    push_unit {rank = i; suit = 'H'} d;
-    push_unit {rank = i; suit = 'S'} d;
+    push_unit {rank = i; suit = 'C'} deck;
+    push_unit {rank = i; suit = 'D'} deck;
+    push_unit {rank = i; suit = 'H'} deck;
+    push_unit {rank = i; suit = 'S'} deck;
   done;
-  shuffle d
+  shuffle deck
 
 (* [create] calls [create_help 1] to initialize a new deck with the standard 
    52-card deck in random order. *)
 let create : deck =
   create_help 1 
 
-(* [create_size size] calls [create_help s] to intialize a new deck with s number 
-   of standard 52-card decks in random order.
-   [s] is an int >= 1*)
 let create_size size : deck =
   create_help size

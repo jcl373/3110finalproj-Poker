@@ -1,5 +1,4 @@
 open Graphics
-
 open Gui
 
 exception InvalidResponse
@@ -34,7 +33,7 @@ let max_name_len = 12
 
 let rec print_card_list list : string =
   match list with
-  | [] -> failwith "can't print empty deck"
+  | [] -> failwith "Can't print empty deck"
   | h :: [] -> "and the " ^ Deck.print_card h ^ "."
   | h :: t -> "the " ^ Deck.print_card h ^ ", " ^ (print_card_list t)
 
@@ -45,18 +44,18 @@ let rec print_list (list : Table.person list) : string =
 
 let rec iter_index (i : int) (f : 'a -> unit) (list : 'a list) : unit =
   match list with
-  | [] -> failwith "empty iter list"
+  | [] -> failwith "Can't iterate on empty list"
   | h :: t -> if (i = 0) then List.iter f list
     else iter_index (i-1) f (t @ (h :: []))
 
 let rec iter_index_snd (i : int) p (list : 'a list)  =
   match list with
-  | [] -> failwith "empty iter list"
+  | [] -> failwith "Can't iterate on empty list"
   | h :: t -> if (i = 0) then list else iter_index_snd (i-1) p (t @ (h :: []))
 
 let rec shorten_to_p lst p f acc =
   match lst with 
-  | [] -> failwith "empty iter list"
+  | [] -> failwith "Can't iterate on empty list"
   | h :: t -> if h = p then List.iter f (List.rev acc) 
     else shorten_to_p t p f (h :: acc)
 

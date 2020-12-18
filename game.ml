@@ -7,7 +7,7 @@ type result =
   | Straight of int (* int is the highest card *)
   | ThreeOfKind of int * int * int (* trips, kicker, kicker *)
   | TwoPair of int * int * int (* pair, pair, kicker *)
-  | OnePair of int * int * int * int (* first int is pair,rest are kickers *)
+  | OnePair of int * int * int * int (* first int is pair, rest are kickers *)
   | HighCard of int (* int is highest card *)
 
 exception Empty
@@ -22,7 +22,7 @@ let getRank (card : Deck.card) = card.rank
 let rec nth_of_list lst n acc =  (* REMOVE, replace w librayr*)
   match lst with
   | [] -> None
-  | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
+  | h :: t -> if acc = n then Some h else nth_of_list t n (acc + 1)
 
 (** [n_of_list] returns the first (head) element of the list [lst]
     Returns an option as the list may not contain anything.
@@ -39,11 +39,11 @@ let n_of_list lst n = (* REMOVE, replace w librayr*)
 
 let t_of_list lst = (* REMOVE, replace w librayr*)
   match lst with 
-  | h::t -> t
+  | h :: t -> t
   | [] -> failwith "Empty list has no tail"
 
 let extract_value = function (* REMOVE, replace w librayr*)
-  | Some x -> x
+  | Some value -> value
   | None -> raise Empty ;;
 
 let create_histogram hand = 
@@ -64,16 +64,17 @@ let compare_cards (card1 : Deck.card) (card2 : Deck.card) =
   else 1 
 
 let compare_pairs pair1 pair2 = 
+  let compare_first first second =
+    if first = 1 then -1 
+    else if second = 1 then 1 
+    else if first > second then -1 
+    else if second > first then 1 
+    else 0 in
   match (pair1, pair2) with
   | ((a,b),(x,y)) -> 
     if b > y then -1 
     else if b < y then 1 
-    else begin 
-      if a = 1 then -1 
-      else if x = 1 then 1 
-      else if a > x then -1 
-      else if x > a then 1 
-      else 0 end
+    else compare_first a x
 
 (* helper for check_straght and check_straight_flush,
    helps for getting rank with n_of_list *)
@@ -118,7 +119,6 @@ let check_straight_flush hand =
     let h0 = getRank hand.(0) in
     Flush (h0, getRank hand.(1), getRank hand.(2), getRank hand.(3), 
            getRank hand.(4)) 
-
 
 let check_flush hand = 
   let sameSuit (suit : char) (card : Deck.card) = card.suit = suit in

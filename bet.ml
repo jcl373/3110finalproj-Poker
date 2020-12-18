@@ -31,7 +31,7 @@ let add bag amt =
   bag
 
 let set amt bag =
-  bag := (amt - !bag)
+  bag := amt - !bag
 
 (** [current_wager] takes in a choice [opt] and returns the amount that 
     the player is contributing to the pot. 
@@ -59,8 +59,8 @@ let max_wager (opt : choice) (max : int) =
   | _ -> true
 
 let wager (opt : choice) (pot : pot) (bag : bag) amt (current_bet : int) =  
-  if current_wager opt > !bag && not (check_wager opt current_bet) then 
-    raise InvalidWager
+  if current_wager opt > !bag && not (check_wager opt current_bet)
+  then raise InvalidWager
   else pot := !pot + amt; 
   bag := !bag - amt
 
