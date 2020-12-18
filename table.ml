@@ -26,7 +26,7 @@ let win_ss = ".\n" ^ "The winning hand is"
 let rec nth_of_list lst n acc =  (* REMOVE, replace w librayr*)
   match lst with
   | [] -> None
-  | h :: t -> if acc = n then Some h else nth_of_list t n (acc+1)
+  | h :: t -> if acc = n then Some h else nth_of_list t n (acc + 1)
 
 (** [n_of_list] returns the first (head) element of the list [lst]
     Returns an option as the list may not contain anything.
@@ -51,7 +51,7 @@ let find_list lst x = (* REMOVE, replace w librayr*)
 
 let rec print_card_tup tup : string =
   match tup with
-  | (x,y) -> " the " ^ Deck.print_card x ^ " and the " ^ Deck.print_card y ^ "."
+  | (x, y) -> " " ^ Deck.print_card x ^ " and " ^ Deck.print_card y ^ "."
 
 let extract_value = function (* REMOVE, replace w librayr*)
   | Some x -> x
@@ -68,7 +68,7 @@ type person = {name : string;
                location : int * int} 
 
 type table = {mutable pot : Bet.pot; 
-              blinds: int * int; 
+              blinds : int * int; 
               mutable river: Deck.card list; 
               mutable players : person list; 
               mutable in_players : person list;
@@ -127,15 +127,16 @@ let add_commcard table deck =
 let choose_dealer table = 
   Random.self_init ();
   let num_in_players = List.length table.players in
+
   let deal_start = Random.int num_in_players in
   let dealer = extract_value (n_of_list table.players deal_start) in
   dealer.position <- Some Dealer; 
+
   let lb_start =  (deal_start + 1) mod num_in_players in
-  let littleblinds = extract_value (n_of_list table.players lb_start) in
-  littleblinds.position <- Some LB; 
+  (extract_value (n_of_list table.players lb_start)).position <- Some LB; 
   let bb_start =  (lb_start + 1) mod num_in_players in
-  let bigblinds = extract_value (n_of_list table.players bb_start) in
-  bigblinds.position <- Some BB;
+  (extract_value (n_of_list table.players bb_start)).position <- Some BB;
+
   table.dealer <- Some dealer;
   table.in_players <- table.players
 
@@ -162,18 +163,18 @@ let next_round_prep table =
   table.players <- players; 
   table.in_players <- players; 
   table.out_players <- []; 
-  let curr_dealer = find_list table.players (extract_value table.dealer) in
-  let curr_deal_int = 
-    if curr_dealer != None then extract_value curr_dealer else 0 in
   let length = List.length table.players in
-  let new_dealer =  n_of_list table.players ((curr_deal_int + 1) mod length) in 
-  table.dealer <- new_dealer;  
+
+  let curr_dealer = find_list table.players (extract_value table.dealer) in
+  let curr_deal_int = if curr_dealer != None then extract_value curr_dealer 
+    else 0 in
+  table.dealer <- (n_of_list table.players ((curr_deal_int + 1) mod length)); 
+
   let lb_start =  (curr_deal_int + 2) mod length in
-  let littleblinds = extract_value (n_of_list table.players lb_start) in
-  littleblinds.position <- Some LB; 
+  (extract_value (n_of_list table.players lb_start)).position <- Some LB; 
   let bb_start =  (curr_deal_int + 3) mod length in
-  let bigblinds = extract_value (n_of_list table.players bb_start) in
-  bigblinds.position <- Some BB; 
+  (extract_value (n_of_list table.players bb_start)).position <- Some BB; 
+
   table.river <- [];
   Bet.clear table.pot; 
   table.round_num <- table.round_num + 1
@@ -181,6 +182,7 @@ let next_round_prep table =
 let draw_quit (hover : bool) =
   if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
   fill_rect 275 170 80 50;
+
   set_color white;
   moveto 280 205;
   draw_string "Quit"
@@ -188,6 +190,7 @@ let draw_quit (hover : bool) =
 let draw_stay (hover : bool) =
   if hover then set_color (rgb 67 131 14) else set_color (rgb 87 175 13);
   fill_rect 365 170 80 50;
+
   set_color white;
   moveto 370 205;
   draw_string "Stay"
@@ -196,8 +199,7 @@ let rec exit_hover x f i =
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   if stat.mouse_x > 275 && stat.mouse_x < 355 && 
-     stat.mouse_y > 170 && stat.mouse_y < 220
-  then begin 
+     stat.mouse_y > 170 && stat.mouse_y < 220 then begin 
     draw_quit true; 
     auto_synchronize true; 
     if stat.button then begin 
@@ -205,8 +207,7 @@ let rec exit_hover x f i =
       exit 0 end 
     else exit_hover x f i end
   else if stat.mouse_x > 365 && stat.mouse_x < 445 && 
-          stat.mouse_y > 170 && stat.mouse_y < 220
-  then begin 
+          stat.mouse_y > 170 && stat.mouse_y < 220 then begin 
     draw_stay true; 
     auto_synchronize true; 
     if stat.button then f (i + 1) else exit_hover x f i end
@@ -230,14 +231,14 @@ let end_prompt x f i  =
 let min_players gametable f i = 
   if List.length gametable.players <= 2 then begin
     print_endline "There are not enough players to continue. The game is over.";
-    exit 0
-  end
+    exit 0 end
   else end_prompt 1 f i
 
 let winner winner gametable gamedeck f i = 
   ANSITerminal.(print_string [yellow] (win_sf ^ winner.name ^ win_ss)); 
   ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));
   winner.chips := !(winner.chips) + !(gametable.pot);
+
   gametable.pot := 0;
   gamedeck := !Deck.create;  (* new round *)
   List.iter (auto_remove gametable) gametable.players;
@@ -256,22 +257,22 @@ let rec elig_pots gametable player acc =
   let sidepots = gametable.side_pots in
   match sidepots with
   | [] -> acc
-  | h :: t -> if List.exists (fun x -> x = player) (snd h) then 
-      elig_pots gametable player (fst h + acc)
+  | h :: t -> if List.exists (fun x -> x = player) (snd h) 
+    then elig_pots gametable player (fst h + acc)
     else elig_pots gametable player acc
 
 (* Finishing this *)
 let winning_player win_list gametable gamedeck f i =
-  let win_p = win_list |> h_of_list |> extract_value |> fst in
-  match win_p.position with
-  | Some (AllIn x) -> elig_pots gametable win_p 0
+  let winner = win_list |> h_of_list |> extract_value |> fst in
+  match winner.position with
+  | Some (AllIn x) -> elig_pots gametable winner 0
   | _ -> failwith "TODO"
-(* | _ -> winner win_p gametable gamedeck f i  *)
+(* | _ -> winner win_player gametable gamedeck f i  *)
 
 let last_one_wins table gamedeck round i =
   if List.length table.in_players = 1 then 
-    let def_win = extract_value (h_of_list table.in_players) in
-    ("Everyone folded except for " ^ def_win.name ^ ".\n") |>
+    let definite_win = extract_value (h_of_list table.in_players) in
+    ("Everyone folded except for " ^ definite_win.name ^ ".\n") |>
     ANSITerminal.(print_string [yellow]); 
-    Some def_win
+    Some definite_win
   else None
