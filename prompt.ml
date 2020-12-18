@@ -156,7 +156,7 @@ let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
   moveto 325 205;
   if check then draw_string "Check" else begin
     draw_string "Call";
-    moveto 335 190;
+    moveto 325 190;
     draw_string (string_of_int max_wager) end
 
 let draw_fold (hover : bool) =

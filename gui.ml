@@ -5,6 +5,7 @@ let max_name_len = 12
 let draw_box str =
   set_color black;
   fill_rect 200 350 320 20;
+
   set_color white;
   moveto 205 355;
   draw_string ("> " ^ str);
@@ -38,6 +39,7 @@ let draw_table () =
 let draw_card (card : Deck.card) (x : int) (y : int) =
   set_color white;
   fill_rect x y 38 60;
+
   if card.suit = 'C' || card.suit = 'S' then set_color black else set_color red;
   moveto (x + 5) (y + 45);
   (match card.rank with
@@ -46,6 +48,7 @@ let draw_card (card : Deck.card) (x : int) (y : int) =
    | 12 -> draw_string "Q"
    | 13 -> draw_string "K"
    | n -> draw_string (string_of_int n));
+
   moveto (x + 5) (y + 15);
   draw_string (Char.escaped card.suit)
 
@@ -66,16 +69,18 @@ let draw_player_cards (player : Table.person) =
 let draw_dealer (player : Table.person) =
   Prompt.draw_player player;
   set_color (rgb 200 200 200);
-  fill_rect (fst (player.location) - 40) (snd (player.location) + 25) 80 15;
-  moveto (fst (player.location) - 35) (snd (player.location) + 25);
+  fill_rect (fst player.location - 40) (snd player.location + 25) 80 15;
+
+  moveto (fst player.location - 35) (snd player.location + 25);
   set_color black;
   draw_string "Dealer"
 
 let draw_winner (player : Table.person) =
   Prompt.draw_player player;
   set_color yellow;
-  fill_rect (fst (player.location) - 40) (snd (player.location) + 25) 80 15;
-  moveto (fst (player.location) - 35) (snd (player.location) + 25);
+  fill_rect (fst player.location - 40) (snd player.location + 25) 80 15;
+
+  moveto (fst player.location - 35) (snd player.location + 25);
   set_color black;
   draw_string "Winner"
 
