@@ -405,6 +405,24 @@ let current_wager_test
   name >:: (fun _ -> 
       assert_equal e_output (Bet.current_wager opt)  ~printer:string_of_int)
 
+let check_wager_test
+    (name : string) 
+    (opt: Bet.choice)
+    (current_bet: int)
+    (e_output : bool) : test = 
+  name >:: (fun _ -> 
+      assert_equal e_output (Bet.check_wager opt current_bet) 
+        ~printer:string_of_bool)
+
+let max_wager_test
+    (name : string) 
+    (opt: Bet.choice)
+    (max: int)
+    (e_output : bool) : test = 
+  name >:: (fun _ -> 
+      assert_equal e_output (Bet.max_wager opt max) 
+        ~printer:string_of_bool)
+
 let empty_bag () = ref 0 
 
 let bag_5chips = Bet.add (empty_bag ()) 5
@@ -426,6 +444,21 @@ let bag_tests =
   current_wager_test "Testing bet" (Call 15) 15; 
   current_wager_test "Testing bet" (Raise 20) 20; 
   current_wager_test "Testing bet" (AllIn 50) 50; 
+  check_wager_test "Testing check" Check 50 true; 
+  check_wager_test "Testing Fold" Fold 50 true; 
+  check_wager_test "Testing AllIn" (AllIn 40) 80 true; 
+  check_wager_test "Testing valid bet" (Bet 40) 30 true; 
+  check_wager_test "Testing invalid bet" (Bet 20) 30 false; 
+  check_wager_test "Testing valid call" (Call 40) 20 true; 
+  check_wager_test "Testing invalid call" (Call 50) 80 false; 
+  check_wager_test "Testing invalid Raise" (Raise 30) 50 false; 
+  check_wager_test "Testing valid Raise" (Raise 80) 40 true; 
+  max_wager_test "Testing valid Bet max" (Bet 30) 40 true;
+  max_wager_test "Testing invalid Bet max" (Bet 50) 30 false; 
+  max_wager_test "Testing invalid Call max" (Call 35) 30 false; 
+  max_wager_test "Testing valid Call max" (Call 40) 40 true; 
+  max_wager_test "Testing invalid Raise max" (Raise 60) 30 false; 
+  max_wager_test "Testing valid Raise max" (Raise 40) 50 true; 
 
   ]
 
