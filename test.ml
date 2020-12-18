@@ -17,9 +17,9 @@ open Game
     test the "backbone" of a poker game: in other words we need to ensure
     that the deck is working properly and that our functions evaluate hands and
     handle winnings correctly. For example, table.ml need not be tested
-    because it can be tested by playing the game.
-    The rest is testable through playing the game multiple times and 
-    checking certain features are implemented correctly in order
+    because it can be tested by playing the game. However, we tested the modules 
+    Deck, Game, and Bet. The rest is testable through playing the game multiple
+    times and checking certain features are implemented correctly in order
     to ensure functionality is correct. *)
 
 (** [cmp_arrays a1 a2] compares two arrays to see whether
