@@ -206,21 +206,37 @@ let hand_test
 
 let hand_tests =
   [
-    hand_test "Royal flush C" [|{rank = 1;suit='C'};{rank = 13;suit='C'};
-                                {rank = 12;suit='C'};{rank = 11;suit='C'};
-                                {rank = 10; suit = 'C'}|] RoyalFlush;
+    hand_test "Royal flush Clubs" [|{rank = 1;suit='C'};{rank = 13;suit='C'};
+                                  {rank = 12;suit='C'};{rank = 11;suit='C'};
+                                  {rank = 10; suit = 'C'}|] RoyalFlush;
+
+    hand_test "Royal flush Spades" [|{rank = 1;suit='S'};{rank = 13;suit='S'};
+                                    {rank = 12;suit='S'};{rank = 11;suit='S'};
+                                    {rank = 10; suit = 'S'}|] RoyalFlush;
+
+    hand_test "Royal flush Diamonds" [|{rank = 1;suit='D'};{rank = 13;suit='D'};
+                                  {rank = 12;suit='D'};{rank = 11;suit='D'};
+                                  {rank = 10; suit = 'D'}|] RoyalFlush;
+
+    hand_test "Royal flush Hearts" [|{rank = 1;suit='H'};{rank = 13;suit='H'};
+                                    {rank = 12;suit='H'};{rank = 11;suit='H'};
+                                    {rank = 10; suit = 'H'}|] RoyalFlush;
 
     hand_test "Straight Flush C" [|{rank = 9;suit='C'};{rank = 13;suit='C'};
                                    {rank = 12;suit='C'};{rank = 11;suit='C'};
                                    {rank = 10; suit = 'C'}|] (StraightFlush 13);
 
-    hand_test "Royal flush H" [|{rank = 1;suit='H'};{rank = 13;suit='H'};
-                                {rank = 12;suit='H'};{rank = 11;suit='H'};
-                                {rank = 10; suit = 'H'}|] RoyalFlush;
-
-    hand_test "Straight Flush H" [|{rank = 2;suit='H'};{rank = 4;suit='H'};
-                                   {rank = 6;suit='H'};{rank = 3;suit='H'};
-                                   {rank = 5; suit = 'H'}|] (StraightFlush 6); 
+    hand_test "Straight Flush H" [|{rank = 9;suit='H'};{rank = 8;suit='H'};
+                                   {rank = 6;suit='H'};{rank = 7;suit='H'};
+                                   {rank = 5; suit = 'H'}|] (StraightFlush 9);
+    
+    hand_test "Straight Flush D" [|{rank = 9;suit='D'};{rank = 7;suit='D'};
+                                   {rank = 8;suit='D'};{rank = 11;suit='D'};
+                                   {rank = 10; suit = 'D'}|] (StraightFlush 11);
+                                   
+    hand_test "Straight Flush S" [|{rank = 3;suit='S'};{rank = 6;suit='S'};
+                                   {rank = 4;suit='S'};{rank = 7;suit='S'};
+                                   {rank = 5; suit = 'S'}|] (StraightFlush 7);
 
     hand_test "Straight 2 types" [|{rank = 2;suit='C'};{rank = 4;suit='H'};
                                    {rank = 6;suit='C'};{rank = 3;suit='H'};
