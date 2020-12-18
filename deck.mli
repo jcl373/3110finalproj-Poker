@@ -8,7 +8,7 @@ type card = {rank : int; suit : char}
 (** [deck] represents a mutable array of cards. *)
 type deck = card array ref
 
-(** [print_card c] is the string representation of the card [c]. *)
+(** [print_card card] is the string representation of the card [card]. *)
 val print_card : card -> string
 
 (** [empty] is the empty deck. *)
