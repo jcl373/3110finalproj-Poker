@@ -45,7 +45,6 @@ let print_choice (choice : Bet.choice) (player : Table.person) : unit =
   | AllIn i -> print_endline (player.name ^ " has gone all in and bet " ^ 
                               print_choice_helper i)
 
-
 let parse_h1 (player : Table.person) hd tl : Bet.choice = 
   match hd with
   | "Check" -> Check
@@ -207,27 +206,25 @@ let in_box (stat : Graphics.status) ((x1, y1),(x2, y2)) =
   stat.mouse_y > y1 && stat.mouse_y < y2
 
 let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
-  let bet_input unit = 
-    let rec text_input str : string =
-      draw_hover_box str;
-      let stat2 = wait_next_event (Key_pressed :: []) in
-      if stat2.key = '\027' then begin 
-        erase_box (); 
-        text_hover first max_wager last_call end
-      else if stat2.key = '\r' then 
-        if String.length str = 0 then text_input "" else str 
-      else if stat2.key = '\b' then 
-        if String.length str = 0 then text_input "" 
-        else text_input (String.sub str 0 (String.length str - 1))
-      else if int_of_char stat2.key >= 48 && int_of_char stat2.key <= 57 
-      then text_input (str ^ (Char.escaped stat2.key))
-      else text_input str in
-    text_input "" in
+  let rec text_input str : string =
+    draw_hover_box str;
+    let stat2 = wait_next_event (Key_pressed :: []) in
+    if stat2.key = '\027' then begin 
+      erase_box (); 
+      text_hover first max_wager last_call end
+    else if stat2.key = '\r' then 
+      if String.length str = 0 then text_input "" else str 
+    else if stat2.key = '\b' then 
+      if String.length str = 0 then text_input "" 
+      else text_input (String.sub str 0 (String.length str - 1))
+    else if int_of_char stat2.key >= 48 && int_of_char stat2.key <= 57
+    then text_input (str ^ (Char.escaped stat2.key))
+    else text_input str in
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   let call_check unit = if first && last_call = 0 then "Check" else "Call" in
-  let bet_raise unit = if first then "Bet " ^ bet_input () 
-    else "Raise " ^ bet_input () in
+  let bet_raise unit = if first then "Bet " ^ text_input ""
+    else "Raise " ^ text_input "" in
   if in_box stat ((235, 170), (315, 220))
   then begin 
     draw_fold true; 

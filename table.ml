@@ -96,7 +96,6 @@ let init_commcard table deck =
 let add_commcard table deck = 
   table.river <- Deck.pop deck :: table.river
 
-(* let deal_start = table.players |> List.length |> Random.int *) 
 let choose_dealer table = 
   Random.self_init ();
   let num_in_players = List.length table.players in
@@ -123,13 +122,6 @@ let side_pots_prep table round =
     table.in_players 
     |> List.filter (fun x -> x.position = Some (AllIn round)) in 
   table.side_pots <- (!(table.pot), allin) :: table.side_pots
-(* table.pot <- Bet.empty_pot () *)
-
-(* let match_pos table x = 
-   match x.position with
-   | Some Dealer | Some BB | Some LB | Some Folded -> None
-   | Some Leave -> remove_player table x
-   | None -> None *)
 
 let next_round_prep table =
   let players = List.map (fun x -> x.position <- None; x) table.players in 
