@@ -220,8 +220,6 @@ let rec exit_hover_min x f i =
     draw_ok_end false; 
     exit_hover_min x f i end
 
-
-
 let auto_remove table (player : person)  : unit =
   if !(player.chips) < 10 then begin 
     print_endline (player.name ^ " has left because they ran out of chips.");
