@@ -46,14 +46,16 @@ let print_choice (choice : Bet.choice) (player : Table.person) : unit =
                               print_choice_helper i)
 
 
-let parse_h1 (player: Table.person) = function
+let parse_h1 (player : Table.person) h t : Bet.choice = 
+  match h with
   | "Check" -> Check
   | "Fold" -> Fold
   | "Bet" -> Bet (int_of_string (String.concat "" t))
   | "Allin" -> AllIn !(player.chips)
   | _ -> raise(Bet.InvalidResponse)
 
-let parse_h2 (player: Table.person) = function
+let parse_h2 (player: Table.person) h t max_wager : Bet.choice = 
+  match h with
   | "Call" -> Call !max_wager
   | "Fold" -> Fold
   | "Raise" -> Raise (int_of_string (String.concat "" t))
@@ -65,7 +67,9 @@ let parse str (player : Table.person) max_wager : Bet.choice =
   let lst = List.filter ((<>) "") lst in
   match lst with
   | [] -> raise(Bet.InvalidResponse) 
-  | h :: t -> if !max_wager = 0 then parse_h1 player h else parse_h2 player h
+  | h :: t -> if !max_wager = 0 
+    then parse_h1 player h t 
+    else parse_h2 player h t max_wager
 
 let draw_player (player : Table.person) =
   let x = fst player.location in
@@ -276,9 +280,11 @@ let request_choice_help round (gametable : Table.table) player max_wager bot =
     draw_string (string_of_choice player_bet player); 
     Table.next_br_prep gametable 
   | AllIn x -> player.position <- Some (AllIn round); 
-    if bot then bot_bet_opt max_wager gametable player player_bet 
+    if bot 
+    then bot_bet_opt max_wager gametable player player_bet 
     else player_bet_opt max_wager gametable player player_bet bet_check
-  | _ -> if bot then bot_bet_opt max_wager gametable player player_bet 
+  | _ -> if bot 
+    then bot_bet_opt max_wager gametable player player_bet 
     else player_bet_opt max_wager gametable player player_bet bet_check
 
 let is_bot (player : Table.person) = 

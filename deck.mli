@@ -31,7 +31,7 @@ val shuffle : deck -> deck
 
 (** [create] calls [create_help 1] to initialize a new deck with the standard 
     52-card deck in random order. *)
-val create : deck
+val create : unit -> deck
 
 (** [create_size size] calls [create_help size] to intialize a new deck with 
     [size] number of standard 52-card decks in random order.

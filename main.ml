@@ -6,7 +6,7 @@ exception InvalidResponse
 exception Empty
 
 let gametable = Table.empty_table 5 10
-let gamedeck = Deck.create
+let gamedeck = Deck.create ()
 let max_wager = ref 0
 let dealer_index = ref 0
 let max_name_len = 12
@@ -67,11 +67,16 @@ let rec choices round  =
     choices_helper startpos round gametable.players
   end
   else begin
-
     let startpos = 
       List.length gametable.in_players 
       |> (mod) (!dealer_index - (List.length gametable.out_players) + 1) in
     let inplayers = gametable.in_players in
+    (* print_endline("inplayers");
+       print_int(  List.length gametable.in_players );
+       print_endline("outplayers");
+       print_int(  List.length gametable.out_players );
+       print_endline("val");
+       print_int( !dealer_index - (List.length gametable.out_players) + 1  ); *)
     (* gametable.last_bet <- Table.n_of_list gametable.players startpos; *)
     choices_helper startpos round inplayers
   end
@@ -82,13 +87,21 @@ and choices_helper startpos round inplayers =
   inplayers |>
   iter_index startpos (Prompt.request_choice max_wager gametable round);
   let last_bet = Option.get gametable.last_bet in
+  print_endline("inplayers");
+  print_int(List.length inplayers);
+  print_endline("startpos");
+  print_int(  startpos );
+  print_endline(last_bet.name);
+  print_int( Option.get (Table.find_list gametable.players (last_bet)));
+
+
   if Option.get (Table.find_list gametable.players (last_bet)) = 
      startpos then ()
-  else 
+  else begin
     gametable.last_call <- 1;
-  shorten_to_p (iter_index_snd startpos last_bet inplayers) last_bet
-    (Prompt.request_choice max_wager gametable round) [];
-  gametable.last_call <- 0
+    shorten_to_p (iter_index_snd startpos last_bet inplayers) last_bet
+      (Prompt.request_choice max_wager gametable round) [];
+    gametable.last_call <- 0 end
 
 (*[create_bot] creates a bot with a name [name] and gives it 
   a [start_amt] number of chips *)
@@ -192,8 +205,9 @@ let start_game name =
     let winner : Table.person = Game.evaluate_table gametable in
     draw_winner winner;
     Table.winner winner gametable gamedeck round i;
+    draw_players gametable.players 0
 
-    (* TODO: side pots; cleaner UI; last call prices *)
+  (* TODO: side pots; cleaner UI; last call prices *)
   in
   round 0
 

@@ -114,9 +114,9 @@ let choose_dealer table =
   table.in_players <- table.players
 
 let next_br_prep table  = 
-  table.in_players <- remove_folded table.in_players;
-  let folded = List.filter (fun x -> x.position = Some Folded) 
-      table.in_players in table.out_players <- folded
+  let folded = List.filter (fun x -> x.position = Some Folded) table.in_players
+  in table.in_players <- remove_folded table.in_players;
+  table.out_players <- folded
 
 let side_pots_prep table round =
   let allin = 
@@ -190,6 +190,14 @@ let rec exit_hover x f i =
     draw_stay false; 
     exit_hover x f i end
 
+let draw_ok_end (hover : bool) =
+  if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
+  fill_rect 275 170 80 50;
+  set_color white;
+  moveto 280 205;
+  draw_string "The game is over. There are not enough players to continue.\n
+  Please quit the game using the system exit button. "
+
 let auto_remove table (player : person)  : unit =
   if !(player.chips) < 10 then begin 
     print_endline (player.name ^ " has left because they ran out of chips.");
@@ -204,27 +212,41 @@ let end_prompt x f i  =
 let min_players gametable f i = 
   if List.length gametable.players <= 2 then begin
     print_endline "There are not enough players to continue. The game is over.";
-    exit 0 end
+    draw_ok_end false
+  end
   else end_prompt 1 f i
+
+let rec reset_pos (players : person list) (i : int) =
+  match players with
+  | [] -> ()
+  | h :: t -> begin 
+      if h.position = Some Folded 
+      then h.position <- None; reset_pos t (i+1) end
+
+
+let rec reset_hand lst gamedeck =
+  print_int(Array.length !gamedeck);
+  match lst with
+  | [] -> ()
+  | h :: t -> print_int(List.length lst); set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
+    reset_hand t gamedeck
+
 
 let winner winner gametable gamedeck f i = 
   ANSITerminal.(print_string [yellow] (win_sf ^ winner.name ^ win_ss)); 
   ANSITerminal.(print_string [yellow] (print_card_tup winner.hand ^ "\n"));
   winner.chips := !(winner.chips) + !(gametable.pot);
-
   gametable.pot := 0;
-  gamedeck := !Deck.create;  (* new round *)
+  gamedeck := !(Deck.create ()); (* new round *)
   List.iter (auto_remove gametable) gametable.players;
   gametable.in_players <- gametable.players;
   gametable.out_players <- [];
-  let rec reset_hand lst =
-    match lst with
-    | [] -> ()
-    | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
-      reset_hand t in
+  reset_pos gametable.players 0;
+  reset_hand gametable.players gamedeck;
   min_players gametable f i;
-  end_prompt 1 f i;
-  reset_hand gametable.players
+  end_prompt 1 f i
+
+
 
 let rec elig_pots gametable player acc =
   let sidepots = gametable.side_pots in
@@ -236,7 +258,7 @@ let rec elig_pots gametable player acc =
 
 (* Finishing this *)
 let winning_player win_list gametable gamedeck f i =
-  let winner = win_list |> List.hd |> fst in
+  let winner = List.nth_opt win_list 0 |> Option.get |> fst in
   match winner.position with
   | Some (AllIn x) -> elig_pots gametable winner 0
   | _ -> failwith "TODO"
@@ -244,7 +266,7 @@ let winning_player win_list gametable gamedeck f i =
 
 let last_one_wins table gamedeck round i =
   if List.length table.in_players = 1 then 
-    let definite_win = List.hd table.in_players in
+    let definite_win = List.nth_opt table.in_players 0 |> Option.get in
     ("Everyone folded except for " ^ definite_win.name ^ ".\n") |>
     ANSITerminal.(print_string [yellow]); 
     Some definite_win
