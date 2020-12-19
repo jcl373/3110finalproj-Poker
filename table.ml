@@ -225,10 +225,9 @@ let rec reset_pos (players : person list) (i : int) =
 
 
 let rec reset_hand lst gamedeck =
-  print_int(Array.length !gamedeck);
   match lst with
   | [] -> ()
-  | h :: t -> print_int(List.length lst); set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
+  | h :: t -> set_hand h (Deck.pop gamedeck) (Deck.pop gamedeck); 
     reset_hand t gamedeck
 
 
