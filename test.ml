@@ -295,7 +295,8 @@ let compare_hand_tests =
       (Straight 9) (Straight 7) ~-1;
     compare_hand_test "both straight, hand2 better" 
       (Straight 7) (Straight 9) 1;
-    compare_hand_test "both straight, equal" (Straight 7) (Straight 7) 0;
+    compare_hand_test "both straight, equal" 
+      (Straight 7) (Straight 7) 0;
     compare_hand_test "both 3kind, hand1 better" 
       (ThreeOfKind (7,2,1)) (ThreeOfKind (5,4,3)) ~-1;
     compare_hand_test "both 3kind, hand2 better" 
@@ -306,16 +307,20 @@ let compare_hand_tests =
       (TwoPair (7,2,1)) (TwoPair (5,4,3)) ~-1;
     compare_hand_test "both 2pair, hand2 better" 
       (TwoPair (5,4,3)) (TwoPair(7,2,1)) 1;
-    compare_hand_test "both 2pair, equal" (TwoPair (5,4,3)) (TwoPair (5,4,3)) 0;
+    compare_hand_test "both 2pair, equal" 
+      (TwoPair (5,4,3)) (TwoPair (5,4,3)) 0;
     compare_hand_test "both pair, hand1 better" 
       (OnePair (7,4,2,1)) (OnePair (5,4,3,2)) ~-1;
     compare_hand_test "both pair, hand2 better" 
       (OnePair (5,4,3,1)) (OnePair(7,4,2,1)) 1;
     compare_hand_test "both pair, equal" 
       (OnePair (10,5,4,3)) (OnePair (10,5,4,3)) 0;
-    compare_hand_test "both hcard, hand1 better" (HighCard 10) (HighCard 7) ~-1;
-    compare_hand_test "both hcard, hand2 better" (HighCard 3) (HighCard 5) 1;
-    compare_hand_test "both hcard, equal" (HighCard 6) (HighCard 6) 0;
+    compare_hand_test "both hcard, hand1 better" 
+      (HighCard 10) (HighCard 7) ~-1;
+    compare_hand_test "both hcard, hand2 better" 
+      (HighCard 3) (HighCard 5) 1;
+    compare_hand_test "both hcard, equal" 
+      (HighCard 6) (HighCard 6) 0;
   ]
 
 let evaluate_hands_test

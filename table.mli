@@ -110,21 +110,11 @@ val last_one_wins : table -> 'a -> 'b -> 'c -> person option
     in table [gametable]. *)
 val min_players : table -> (int -> unit) -> int -> unit
 
-(* remove following vals once replaced in table *)
-
-(** [n_of_list] returns the nth element of the list [lst].
-    Returns an option as the list may not contain that number.
-    [lst] is a valid list.
-    [n] is an int; represents the nth element. *)
-val n_of_list : 'a list -> int -> 'a option
-
-(** [extract_value opt] gives the value for option [opt] or raises [Empty] if 
-    [opt] is None. *)
-val extract_value : 'a option -> 'a
-
-(** [find_list lst x] finds value [x] in list [lst]. *)
+(** [find_list lst x] finds the index of value [x] in list [lst]. *)
 val find_list : 'a list -> 'a -> int option
 
+
+(* remove following vals once replaced in table *)
 (** [init_commcard table deck] initializes the first three cards in the river 
     at table [table] from deck [deck]. *)
 val init_commcard : table -> Deck.deck -> unit

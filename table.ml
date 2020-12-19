@@ -18,44 +18,17 @@ let win_sf = "The winner is "
 
 let win_ss = ".\n" ^ "The winning hand is"
 
-(** [nth_of_list] returns the nth element of the list [lst]
-    Returns an option as the list may not contain that number 
-    [lst] is a valid list
-    [n] is an int; represents the nth element
-    [acc] is an int; the accumulator *)
-let rec nth_of_list lst n acc =  (* REMOVE, replace w librayr*)
-  match lst with
-  | [] -> None
-  | h :: t -> if acc = n then Some h else nth_of_list t n (acc + 1)
-
-(** [n_of_list] returns the first (head) element of the list [lst]
-    Returns an option as the list may not contain anything.
-    [lst] is a valid list*)
-let h_of_list lst = (* REMOVE, replace w librayr*)
-  nth_of_list lst 0 0
-
-(** [n_of_list] returns the nth element of the list [lst]
-    Returns an option as the list may not contain that number.
-    [lst] is a valid list
-    [n] is an int; represents the nth element *)
-let n_of_list lst n = (* REMOVE, replace w librayr*)
-  nth_of_list lst n 0
-
-let rec find_in_list lst x acc = (* REMOVE, replace w librayr*)
+let rec find_in_list lst x acc = 
   match lst with
   | [] -> None
   | h :: t -> if h = x then Some acc else find_in_list t x (acc + 1)
 
-let find_list lst x = (* REMOVE, replace w librayr*)
+let find_list lst x = 
   find_in_list lst x 0
 
 let rec print_card_tup tup : string =
   match tup with
   | (x, y) -> " " ^ Deck.print_card x ^ " and " ^ Deck.print_card y ^ "."
-
-let extract_value = function (* REMOVE, replace w librayr*)
-  | Some x -> x
-  | None -> raise Empty
 
 (** The type [player] represents a player in the game. A player
     has a name, which is an identifier for the player, a hand, which is a pair of
@@ -129,13 +102,13 @@ let choose_dealer table =
   let num_in_players = List.length table.players in
 
   let deal_start = Random.int num_in_players in
-  let dealer = extract_value (n_of_list table.players deal_start) in
+  let dealer = Option.get (List.nth_opt table.players deal_start) in
   dealer.position <- Some Dealer; 
 
   let lb_start =  (deal_start + 1) mod num_in_players in
-  (extract_value (n_of_list table.players lb_start)).position <- Some LB; 
+  (Option.get (List.nth_opt table.players lb_start)).position <- Some LB; 
   let bb_start =  (lb_start + 1) mod num_in_players in
-  (extract_value (n_of_list table.players bb_start)).position <- Some BB;
+  (Option.get (List.nth_opt table.players bb_start)).position <- Some BB;
 
   table.dealer <- Some dealer;
   table.in_players <- table.players
@@ -165,15 +138,15 @@ let next_round_prep table =
   table.out_players <- []; 
   let length = List.length table.players in
 
-  let curr_dealer = find_list table.players (extract_value table.dealer) in
-  let curr_deal_int = if curr_dealer != None then extract_value curr_dealer 
+  let curr_dealer = find_list table.players (Option.get table.dealer) in
+  let curr_deal_int = if curr_dealer != None then Option.get curr_dealer 
     else 0 in
-  table.dealer <- (n_of_list table.players ((curr_deal_int + 1) mod length)); 
+  table.dealer <- (List.nth_opt table.players ((curr_deal_int + 1) mod length)); 
 
   let lb_start =  (curr_deal_int + 2) mod length in
-  (extract_value (n_of_list table.players lb_start)).position <- Some LB; 
+  (Option.get (List.nth_opt table.players lb_start)).position <- Some LB; 
   let bb_start =  (curr_deal_int + 3) mod length in
-  (extract_value (n_of_list table.players bb_start)).position <- Some BB; 
+  (Option.get (List.nth_opt table.players bb_start)).position <- Some BB; 
 
   table.river <- [];
   Bet.clear table.pot; 
@@ -263,7 +236,7 @@ let rec elig_pots gametable player acc =
 
 (* Finishing this *)
 let winning_player win_list gametable gamedeck f i =
-  let winner = win_list |> h_of_list |> extract_value |> fst in
+  let winner = win_list |> List.hd |> fst in
   match winner.position with
   | Some (AllIn x) -> elig_pots gametable winner 0
   | _ -> failwith "TODO"
@@ -271,7 +244,7 @@ let winning_player win_list gametable gamedeck f i =
 
 let last_one_wins table gamedeck round i =
   if List.length table.in_players = 1 then 
-    let definite_win = extract_value (h_of_list table.in_players) in
+    let definite_win = List.hd table.in_players in
     ("Everyone folded except for " ^ definite_win.name ^ ".\n") |>
     ANSITerminal.(print_string [yellow]); 
     Some definite_win

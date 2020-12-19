@@ -14,37 +14,10 @@ exception Empty
 
 let getRank (card : Deck.card) = card.rank
 
-(** [nth_of_list] returns the nth element of the list [lst]
-    Returns an option as the list may not contain that number 
-    [lst] is a valid list
-    [n] is an int; represents the nth element
-    [acc] is an int; the accumulator *)
-let rec nth_of_list lst n acc =  (* REMOVE, replace w librayr *)
-  match lst with
-  | [] -> None
-  | h :: t -> if acc = n then Some h else nth_of_list t n (acc + 1)
-
-(** [n_of_list] returns the first (head) element of the list [lst]
-    Returns an option as the list may not contain anything.
-    [lst] is a valid list*)
-let h_of_list lst = (* REMOVE, replace w librayr*)
-  nth_of_list lst 0 0
-
-(** [n_of_list] returns the nth element of the list [lst]
-    Returns an option as the list may not contain that number.
-    [lst] is a valid list
-    [n] is an int; represents the nth element *)
-let n_of_list lst n = (* REMOVE, replace w librayr*)
-  nth_of_list lst n 0
-
-let t_of_list lst = (* REMOVE, replace w librayr*)
+let t_of_list lst = 
   match lst with 
   | h :: t -> t
   | [] -> failwith "Empty list has no tail"
-
-let extract_value = function (* REMOVE, replace w librayr*)
-  | Some value -> value
-  | None -> raise Empty ;;
 
 let create_histogram hand = 
   let hist : (int * int) list ref = ref [] in
@@ -79,7 +52,7 @@ let compare_pairs pair1 pair2 =
 (* helper for check_straght and check_straight_flush,
    helps for getting rank with n_of_list *)
 let get_rank_helper (sorted : Deck.card list) (num : int) = 
-  num |> n_of_list sorted |> extract_value |> getRank
+  num |> List.nth_opt sorted |> Option.get |> getRank
 
 let check_straight_helper hd tl snd thd frth = 
   (hd, tl, snd) = (1, 2, 5) && thd + frth = 7 
@@ -87,7 +60,7 @@ let check_straight_helper hd tl snd thd frth =
 let check_straight hand = 
   let hsort = List.sort compare_cards (Array.to_list hand) in
   let length = List.length hsort in 
-  let headrank = getRank (extract_value (h_of_list hsort)) in 
+  let headrank = getRank (Option.get (List.nth_opt hsort 0)) in 
   let app_func = get_rank_helper hsort in 
   let sndrank = app_func 1 in 
   let thdrank = app_func 2 in 
@@ -105,7 +78,7 @@ let check_straight hand =
 let check_straight_flush hand = 
   let hsort = List.sort compare_cards (Array.to_list hand) in
   let length = List.length hsort in 
-  let headrank = getRank (extract_value (h_of_list hsort)) in 
+  let headrank = getRank (Option.get (List.nth_opt hsort 0)) in 
   let sndrank = get_rank_helper hsort 1 in 
   let thdrank = get_rank_helper hsort 2 in 
   let frthrank = get_rank_helper hsort 3 in 
@@ -158,8 +131,8 @@ let compare_hands_helper (hand : result) =
 
 (* helper for compare_hands *)
 let rec compare_lists lst1 lst2 =
-  let first_ele = h_of_list lst1 in 
-  let second_ele = h_of_list lst2 in 
+  let first_ele = List.nth_opt lst1 0 in 
+  let second_ele = List.nth_opt lst2 0 in 
   let comp = compare second_ele first_ele in 
 
   if first_ele = None then 0 
@@ -221,10 +194,8 @@ let evaluate_table (table : Table.table)  =
     match list with
     | [] -> []
     | h :: t -> (h, evaluate_hands [|fst (h.hand);snd (h.hand)|] 
-                   (Array.of_list table.river)) :: pairs t in
-  table.in_players 
-  |> pairs 
-  |> sorted_pairs 
-  |> h_of_list 
-  |> extract_value 
+                   (Array.of_list table.river)) :: pairs t 
+  in
+  List.nth_opt (sorted_pairs (pairs (table.in_players))) 0
+  |> Option.get 
   |> fst

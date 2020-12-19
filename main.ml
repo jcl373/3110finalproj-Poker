@@ -65,16 +65,6 @@ let rec choices round  =
       (List.length gametable.in_players)
       |> (mod) (!dealer_index + 3) in
     choices_helper startpos round gametable.players
-    (* gametable.last_bet <- Table.n_of_list gametable.players startpos; *)
-    (* iter_index startpos (Prompt.request_choice max_wager gametable round) gametable.players;
-       if Table.extract_value (Table.find_list gametable.players (Table.extract_value gametable.last_bet)) = 
-       startpos then ()
-       else 
-       gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
-       shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
-                    gametable.players) (Table.extract_value gametable.last_bet) 
-       (Prompt.request_choice max_wager gametable round) []; 
-       gametable.last_call <- 0; end *)
   end
   else begin
 
@@ -84,25 +74,15 @@ let rec choices round  =
     let inplayers = gametable.in_players in
     (* gametable.last_bet <- Table.n_of_list gametable.players startpos; *)
     choices_helper startpos round inplayers
-    (* let inplayers = gametable.in_players in
-       iter_index startpos (Prompt.request_choice max_wager gametable round) inplayers;
-       if Table.extract_value (Table.find_list gametable.players (Table.extract_value gametable.last_bet)) = 
-       startpos then ()
-       else 
-       gametable.last_call <- 1; (* Need to only let Check / Call when last_call = 1 *)
-       shorten_to_p (iter_index_snd startpos (Table.extract_value gametable.last_bet) 
-                    inplayers) (Table.extract_value gametable.last_bet) 
-       (Prompt.request_choice max_wager gametable round) [];
-       gametable.last_call <- 0 *)
   end
 
 and choices_helper startpos round inplayers =
-  gametable.last_bet <- Table.n_of_list gametable.players startpos;
+  gametable.last_bet <- List.nth_opt gametable.players startpos;
   (* let inplayers = gametable.in_players in *)
   inplayers |>
   iter_index startpos (Prompt.request_choice max_wager gametable round);
-  let last_bet = Table.extract_value gametable.last_bet in
-  if Table.extract_value (Table.find_list gametable.players (last_bet)) = 
+  let last_bet = Option.get gametable.last_bet in
+  if Option.get (Table.find_list gametable.players (last_bet)) = 
      startpos then ()
   else 
     gametable.last_call <- 1;
@@ -120,7 +100,7 @@ let create_bot name start_amt loc =
 let mid_winner round i = 
   let possible_winner = Table.last_one_wins gametable gamedeck round i in
   if possible_winner <> None then begin 
-    let winner = Table.extract_value possible_winner in 
+    let winner = Option.get possible_winner in 
     draw_winner winner;
     Table.winner winner gametable gamedeck round i end
   else
@@ -185,19 +165,19 @@ let start_game name =
     if i = 0 then () 
     else Table.next_round_prep gametable;
     dealer_index := 
-      (Table.extract_value gametable.dealer) 
+      (Option.get gametable.dealer) 
       |> Table.find_list gametable.players 
-      |>  Table.extract_value;
-    draw_dealer (Table.extract_value gametable.dealer);
-    print_endline ("The current dealer is " ^ (Table.extract_value gametable.dealer).name);
+      |>  Option.get;
+    draw_dealer (Option.get gametable.dealer);
+    print_endline ("The current dealer is " ^ (Option.get gametable.dealer).name);
     Unix.sleepf 0.5;
 
     (* Blind bets *)
-    let sb = Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 1) mod List.length gametable.players)) in
+    let sb = Option.get (List.nth_opt gametable.players ((!dealer_index + 1) mod List.length gametable.players)) in
     print_endline (sb.name ^ " has put forth a small blind of " ^ string_of_int (fst gametable.blinds) ^ " chips.");
     blinds sb fst;
 
-    let bb = Table.extract_value (Table.n_of_list gametable.players ((!dealer_index + 2) mod List.length gametable.players)) in
+    let bb = Option.get (List.nth_opt gametable.players ((!dealer_index + 2) mod List.length gametable.players)) in
     print_endline (bb.name ^ " has put forth a big blind of " ^ string_of_int (snd gametable.blinds) ^ " chips.");
     blinds bb snd;
     max_wager := snd gametable.blinds;
