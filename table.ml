@@ -31,8 +31,9 @@ let rec print_card_tup tup : string =
   | (x, y) -> " " ^ Deck.print_card x ^ " and " ^ Deck.print_card y ^ "."
 
 (** The type [player] represents a player in the game. A player
-    has a name, which is an identifier for the player, a hand, which is a pair of
-    cards, and chips, which is the amount of money they have. *)
+    has a name, which is an identifier for the player, a hand, 
+    which is a pair of cards, and chips, which is the amount of money they have.
+*)
 type person = {name : string; 
                mutable hand : Deck.card * Deck.card; 
                chips : Bet.bag; 
