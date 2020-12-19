@@ -6,9 +6,10 @@ open Game
     Our team wrote tests to make sure that the game functionality was working
     properly; however, some aspects of the game simply had to be tested by
     playing the game. This includes the GUI portion of the program, as well as 
-    other front-end aspects. For our the rest of our tests, we used white-box 
+    other front-end aspects. For our the rest of our tests, we used black-box 
     testing in order to test that deck/hands were functioning properly within 
-    the game. Furthermore, we tested that hands were evaluated correctly. 
+    the game. The tester did not need to know the implementation of the functions
+    in order to test them. We tested that hands were evaluated correctly. 
     In order to test that our bots were functioning properly and that winners 
     were given the correct amount of money/the correct person won, we simply 
     played the game.
@@ -18,7 +19,8 @@ open Game
     that the deck is working properly and that our functions evaluate hands and
     handle winnings correctly. For example, table.ml need not be tested
     because it can be tested by playing the game. However, we tested the modules 
-    Deck, Game, and Bet. The rest is testable through playing the game multiple
+    Deck, Game, and Bet. The rest of the modules, such as Gui and Main, 
+    are testable through playing the game multiple
     times and checking certain features are implemented correctly in order
     to ensure functionality is correct. *)
 
@@ -247,6 +249,14 @@ let hand_tests =
                                       {rank = 3;suit='C'};{rank = 10;suit='S'};
                                      {rank = 3; suit = 'D'}|](FourOfKind(3,10));
 
+    hand_test "Full House, low to H" [|{rank = 3;suit='S'};{rank = 10;suit='H'};
+                                      {rank = 3;suit='C'};{rank = 10;suit='D'};
+                                     {rank = 3; suit = 'D'}|] (FullHouse(3,10));
+
+    hand_test "Full House, H to low" [|{rank = 10;suit='S'};{rank = 3;suit='H'};
+                                      {rank = 10;suit='C'};{rank = 3;suit='D'};
+                                     {rank = 10; suit = 'D'}|](FullHouse(10,3));
+
     hand_test "3 of kind test Face" [|{rank = 12;suit='C'};{rank = 8;suit='H'};
                                     {rank = 12;suit='D'};{rank = 7;suit='S'};
                                     {rank = 12; suit = 'S'}|] 
@@ -282,8 +292,21 @@ let hand_tests =
                            {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8)); 
 
     hand_test "One Pair Face" [|{rank = 12;suit='C'};{rank = 12;suit='S'};
-                           {rank = 6;suit='D'};{rank = 3;suit='H'};
-                           {rank = 1; suit = 'H'}|] (OnePair (12, 1, 6, 3));                         
+                              {rank = 6;suit='D'};{rank = 3;suit='H'};
+                              {rank = 1; suit = 'H'}|] (OnePair (12, 1, 6, 3)); 
+
+    hand_test "2 Pair same suit"[|{rank = 7;suit='C'};{rank = 7;suit='S'};
+                                {rank = 9;suit='C'};{rank = 9;suit='S'};
+                                {rank = 1; suit = 'H'}|] (TwoPair (9,7,1)); 
+
+    hand_test "2 Pair diff suits" [|{rank = 12;suit='C'};{rank = 12;suit='S'};
+                              {rank = 6;suit='D'};{rank = 6;suit='H'};
+                              {rank = 1; suit = 'H'}|] (TwoPair (12,6,1)); 
+
+     hand_test "2 Pair,last card lower" 
+                              [|{rank = 12;suit='C'};{rank = 12;suit='S'};
+                              {rank = 9;suit='D'};{rank = 9;suit='H'};
+                              {rank = 3; suit = 'H'}|] (TwoPair (12,9,3));                        
 
   ]
 
