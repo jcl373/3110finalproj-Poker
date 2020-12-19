@@ -46,29 +46,28 @@ let print_choice (choice : Bet.choice) (player : Table.person) : unit =
                               print_choice_helper i)
 
 
-let parse_h1 (player : Table.person) h t : Bet.choice = 
-  match h with
+let parse_h1 (player : Table.person) hd tl : Bet.choice = 
+  match hd with
   | "Check" -> Check
   | "Fold" -> Fold
-  | "Bet" -> Bet (int_of_string (String.concat "" t))
+  | "Bet" -> Bet (int_of_string (String.concat "" tl))
   | "Allin" -> AllIn !(player.chips)
   | _ -> raise(Bet.InvalidResponse)
 
-let parse_h2 (player: Table.person) h t max_wager : Bet.choice = 
-  match h with
+let parse_h2 (player: Table.person) hd tl max_wager : Bet.choice = 
+  match hd with
   | "Call" -> Call !max_wager
   | "Fold" -> Fold
-  | "Raise" -> Raise (int_of_string (String.concat "" t))
+  | "Raise" -> Raise (int_of_string (String.concat "" tl))
   | "Allin" -> AllIn !(player.chips)
   | _ -> raise(Bet.InvalidResponse) 
 
 let parse str (player : Table.person) max_wager : Bet.choice =
   let lst = String.split_on_char ' ' str in
-  let lst = List.filter ((<>) "") lst in
-  match lst with
+  let lst_filtered = List.filter ((<>) "") lst in
+  match lst_filtered with
   | [] -> raise(Bet.InvalidResponse) 
-  | h :: t -> if !max_wager = 0 
-    then parse_h1 player h t 
+  | h :: t -> if !max_wager = 0 then parse_h1 player h t 
     else parse_h2 player h t max_wager
 
 let draw_player (player : Table.person) =
@@ -76,27 +75,25 @@ let draw_player (player : Table.person) =
   let y = snd player.location in
   set_color (rgb 70 70 70);
   fill_rect (x-40) (y-25) 80 50;
-  moveto (x-35) (y+10);
+
   set_color white;
+  moveto (x-35) (y+10);
   draw_string player.name;
   moveto (x-35) (y-5);
   draw_string (string_of_int !(player.chips));
+
+  moveto ((fst player.location)-35) ((snd player.location)-20); 
   match player.position with
-  | Some Folded -> moveto ((fst player.location)-35)
-                     ((snd player.location)-20); 
-    set_color red;
-    draw_string "Fold";
-    ()
-  | Some AllIn x -> moveto ((fst player.location)-35) 
-                      ((snd player.location)-20); 
-    set_color green;
-    draw_string ("All in " ^ string_of_int x);
-    ()
+  | Some Folded -> set_color red;
+    draw_string "Fold"
+  | Some AllIn x -> set_color green;
+    draw_string ("All in " ^ string_of_int x)
   | _ -> ()
 
 let draw_pot (gametable : Table.table) : unit =
   set_color (rgb 68 125 35);
   fill_rect 300 425 100 15;
+
   set_color white;
   moveto 300 425;
   draw_string ("Total pot: " ^ (string_of_int !(gametable.pot)))
@@ -120,6 +117,7 @@ let player_bet_opt max_wager (gametable : Table.table) (player : Table.person)
   if gametable.last_call = 0 then player.last_bet <- curr_wager;
   Bet.wager player_bet gametable.pot player.chips 
     (curr_bet max_wager gametable player) !max_wager;
+
   draw_player player;
   draw_pot gametable; 
   moveto ((fst player.location)-35) ((snd player.location)-20); 
@@ -134,11 +132,13 @@ let bot_bet_opt max_wager (gametable : Table.table) (player : Table.person)
     | Raise x | Bet x | AllIn x -> gametable.last_bet <- Some player
     | _ -> ()
   else ();
+
   let curr_wager = Bet.current_wager bot_bet in 
   if curr_wager > !max_wager then max_wager := curr_wager;
   if gametable.last_call = 0 then player.last_bet <- curr_wager;
   Bet.wager bot_bet gametable.pot player.chips 
     (curr_bet max_wager gametable player) !max_wager;
+
   draw_player player;
   draw_pot gametable; 
   moveto ((fst player.location)-35) ((snd player.location)-20); 
@@ -148,6 +148,7 @@ let bot_bet_opt max_wager (gametable : Table.table) (player : Table.person)
 let draw_bet_raise (hover : bool) (bet : bool) =
   if hover then set_color (rgb 67 131 14) else set_color (rgb 87 175 13);
   fill_rect 405 170 80 50;
+
   set_color white;
   moveto 410 205;
   if bet then draw_string "Bet" else draw_string "Raise"
@@ -155,6 +156,7 @@ let draw_bet_raise (hover : bool) (bet : bool) =
 let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
   if hover then set_color (rgb 188 153 0) else set_color (rgb 255 208 0);
   fill_rect 320 170 80 50;
+
   set_color white;
   moveto 325 205;
   if check then draw_string "Check" else begin
@@ -165,6 +167,7 @@ let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
 let draw_fold (hover : bool) =
   if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
   fill_rect 235 170 80 50;
+
   set_color white;
   moveto 240 205;
   draw_string "Fold"
@@ -190,16 +193,23 @@ let draw_options (max_wager : int) last_call first =
 let rec unclick unit =
   if button_down () then unclick () else ()
 
+let draw_hover_box str = 
+  set_color black;
+  fill_rect 235 145 250 20;
+
+  set_color white;
+  moveto 240 150;
+  draw_string ("> " ^ str)
+
+(* requires x1 <= x2 and y1 <= y2 *)
+let in_box (stat : Graphics.status) ((x1, y1),(x2, y2)) =
+  stat.mouse_x > x1 && stat.mouse_x < x2 && 
+  stat.mouse_y > y1 && stat.mouse_y < y2
+
 let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
   let bet_input unit = 
     let rec text_input str : string =
-      let draw_box str2 =
-        set_color black;
-        fill_rect 235 145 250 20;
-        set_color white;
-        moveto 240 150;
-        draw_string ("> " ^ str2) in
-      draw_box str;
+      draw_hover_box str;
       let stat2 = wait_next_event (Key_pressed :: []) in
       if stat2.key = '\027' then begin 
         erase_box (); 
@@ -209,10 +219,8 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
       else if stat2.key = '\b' then 
         if String.length str = 0 then text_input "" 
         else text_input (String.sub str 0 (String.length str - 1))
-      else if stat2.key = '0' || stat2.key = '1' || stat2.key = '2' || 
-              stat2.key = '3' || stat2.key = '4' || stat2.key = '5' || 
-              stat2.key = '6' || stat2.key = '7' || stat2.key = '8' || 
-              stat2.key = '9' then text_input (str ^ (Char.escaped stat2.key))
+      else if int_of_char stat2.key >= 48 && int_of_char stat2.key <= 57 
+      then text_input (str ^ (Char.escaped stat2.key))
       else text_input str in
     text_input "" in
   auto_synchronize false;
@@ -220,21 +228,18 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
   let call_check unit = if first && last_call = 0 then "Check" else "Call" in
   let bet_raise unit = if first then "Bet " ^ bet_input () 
     else "Raise " ^ bet_input () in
-  if stat.mouse_x > 235 && stat.mouse_x < 315 && 
-     stat.mouse_y > 170 && stat.mouse_y < 220
+  if in_box stat ((235, 170), (315, 220))
   then begin 
     draw_fold true; 
     auto_synchronize true; 
     if stat.button then "Fold" else text_hover first max_wager last_call end
-  else if stat.mouse_x > 320 && stat.mouse_x < 400 && 
-          stat.mouse_y > 170 && stat.mouse_y < 220
+  else if in_box stat ((320, 170), (400, 220))
   then begin 
     draw_call_check true first max_wager; 
     auto_synchronize true; 
     if stat.button then call_check () 
     else text_hover first max_wager last_call end
-  else if last_call <> 1 && stat.mouse_x > 405 && stat.mouse_x < 485 && 
-          stat.mouse_y > 170 && stat.mouse_y < 220
+  else if last_call <> 1 && in_box stat ((405, 170), (485, 220))
   then begin 
     draw_bet_raise true first; 
     auto_synchronize true; 
@@ -245,18 +250,16 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
     auto_synchronize true; 
     text_hover first max_wager last_call end
 
-let rc_setup (gametable : Table.table) player max_wager bot = 
+let request_choice_setup (gametable : Table.table) player max_wager bot = 
   if bot then
-    if gametable.last_call = 0 
-    then bot_choice player max_wager 
+    if gametable.last_call = 0 then bot_choice player max_wager 
     else bot_choice_fold player max_wager 
   else begin 
     let input = if gametable.last_call = 1 then begin
         draw_options !max_wager 1 false; 
         unclick (); 
         text_hover false !max_wager 1 end
-      else if !max_wager = 0 
-      then begin
+      else if !max_wager = 0 then begin
         draw_options !max_wager 0 true; 
         unclick (); 
         text_hover true !max_wager 0 end
@@ -268,9 +271,13 @@ let rc_setup (gametable : Table.table) player max_wager bot =
     parse input player max_wager end
 
 let request_choice_help round (gametable : Table.table) player max_wager bot =
-  let player_bet = rc_setup gametable player max_wager bot in 
+  set_color white; 
+  fill_rect 255 100 210 13;
+
+  let player_bet = request_choice_setup gametable player max_wager bot in 
   let bet_check = Bet.check_wager player_bet !max_wager in
-  set_color white; fill_rect 255 100 210 13;
+  let bet unit = if bot then bot_bet_opt max_wager gametable player player_bet 
+    else player_bet_opt max_wager gametable player player_bet bet_check in
   match player_bet with
   | Fold -> player.position <- Some Folded; 
     print_choice player_bet player; 
@@ -280,12 +287,8 @@ let request_choice_help round (gametable : Table.table) player max_wager bot =
     draw_string (string_of_choice player_bet player); 
     Table.next_br_prep gametable 
   | AllIn x -> player.position <- Some (AllIn round); 
-    if bot 
-    then bot_bet_opt max_wager gametable player player_bet 
-    else player_bet_opt max_wager gametable player player_bet bet_check
-  | _ -> if bot 
-    then bot_bet_opt max_wager gametable player player_bet 
-    else player_bet_opt max_wager gametable player player_bet bet_check
+    bet ()
+  | _ -> bet ()
 
 let is_bot (player : Table.person) = 
   player.name = "Bot 1" || 
@@ -296,6 +299,9 @@ let is_bot (player : Table.person) =
 
 let rec request_choice max_wager (gametable : Table.table) round 
     (player : Table.person) : unit =
+  set_color yellow;
+  draw_rect ((fst player.location)-40) ((snd player.location)-25) 80 50;
+
   let resolve unit = begin
     try request_choice_help round gametable player max_wager (is_bot player) 
     with 
@@ -306,8 +312,6 @@ let rec request_choice max_wager (gametable : Table.table) round
       set_color red;
       draw_string "Invalid Wager Amount. Select again.";
       request_choice max_wager gametable round player end in
-  set_color yellow;
-  draw_rect ((fst player.location)-40) ((snd player.location)-25) 80 50;
   if List.length gametable.in_players = 1 then () else 
     match player.position with
     | Some Folded | Some AllIn _ -> ()
