@@ -238,6 +238,15 @@ let hand_tests =
                                    {rank = 4;suit='S'};{rank = 7;suit='S'};
                                    {rank = 5; suit = 'S'}|] (StraightFlush 7);
 
+    hand_test "4 of kind test Face" [|{rank = 12;suit='C'};{rank = 12;suit='H'};
+                                    {rank = 12;suit='D'};{rank = 7;suit='S'};
+                                    {rank = 12; suit = 'S'}|] 
+                                    (FourOfKind (12,7));
+
+    hand_test "4 of a kind test num" [|{rank = 3;suit='S'};{rank = 3;suit='H'};
+                                      {rank = 3;suit='C'};{rank = 10;suit='S'};
+                                     {rank = 3; suit = 'D'}|](FourOfKind(3,10));
+
     hand_test "Straight 2 types" [|{rank = 2;suit='C'};{rank = 4;suit='H'};
                                    {rank = 6;suit='C'};{rank = 3;suit='H'};
                                    {rank = 5; suit = 'H'}|] (Straight 6); 
@@ -253,6 +262,14 @@ let hand_tests =
     hand_test "High Ace" [|{rank = 7;suit='C'};{rank = 10;suit='S'};
                            {rank = 9;suit='D'};{rank = 8;suit='D'};
                            {rank = 1; suit = 'H'}|] (HighCard 1);   
+    
+    hand_test "High 6card" [|{rank = 6;suit='C'};{rank = 5;suit='S'};
+                           {rank = 3;suit='D'};{rank = 4;suit='D'};
+                           {rank = 2; suit = 'H'}|] (HighCard 6);  
+
+    hand_test "High 8card,same suit"  [|{rank = 8;suit='C'};{rank = 6;suit='C'};
+                                      {rank = 5;suit='C'};{rank = 4;suit='C'};
+                                      {rank = 2; suit = 'C'}|] (HighCard 8);    
 
     hand_test "One Pair" [|{rank = 7;suit='C'};{rank = 7;suit='S'};
                            {rank = 9;suit='D'};{rank = 8;suit='D'};
