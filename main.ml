@@ -119,38 +119,33 @@ let round_gfx player =
   draw_players gametable.players 0;
   draw_player_cards player
 
-(* TODO : longer than 20 lines *)
+let set_blinds num_players =
+  Unix.sleepf 0.5;
+  let sb = Option.get (List.nth_opt gametable.players 
+                         ((!dealer_index + 1) mod num_players)) in
+  blinds sb fst;
+  let bb = Option.get (List.nth_opt gametable.players 
+                         ((!dealer_index + 2) mod num_players)) in
+  blinds bb snd;
+  max_wager := snd gametable.blinds;
+  gametable.last_bet <- Some bb
+
 let start_game name =
   create_bots;
   let player = create_player name in
-  let num_players = List.length gametable.players in
   Table.choose_dealer gametable;
-
   let rec round i =
     round_gfx player;
 
     if i = 0 then () else Table.next_round_prep gametable;
-    dealer_index := gametable.dealer
-                    |> Option.get
-                    |> Table.find_list gametable.players 
-                    |> Option.get;
+    dealer_index := gametable.dealer |> Option.get
+                    |> Table.find_list gametable.players |> Option.get;
     draw_dealer (Option.get gametable.dealer);
-    Unix.sleepf 0.5;
+    set_blinds (List.length gametable.players);
 
-    let sb = Option.get (List.nth_opt gametable.players 
-                           ((!dealer_index + 1) mod num_players)) in
-    blinds sb fst;
-    let bb = Option.get (List.nth_opt gametable.players 
-                           ((!dealer_index + 2) mod num_players)) in
-    blinds bb snd;
-    max_wager := snd gametable.blinds;
-    gametable.last_bet <- Some bb;
+    for n = 1 to 3 do step n round i done;
 
-    step 1 round i;
-    step 2 round i;
-    step 3 round i;
-
-    let winner : Table.person = Game.evaluate_table gametable in
+    let winner = Game.evaluate_table gametable in
     draw_winner winner;
     Table.winner winner gametable gamedeck round i;
     draw_players gametable.players 0 in

@@ -205,10 +205,12 @@ let in_box (stat : Graphics.status) ((x1, y1),(x2, y2)) =
   stat.mouse_x > x1 && stat.mouse_x < x2 && 
   stat.mouse_y > y1 && stat.mouse_y < y2
 
-let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
+(* TODO : longer than 20 lines *)
+let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string = 
   let rec text_input str : string =
     draw_hover_box str;
     let stat2 = wait_next_event (Key_pressed :: []) in
+    (* sometimes gives int_of_string error *)
     if stat2.key = '\027' then begin 
       erase_box (); 
       text_hover first max_wager last_call end
@@ -223,8 +225,7 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
   let call_check unit = if first && last_call = 0 then "Check" else "Call" in
-  let bet_raise unit = if first then "Bet " ^ text_input ""
-    else "Raise " ^ text_input "" in
+  let bet_raise str = if first then "Bet " ^ str else "Raise " ^ str in
   if in_box stat ((235, 170), (315, 220))
   then begin 
     draw_fold true; 
@@ -240,7 +241,7 @@ let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string =
   then begin 
     draw_bet_raise true first; 
     auto_synchronize true; 
-    if stat.button then bet_raise () 
+    if stat.button then bet_raise (text_input "")
     else text_hover first max_wager last_call end
   else begin 
     draw_options max_wager last_call first; 
