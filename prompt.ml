@@ -45,28 +45,27 @@ let print_choice (choice : Bet.choice) (player : Table.person) : unit =
   | AllIn i -> print_endline (player.name ^ " has gone all in and bet " ^ 
                               print_choice_helper i)
 
+
+let parse_h1 (player: Table.person) = function
+  | "Check" -> Check
+  | "Fold" -> Fold
+  | "Bet" -> Bet (int_of_string (String.concat "" t))
+  | "Allin" -> AllIn !(player.chips)
+  | _ -> raise(Bet.InvalidResponse)
+
+let parse_h2 (player: Table.person) = function
+  | "Call" -> Call !max_wager
+  | "Fold" -> Fold
+  | "Raise" -> Raise (int_of_string (String.concat "" t))
+  | "Allin" -> AllIn !(player.chips)
+  | _ -> raise(Bet.InvalidResponse) 
+
 let parse str (player : Table.person) max_wager : Bet.choice =
   let lst = String.split_on_char ' ' str in
   let lst = List.filter ((<>) "") lst in
   match lst with
   | [] -> raise(Bet.InvalidResponse) 
-  | h :: t -> 
-    begin 
-      if !max_wager = 0 then 
-        match h with 
-        | "Check" -> Check
-        | "Fold" -> Fold
-        | "Bet" -> Bet (int_of_string (String.concat "" t))
-        | "AllIn" | "Allin" -> AllIn !(player.chips)
-        | _ -> raise(Bet.InvalidResponse) 
-      else 
-        match h with 
-        | "Call" -> Call !max_wager
-        | "Fold" -> Fold
-        | "Raise" -> Raise (int_of_string (String.concat "" t))
-        | "AllIn" | "Allin" -> AllIn !(player.chips)
-        | _ -> raise(Bet.InvalidResponse) 
-    end 
+  | h :: t -> if !max_wager = 0 then parse_h1 player h else parse_h2 player h
 
 let draw_player (player : Table.person) =
   let x = fst player.location in
