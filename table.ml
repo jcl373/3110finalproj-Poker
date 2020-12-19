@@ -192,11 +192,35 @@ let rec exit_hover x f i =
 
 let draw_ok_end (hover : bool) =
   if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
-  fill_rect 275 170 80 50;
+  fill_rect 275 170 170 50;
   set_color white;
   moveto 280 205;
-  draw_string "The game is over. There are not enough players to continue.\n
-  Please quit the game using the system exit button. "
+  draw_string "The game is over.";
+  moveto 280 193;
+  draw_string "There are not enough ";
+  moveto 280 181;
+  draw_string "players to continue.";
+  moveto 280 169;
+  draw_string "Click to quit."
+
+let rec exit_hover_min x f i =
+  auto_synchronize false;
+  let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
+  if stat.mouse_x > 275 && stat.mouse_x < 445 && 
+     stat.mouse_y > 170 && stat.mouse_y < 220 then begin 
+    draw_ok_end true; 
+    auto_synchronize true; 
+    if stat.button then begin 
+      Graphics.close_graph (); 
+      exit 0 end 
+    else exit_hover_min x f i end
+  else begin 
+    draw_ok_end false; 
+    auto_synchronize true; 
+    draw_ok_end false; 
+    exit_hover_min x f i end
+
+
 
 let auto_remove table (player : person)  : unit =
   if !(player.chips) < 10 then begin 
@@ -212,7 +236,8 @@ let end_prompt x f i  =
 let min_players gametable f i = 
   if List.length gametable.players <= 2 then begin
     print_endline "There are not enough players to continue. The game is over.";
-    draw_ok_end false
+    draw_ok_end false;
+    exit_hover_min 1 f i
   end
   else end_prompt 1 f i
 
