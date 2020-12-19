@@ -7,11 +7,11 @@ open Game
     properly; however, some aspects of the game simply had to be tested by
     playing the game. This includes the GUI portion of the program, as well as 
     other front-end aspects. For our the rest of our tests, we used white-box 
-    testing in order to test that the deck was fnuctioning properly within the 
-    game. Furthermore, we tested that hands were evaluated correctly. In order 
-    to test that our bots were functioning properly and that winners were 
-    given the correct amount of money/the correct person won, we simply played
-    the game.
+    testing in order to test that deck/hands were functioning properly within 
+    the game. Furthermore, we tested that hands were evaluated correctly. 
+    In order to test that our bots were functioning properly and that winners 
+    were given the correct amount of money/the correct person won, we simply 
+    played the game.
 
     Our test suite ensures that our program is correct because we simply need to
     test the "backbone" of a poker game: in other words we need to ensure
@@ -387,12 +387,56 @@ let evaluate_hands_tests =
   ]
 
 (* Tests for game.ml end here *)
+
+(** [amount_test name bag e_output] tests that the amount in [bag] is
+    correctly returned. *)
+
+let amount_test
+    (name : string) 
+    (bag: int ref)
+    (e_output : int) : test = 
+  name >:: (fun _ -> 
+      assert_equal e_output (Bet.amount bag)  ~printer:string_of_int)
+
+let current_wager_test
+    (name : string) 
+    (opt: Bet.choice)
+    (e_output : int) : test = 
+  name >:: (fun _ -> 
+      assert_equal e_output (Bet.current_wager opt)  ~printer:string_of_int)
+
+let empty_bag () = ref 0 
+
+let bag_5chips = Bet.add (empty_bag ()) 5
+
+let bag_10chips = Bet.add (empty_bag ()) 10 
+
+let empty_pot () = ref 0 
+
+(* Tests for bet.ml start here*)
+
+let bag_tests = 
+  [
+
+  amount_test "amount in empty bag" (empty_bag ()) 0; 
+  amount_test "amount in nonempty bag" bag_5chips 5; 
+  current_wager_test "Testing check" Check 0; 
+  current_wager_test "Testing fold" Fold 0;
+  current_wager_test "Testing bet" (Bet 10) 10; 
+  current_wager_test "Testing bet" (Call 15) 15; 
+  current_wager_test "Testing bet" (Raise 20) 20; 
+  current_wager_test "Testing bet" (AllIn 50) 50; 
+
+  ]
+
+(* Tests for bet.ml end here *)
 let suite =
   "test suite"  >::: List.flatten [
     deck_tests;
     hand_tests;
     compare_hand_tests;
-    evaluate_hands_tests
+    evaluate_hands_tests;
+    bag_tests
   ]
 
 let _ = run_test_tt_main suite
