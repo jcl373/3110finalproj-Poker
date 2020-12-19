@@ -16,8 +16,11 @@ open Game
     Our test suite ensures that our program is correct because we simply need to
     test the "backbone" of a poker game: in other words we need to ensure
     that the deck is working properly and that our functions evaluate hands and
-    handle winnings correctly. The rest is testable through playing the game 
-    multiple times in order to ensure functionality. *)
+    handle winnings correctly. For example, table.ml need not be tested
+    because it can be tested by playing the game.
+    The rest is testable through playing the game multiple times and 
+    checking certain features are implemented correctly in order
+    to ensure functionality is correct. *)
 
 (** [cmp_arrays a1 a2] compares two arrays to see whether
     they are equivalent arrays.  They must contain the same elements,
@@ -192,9 +195,6 @@ let deck_tests =
     with [evaluate_hand hand]. *)
 
 (*Tests for Deck.ml end here *)
-
-(*Tests for table.ml start here *)
-(*Tests for table.ml end here *)
 
 (*Tests for game.ml start here *)
 let hand_test
