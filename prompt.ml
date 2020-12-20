@@ -151,6 +151,7 @@ let draw_raise (hover : bool) (bet : bool) =
   set_color white;
   moveto 410 205;
   if bet then draw_string "Bet" else draw_string "Raise";
+
   auto_synchronize true
 
 let draw_call (hover : bool) (check : bool) (max_wager : int) =
@@ -163,6 +164,7 @@ let draw_call (hover : bool) (check : bool) (max_wager : int) =
     draw_string "Call";
     moveto 325 190;
     draw_string (string_of_int max_wager) end;
+
   auto_synchronize true
 
 let draw_fold (hover : bool) =
@@ -172,6 +174,7 @@ let draw_fold (hover : bool) =
   set_color white;
   moveto 240 205;
   draw_string "Fold";
+
   auto_synchronize true
 
 let erase_box unit =
@@ -224,7 +227,6 @@ let rec text_input str : string =
   then text_input (str ^ (Char.escaped stat2.key))
   else text_input str
 
-(* TODO : 23 lines *)
 let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string = 
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
