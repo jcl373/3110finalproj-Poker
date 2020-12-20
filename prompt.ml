@@ -219,7 +219,8 @@ let rec text_input str : string =
     erase_box (); 
     "RETRY" end
   else if stat2.key = '\r' then 
-    if String.length str = 0 then text_input "" else begin print_endline (String.escaped str); str end
+    if String.length str = 0 then text_input "" 
+    else begin print_endline (String.escaped str); str end
   else if stat2.key = '\b' then 
     if String.length str = 0 then text_input "" 
     else text_input (String.sub str 0 (String.length str - 1))
