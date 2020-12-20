@@ -144,15 +144,16 @@ let bot_bet_opt max_wager (gametable : Table.table) (player : Table.person)
   draw_string (string_of_choice bot_bet player);
   print_choice bot_bet player
 
-let draw_bet_raise (hover : bool) (bet : bool) =
+let draw_raise (hover : bool) (bet : bool) =
   if hover then set_color (rgb 67 131 14) else set_color (rgb 87 175 13);
   fill_rect 405 170 80 50;
 
   set_color white;
   moveto 410 205;
-  if bet then draw_string "Bet" else draw_string "Raise"
+  if bet then draw_string "Bet" else draw_string "Raise";
+  auto_synchronize true
 
-let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
+let draw_call (hover : bool) (check : bool) (max_wager : int) =
   if hover then set_color (rgb 188 153 0) else set_color (rgb 255 208 0);
   fill_rect 320 170 80 50;
 
@@ -161,7 +162,8 @@ let draw_call_check (hover : bool) (check : bool) (max_wager : int) =
   if check then draw_string "Check" else begin
     draw_string "Call";
     moveto 325 190;
-    draw_string (string_of_int max_wager) end
+    draw_string (string_of_int max_wager) end;
+  auto_synchronize true
 
 let draw_fold (hover : bool) =
   if hover then set_color (rgb 180 0 0) else set_color (rgb 220 40 0);
@@ -169,7 +171,8 @@ let draw_fold (hover : bool) =
 
   set_color white;
   moveto 240 205;
-  draw_string "Fold"
+  draw_string "Fold";
+  auto_synchronize true
 
 let erase_box unit =
   set_color white;
@@ -182,12 +185,13 @@ let erase_options unit =
 let draw_options (max_wager : int) last_call first =
   erase_box ();
   if last_call = 0 then begin
-    draw_bet_raise false first;
-    draw_call_check false first max_wager;
+    draw_raise false first;
+    draw_call false first max_wager;
     draw_fold false end
   else begin
     draw_fold false;
-    draw_call_check false first max_wager end
+    draw_call false first max_wager end;
+  auto_synchronize true
 
 let rec unclick unit =
   if button_down () then unclick () else ()
@@ -220,35 +224,26 @@ let rec text_input str : string =
   then text_input (str ^ (Char.escaped stat2.key))
   else text_input str
 
-(* TODO : 25 lines *)
+(* TODO : 23 lines *)
 let rec text_hover (first : bool) (max_wager : int) (last_call : int) : string = 
   auto_synchronize false;
   let stat = wait_next_event (Button_down :: Mouse_motion :: Poll :: []) in
-  let call_check unit = if first && last_call = 0 then "Check" else "Call" in
-  let bet_raise unit =
+  let call unit = if first && last_call = 0 then "Check" else "Call" in
+  let raise unit =
     let input = text_input "" in 
     if input = "RETRY" then text_hover first max_wager last_call 
     else begin if first then "Bet " ^ input else "Raise " ^ input end in
-  if in_box stat ((235, 170), (315, 220))
-  then begin 
+  if in_box stat ((235, 170), (315, 220)) then begin 
     draw_fold true; 
-    auto_synchronize true; 
     if stat.button then "Fold" else text_hover first max_wager last_call end
-  else if in_box stat ((320, 170), (400, 220))
-  then begin 
-    draw_call_check true first max_wager; 
-    auto_synchronize true; 
-    if stat.button then call_check () 
-    else text_hover first max_wager last_call end
-  else if last_call <> 1 && in_box stat ((405, 170), (485, 220))
-  then begin 
-    draw_bet_raise true first; 
-    auto_synchronize true; 
-    if stat.button then bet_raise () 
-    else text_hover first max_wager last_call end
+  else if in_box stat ((320, 170), (400, 220)) then begin 
+    draw_call true first max_wager; 
+    if stat.button then call () else text_hover first max_wager last_call end
+  else if last_call <> 1 && in_box stat ((405, 170), (485, 220)) then begin 
+    draw_raise true first;
+    if stat.button then raise () else text_hover first max_wager last_call end
   else begin 
     draw_options max_wager last_call first; 
-    auto_synchronize true; 
     text_hover first max_wager last_call end
 
 let request_choice_setup (gametable : Table.table) player max_wager bot = 
