@@ -1,4 +1,4 @@
-(** CS 3110 Fall 2020 Assignment MS1
+(** CS 3110 Fall 2020 Assignment MS3
     @author Brandon Lewis (bcl62)
     @author Abhimanyu Bhargava (ab2229)
     @author Justin Lee (jcl373) *)
