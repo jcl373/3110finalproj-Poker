@@ -1,10 +1,13 @@
 (** Handles hand evaluation and comparison. *)
 
 
-(** [result] is a type of poker hand, and it carries integers which represent
+(** AF: 
+    [result] is a type of poker hand, and it carries integers which represent
     the cards in the hand.
     Example: Onepair of (7,5,4,3) represents a hand with 2 7's, a 5, a 4, and a 
-    3 card (suit is irrelevant). *)
+    3 card (suit is irrelevant). 
+    RI: Each hand is one of these types.
+*)
 type result =
   | RoyalFlush
   | StraightFlush of int

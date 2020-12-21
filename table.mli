@@ -1,6 +1,8 @@
 (** Handles the gametable, round changes, and players. *)
 
-(** [pos] represents a type of position at the table. *)
+(** AF: [pos] represents a type of position at the table. 
+    RI: None
+*)
 type pos =  
   | Dealer
   | BB
@@ -12,7 +14,8 @@ type pos =
 (** Raised when an unknown response is encountered. *)
 exception InvalidResponse
 
-(** [player] represents a player in the game.
+(** AF: 
+    [player] represents a player in the game.
     [name] is a string identifier for the player.
     [hand] is mutable pair of cards in the player's hand.
     [chips] is a int reference representing the player's money.
@@ -20,7 +23,8 @@ exception InvalidResponse
     [position] is a mutable position option representing the player's place at 
     the table. 
     [location] is a pair of ints representing the pixel location of the player 
-    on the screen. *)
+    on the screen. 
+    RI: person contaains all required information. *)
 type person = {name : string; 
                mutable hand: Deck.card * Deck.card; 
                chips : int ref; 
@@ -28,7 +32,8 @@ type person = {name : string;
                mutable position : pos option; 
                location : int * int } 
 
-(** [table] represents a poker table.
+(** AF:
+    [table] represents a poker table.
     [pot] is a mutable int ref which represents the amount in the pot.
     [blinds] is an int tuple representing the SB and the BB respectively.
     [river] are the river cards in the middle of the table
@@ -39,12 +44,18 @@ type person = {name : string;
     [round_num] represents the round number of the entire game.
     [side_pots] handles any side pots.
     [last_bet] is the person who made the last bet.
-    [last_call] is the latest call value. *)
-type table = {mutable pot : int ref ; blinds: int * int; 
+    [last_call] is the latest call value. 
+    RI: Each field must contain a value, listed above, to represent a valid 
+    table. 
+*)
+type table = {mutable pot : int ref ;
+              blinds: int * int; 
               mutable river: Deck.card list; 
-              mutable players : person list; mutable in_players : person list; 
+              mutable players : person list; 
+              mutable in_players : person list; 
               mutable out_players : person list;
-              mutable dealer : person option; mutable round_num : int;
+              mutable dealer : person option; 
+              mutable round_num : int;
               mutable side_pots : (int * person list) list;
               mutable last_bet : person option;
               mutable last_call : int;}

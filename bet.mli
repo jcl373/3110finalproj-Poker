@@ -1,16 +1,19 @@
 (** Handles betting and the pot. *)
 
-(** [bag] represents a players bag of how much money they have 
+(** AF: [bag] represents a players bag of how much money they have 
     available at a given time to use.
-    This can change depending on the instance of the game and round. *)
+    This can change depending on the instance of the game and round.
+    RI: None *)
 type bag = int ref
 
-(** [pot] represents the pot of money that has been wagered by all players 
-    This can change depending on the instance of the game and round. *)
+(** AF: [pot] represents the pot of money that has been wagered by all players 
+    This can change depending on the instance of the game and round.
+    RI: None.  *)
 type pot = int ref
 
-(** [choice] represents the choice of bet that the player has chosen to
-    do at their given turn. *)
+(** AF: [choice] represents the choice of bet that the player has chosen to
+    do at their given turn. 
+    RI: None*)
 type choice = 
   | Check
   | Fold

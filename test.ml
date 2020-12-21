@@ -8,8 +8,9 @@ open Game
     playing the game. This includes the GUI portion of the program, as well as 
     other front-end aspects. For our the rest of our tests, we used black-box 
     testing in order to test that deck/hands were functioning properly within 
-    the game. The tester did not need to know the implementation of the functions
-    in order to test them. We tested that hands were evaluated correctly. 
+    the game. The tester did not need to know the implementation of the 
+    functions in order to test them. We tested that hands were evaluated 
+    correctly. 
     In order to test that our bots were functioning properly and that winners 
     were given the correct amount of money/the correct person won, we simply 
     played the game.
@@ -208,105 +209,125 @@ let hand_test
 
 let hand_tests =
   [
-    hand_test "Royal flush Clubs" [|{rank = 1;suit='C'};{rank = 13;suit='C'};
-                                  {rank = 12;suit='C'};{rank = 11;suit='C'};
-                                  {rank = 10; suit = 'C'}|] RoyalFlush;
+    hand_test "Royal flush Clubs" 
+      [|{rank = 1;suit='C'};{rank = 13;suit='C'};
+        {rank = 12;suit='C'};{rank = 11;suit='C'};
+        {rank = 10; suit = 'C'}|] RoyalFlush;
 
-    hand_test "Royal flush Spades" [|{rank = 1;suit='S'};{rank = 13;suit='S'};
-                                    {rank = 12;suit='S'};{rank = 11;suit='S'};
-                                    {rank = 10; suit = 'S'}|] RoyalFlush;
+    hand_test "Royal flush Spades" 
+      [|{rank = 1;suit='S'};{rank = 13;suit='S'};
+        {rank = 12;suit='S'};{rank = 11;suit='S'};
+        {rank = 10; suit = 'S'}|] RoyalFlush;
 
-    hand_test "Royal flush Diamonds" [|{rank = 1;suit='D'};{rank = 13;suit='D'};
-                                  {rank = 12;suit='D'};{rank = 11;suit='D'};
-                                  {rank = 10; suit = 'D'}|] RoyalFlush;
+    hand_test "Royal flush Diamonds" 
+      [|{rank = 1;suit='D'};{rank = 13;suit='D'};
+        {rank = 12;suit='D'};{rank = 11;suit='D'};
+        {rank = 10; suit = 'D'}|] RoyalFlush;
 
-    hand_test "Royal flush Hearts" [|{rank = 1;suit='H'};{rank = 13;suit='H'};
-                                    {rank = 12;suit='H'};{rank = 11;suit='H'};
-                                    {rank = 10; suit = 'H'}|] RoyalFlush;
+    hand_test "Royal flush Hearts" 
+      [|{rank = 1;suit='H'};{rank = 13;suit='H'};
+        {rank = 12;suit='H'};{rank = 11;suit='H'};
+        {rank = 10; suit = 'H'}|] RoyalFlush;
 
-    hand_test "Straight Flush C" [|{rank = 9;suit='C'};{rank = 13;suit='C'};
-                                   {rank = 12;suit='C'};{rank = 11;suit='C'};
-                                   {rank = 10; suit = 'C'}|] (StraightFlush 13);
+    hand_test "Straight Flush C" 
+      [|{rank = 9;suit='C'};{rank = 13;suit='C'};
+        {rank = 12;suit='C'};{rank = 11;suit='C'};
+        {rank = 10; suit = 'C'}|] (StraightFlush 13);
 
-    hand_test "Straight Flush H" [|{rank = 9;suit='H'};{rank = 8;suit='H'};
-                                   {rank = 6;suit='H'};{rank = 7;suit='H'};
-                                   {rank = 5; suit = 'H'}|] (StraightFlush 9);
-    
-    hand_test "Straight Flush D" [|{rank = 9;suit='D'};{rank = 7;suit='D'};
-                                   {rank = 8;suit='D'};{rank = 11;suit='D'};
-                                   {rank = 10; suit = 'D'}|] (StraightFlush 11);
-                                   
-    hand_test "Straight Flush S" [|{rank = 3;suit='S'};{rank = 6;suit='S'};
-                                   {rank = 4;suit='S'};{rank = 7;suit='S'};
-                                   {rank = 5; suit = 'S'}|] (StraightFlush 7);
+    hand_test "Straight Flush H" 
+      [|{rank = 9;suit='H'};{rank = 8;suit='H'};
+        {rank = 6;suit='H'};{rank = 7;suit='H'};
+        {rank = 5; suit = 'H'}|] (StraightFlush 9);
 
-    hand_test "4 of kind test Face" [|{rank = 12;suit='C'};{rank = 12;suit='H'};
-                                    {rank = 12;suit='D'};{rank = 7;suit='S'};
-                                    {rank = 12; suit = 'S'}|] 
-                                    (FourOfKind (12,7));
+    hand_test "Straight Flush D" 
+      [|{rank = 9;suit='D'};{rank = 7;suit='D'};
+        {rank = 8;suit='D'};{rank = 11;suit='D'};
+        {rank = 10; suit = 'D'}|] (StraightFlush 11);
 
-    hand_test "4 of a kind test num" [|{rank = 3;suit='S'};{rank = 3;suit='H'};
-                                      {rank = 3;suit='C'};{rank = 10;suit='S'};
-                                     {rank = 3; suit = 'D'}|](FourOfKind(3,10));
+    hand_test "Straight Flush S" 
+      [|{rank = 3;suit='S'};{rank = 6;suit='S'};
+        {rank = 4;suit='S'};{rank = 7;suit='S'};
+        {rank = 5; suit = 'S'}|] (StraightFlush 7);
 
-    hand_test "Full House, low to H" [|{rank = 3;suit='S'};{rank = 10;suit='H'};
-                                      {rank = 3;suit='C'};{rank = 10;suit='D'};
-                                     {rank = 3; suit = 'D'}|] (FullHouse(3,10));
+    hand_test "4 of kind test Face" 
+      [|{rank = 12;suit='C'};{rank = 12;suit='H'};
+        {rank = 12;suit='D'};{rank = 7;suit='S'};
+        {rank = 12; suit = 'S'}|] (FourOfKind (12,7));
 
-    hand_test "Full House, H to low" [|{rank = 10;suit='S'};{rank = 3;suit='H'};
-                                      {rank = 10;suit='C'};{rank = 3;suit='D'};
-                                     {rank = 10; suit = 'D'}|](FullHouse(10,3));
+    hand_test "4 of a kind test num" 
+      [|{rank = 3;suit='S'};{rank = 3;suit='H'};
+        {rank = 3;suit='C'};{rank = 10;suit='S'};
+        {rank = 3; suit = 'D'}|](FourOfKind(3,10));
 
-    hand_test "3 of kind test Face" [|{rank = 12;suit='C'};{rank = 8;suit='H'};
-                                    {rank = 12;suit='D'};{rank = 7;suit='S'};
-                                    {rank = 12; suit = 'S'}|] 
-                                    (ThreeOfKind (12,8,7));
+    hand_test "Full House, low to H" 
+      [|{rank = 3;suit='S'};{rank = 10;suit='H'};
+        {rank = 3;suit='C'};{rank = 10;suit='D'};
+        {rank = 3; suit = 'D'}|] (FullHouse(3,10));
 
-    hand_test "3 of a kind test num" [|{rank = 3;suit='S'};{rank = 5;suit='H'};
-                                      {rank = 3;suit='C'};{rank = 10;suit='S'};
-                                     {rank = 3; suit = 'D'}|]
-                                     (ThreeOfKind(3,10,5));
+    hand_test "Full House, H to low" 
+      [|{rank = 10;suit='S'};{rank = 3;suit='H'};
+        {rank = 10;suit='C'};{rank = 3;suit='D'};
+        {rank = 10; suit = 'D'}|](FullHouse(10,3));
 
-    hand_test "Straight 2 types" [|{rank = 2;suit='C'};{rank = 4;suit='H'};
-                                   {rank = 6;suit='C'};{rank = 3;suit='H'};
-                                   {rank = 5; suit = 'H'}|] (Straight 6); 
+    hand_test "3 of kind test Face" 
+      [|{rank = 12;suit='C'};{rank = 8;suit='H'};
+        {rank = 12;suit='D'};{rank = 7;suit='S'};
+        {rank = 12; suit = 'S'}|] (ThreeOfKind (12,8,7));
 
-    hand_test "Straight 3 types" [|{rank = 7;suit='C'};{rank = 4;suit='H'};
-                                   {rank = 6;suit='D'};{rank = 8;suit='D'};
-                                   {rank = 5; suit = 'H'}|] (Straight 8); 
+    hand_test "3 of a kind test num" 
+      [|{rank = 3;suit='S'};{rank = 5;suit='H'};
+        {rank = 3;suit='C'};{rank = 10;suit='S'};
+        {rank = 3; suit = 'D'}|] (ThreeOfKind(3,10,5));
 
-    hand_test "Straight 4 types" [|{rank = 11;suit='C'};{rank = 10;suit='S'};
-                                   {rank = 9;suit='D'};{rank = 8;suit='D'};
-                                   {rank = 7; suit = 'H'}|] (Straight 11);    
+    hand_test "Straight 2 types" 
+      [|{rank = 2;suit='C'};{rank = 4;suit='H'};
+        {rank = 6;suit='C'};{rank = 3;suit='H'};
+        {rank = 5; suit = 'H'}|] (Straight 6); 
 
-    hand_test "High Ace" [|{rank = 7;suit='C'};{rank = 10;suit='S'};
-                           {rank = 9;suit='D'};{rank = 8;suit='D'};
-                           {rank = 1; suit = 'H'}|] (HighCard 1);   
-    
-    hand_test "High 6card" [|{rank = 9;suit='C'};{rank = 7;suit='S'};
-                           {rank = 6;suit='D'};{rank = 4;suit='D'};
-                           {rank = 2; suit = 'H'}|] (HighCard 9);  
+    hand_test "Straight 3 types" 
+      [|{rank = 7;suit='C'};{rank = 4;suit='H'};
+        {rank = 6;suit='D'};{rank = 8;suit='D'};
+        {rank = 5; suit = 'H'}|] (Straight 8); 
 
-    hand_test "One Pair" [|{rank = 7;suit='C'};{rank = 7;suit='S'};
-                           {rank = 9;suit='D'};{rank = 8;suit='D'};
-                           {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8)); 
+    hand_test "Straight 4 types" 
+      [|{rank = 11;suit='C'};{rank = 10;suit='S'};
+        {rank = 9;suit='D'};{rank = 8;suit='D'};
+        {rank = 7; suit = 'H'}|] (Straight 11);    
 
-    hand_test "One Pair Face" [|{rank = 12;suit='C'};{rank = 12;suit='S'};
-                              {rank = 6;suit='D'};{rank = 3;suit='H'};
-                              {rank = 1; suit = 'H'}|] (OnePair (12, 1, 6, 3)); 
+    hand_test "High Ace" 
+      [|{rank = 7;suit='C'};{rank = 10;suit='S'};
+        {rank = 9;suit='D'};{rank = 8;suit='D'};
+        {rank = 1; suit = 'H'}|] (HighCard 1);   
 
-    hand_test "2 Pair same suit"[|{rank = 7;suit='C'};{rank = 7;suit='S'};
-                                {rank = 9;suit='C'};{rank = 9;suit='S'};
-                                {rank = 1; suit = 'H'}|] (TwoPair (9,7,1)); 
+    hand_test "High 6card" 
+      [|{rank = 9;suit='C'};{rank = 7;suit='S'};
+        {rank = 6;suit='D'};{rank = 4;suit='D'};
+        {rank = 2; suit = 'H'}|] (HighCard 9);  
 
-    hand_test "2 Pair diff suits" [|{rank = 12;suit='C'};{rank = 12;suit='S'};
-                              {rank = 6;suit='D'};{rank = 6;suit='H'};
-                              {rank = 1; suit = 'H'}|] (TwoPair (12,6,1)); 
+    hand_test "One Pair" 
+      [|{rank = 7;suit='C'};{rank = 7;suit='S'};
+        {rank = 9;suit='D'};{rank = 8;suit='D'};
+        {rank = 1; suit = 'H'}|] (OnePair (7, 1, 9, 8)); 
 
-     hand_test "2 Pair,last card lower" 
-                              [|{rank = 12;suit='C'};{rank = 12;suit='S'};
-                              {rank = 9;suit='D'};{rank = 9;suit='H'};
-                              {rank = 3; suit = 'H'}|] (TwoPair (12,9,3));                        
+    hand_test "One Pair Face" 
+      [|{rank = 12;suit='C'};{rank = 12;suit='S'};
+        {rank = 6;suit='D'};{rank = 3;suit='H'};
+        {rank = 1; suit = 'H'}|] (OnePair (12, 1, 6, 3)); 
+
+    hand_test "2 Pair same suit"
+      [|{rank = 7;suit='C'};{rank = 7;suit='S'};
+        {rank = 9;suit='C'};{rank = 9;suit='S'};
+        {rank = 1; suit = 'H'}|] (TwoPair (9,7,1)); 
+
+    hand_test "2 Pair diff suits" 
+      [|{rank = 12;suit='C'};{rank = 12;suit='S'};
+        {rank = 6;suit='D'};{rank = 6;suit='H'};
+        {rank = 1; suit = 'H'}|] (TwoPair (12,6,1)); 
+
+    hand_test "2 Pair,last card lower" 
+      [|{rank = 12;suit='C'};{rank = 12;suit='S'};
+        {rank = 9;suit='D'};{rank = 9;suit='H'};
+        {rank = 3; suit = 'H'}|] (TwoPair (12,9,3));                        
 
   ]
 
@@ -502,29 +523,29 @@ let empty_pot () = ref 0
 let bag_tests = 
   [
 
-  amount_test "amount in empty bag" (empty_bag ()) 0; 
-  amount_test "amount in nonempty bag" bag_5chips 5; 
-  current_wager_test "Testing check" Check 0; 
-  current_wager_test "Testing fold" Fold 0;
-  current_wager_test "Testing bet" (Bet 10) 10; 
-  current_wager_test "Testing bet" (Call 15) 15; 
-  current_wager_test "Testing bet" (Raise 20) 20; 
-  current_wager_test "Testing bet" (AllIn 50) 50; 
-  check_wager_test "Testing check" Check 50 true; 
-  check_wager_test "Testing Fold" Fold 50 true; 
-  check_wager_test "Testing AllIn" (AllIn 40) 80 true; 
-  check_wager_test "Testing valid bet" (Bet 40) 30 true; 
-  check_wager_test "Testing invalid bet" (Bet 20) 30 false; 
-  check_wager_test "Testing valid call" (Call 40) 20 true; 
-  check_wager_test "Testing invalid call" (Call 50) 80 false; 
-  check_wager_test "Testing invalid Raise" (Raise 30) 50 false; 
-  check_wager_test "Testing valid Raise" (Raise 80) 40 true; 
-  max_wager_test "Testing valid Bet max" (Bet 30) 40 true;
-  max_wager_test "Testing invalid Bet max" (Bet 50) 30 false; 
-  max_wager_test "Testing invalid Call max" (Call 35) 30 false; 
-  max_wager_test "Testing valid Call max" (Call 40) 40 true; 
-  max_wager_test "Testing invalid Raise max" (Raise 60) 30 false; 
-  max_wager_test "Testing valid Raise max" (Raise 40) 50 true; 
+    amount_test "amount in empty bag" (empty_bag ()) 0; 
+    amount_test "amount in nonempty bag" bag_5chips 5; 
+    current_wager_test "Testing check" Check 0; 
+    current_wager_test "Testing fold" Fold 0;
+    current_wager_test "Testing bet" (Bet 10) 10; 
+    current_wager_test "Testing bet" (Call 15) 15; 
+    current_wager_test "Testing bet" (Raise 20) 20; 
+    current_wager_test "Testing bet" (AllIn 50) 50; 
+    check_wager_test "Testing check" Check 50 true; 
+    check_wager_test "Testing Fold" Fold 50 true; 
+    check_wager_test "Testing AllIn" (AllIn 40) 80 true; 
+    check_wager_test "Testing valid bet" (Bet 40) 30 true; 
+    check_wager_test "Testing invalid bet" (Bet 20) 30 false; 
+    check_wager_test "Testing valid call" (Call 40) 20 true; 
+    check_wager_test "Testing invalid call" (Call 50) 80 false; 
+    check_wager_test "Testing invalid Raise" (Raise 30) 50 false; 
+    check_wager_test "Testing valid Raise" (Raise 80) 40 true; 
+    max_wager_test "Testing valid Bet max" (Bet 30) 40 true;
+    max_wager_test "Testing invalid Bet max" (Bet 50) 30 false; 
+    max_wager_test "Testing invalid Call max" (Call 35) 30 false; 
+    max_wager_test "Testing valid Call max" (Call 40) 40 true; 
+    max_wager_test "Testing invalid Raise max" (Raise 60) 30 false; 
+    max_wager_test "Testing valid Raise max" (Raise 40) 50 true; 
 
   ]
 

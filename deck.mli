@@ -1,11 +1,13 @@
 (** Handles deck creation, shuffling, and card pulling. *)
 
-(** [card] represents a playing card with a rank from 1-13 and a suit
+(** AF: [card] represents a playing card with a rank from 1-13 and a suit
     denoted by the first character of the suit's name. A card with the rank of
-    1 represents an ace, 11 is a Jack, 12 a Queen, and 13 a King.*)
+    1 represents an ace, 11 is a Jack, 12 a Queen, and 13 a King.
+    RI: [rank] 1 <= [rank] <= 13
+    [char] = {C,S,H,D} one of the following. *)
 type card = {rank : int; suit : char}
 
-(** [deck] represents a mutable array of cards. *)
+(** AF:[deck] represents a mutable array of cards.*)
 type deck = card array ref
 
 (** [print_card card] is the string representation of the card [card]. *)
